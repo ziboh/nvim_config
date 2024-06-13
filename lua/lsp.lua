@@ -175,6 +175,8 @@ end
 local function get_lspserver()
   local lsp_server = "rust-anlayzer"
   if require("mason-registry").has_package "rust-analyzer" then
+    if vim.fn.has "win32" then lsp_server = vim.fn.stdpath "data" .. "\\mason\\bin\\rust-analyzer.cmd" end
+  elseif vim.fn.has "linux" then
     lsp_server = vim.fn.stdpath "data" .. "/mason/bin/rust-analyzer"
   end
   return lsp_server
