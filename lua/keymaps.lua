@@ -693,20 +693,25 @@ maps.n["<Leader>ds"] = {
 }
 
 -- For Fittencode
-maps.n["<leader>ac"] = {
-  function()
-    local input_opts = { prompt = "Ask... (Fitten Code Fast): ", default = "" }
-    vim.ui.input(input_opts, function(content)
-      if not content or #content == 0 then return end
-      require("fittencode").start_chat {
-        prompt = "使用中文回答上面问题",
-        content = content,
-      }
-    end)
-  end,
-  desc = "chat with Fitten Code",
-}
-
+if utils.is_available "fittencode.nvim" then
+  maps.n["<leader>ac"] = {
+    function()
+      local input_opts = { prompt = "Ask... (Fitten Code Fast): ", default = "" }
+      vim.ui.input(input_opts, function(content)
+        if not content or #content == 0 then return end
+        require("fittencode").start_chat {
+          prompt = "使用中文回答上面问题",
+          content = content,
+        }
+      end)
+    end,
+    desc = "chat with Fitten Code",
+  }
+  maps.n["<leader>at"] = {
+    function() toggle.fittencode() end,
+    desc = "Toggle Fitten Code",
+  }
+end
 -- For diagnostic
 maps.n["<leader>ld"] = { function() vim.diagnostic.open_float() end, desc = "Hover diagnostics" }
 if vim.fn.has "nvim-0.11" == 0 then
@@ -720,4 +725,10 @@ vim.keymap.set("n", "<leader>lf", function()
     filter = function(client) return client.name == "null-ls" end,
   }
 end, { noremap = true, silent = true, desc = "Formatting" })
+
+-- FOr ccc
+maps.n["<Leader>uC"] = { "<Cmd>CccHighlighterToggle<CR>", desc = "Toggle colorizer" }
+maps.n["<Leader>pg"] = { "<Cmd>CccConvert<CR>", desc = "Convert color" }
+maps.n["<Leader>pc"] = { "<Cmd>CccPick<CR>", desc = "Pick Color" }
+
 require("utils").set_mappings(maps)

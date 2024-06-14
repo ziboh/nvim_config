@@ -148,4 +148,22 @@ function M.diagnostics(silent)
   end
 end
 
+function M.fittencode(slient)
+  local ok, fittencode = pcall(require, "fittencode")
+  if ok then
+    local statuscode = fittencode.get_current_status()
+    if statuscode == 1 then
+      fittencode.enable_completions { enable = true }
+      ui_notify(slient, "Enable Fittencode")
+    else
+      fittencode.enable_completions { enable = false }
+      ui_notify(slient, "Disable Fittencode")
+    end
+    vim.api.nvim_exec_autocmds("User", {
+      pattern = "ToggleFitten",
+      modeline = false,
+    })
+  end
+end
+
 return M

@@ -120,6 +120,7 @@ local on_attach = function(client, bufnr)
 end
 
 local rust_on_attach = function(client, bufnr)
+  vim.notify "rust-analyzer attached"
   on_attach(client, bufnr)
 
   if client.server_capabilities.code_lens or client.server_capabilities.codeLensProvider then
@@ -195,9 +196,8 @@ require("mason-nvim-dap").setup {
 
 local rustacean_logfile = vim.fn.tempname() .. "-rustacean.log"
 vim.g.rustaceanvim = {
-  -- Plugin configuration
   tools = {
-    test_executor = "toggleterm",
+    test_executor = "background",
   },
   -- LSP configuration
   server = {

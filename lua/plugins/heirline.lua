@@ -71,17 +71,32 @@ return {
         },
         lib.component.git_branch(),
         lib.component.file_info(),
-        lib.component.git_diff {
-          on_click = {
-            name = "yadm_or_git",
-            callback = function() vim.cmd [[Telescope git_or_yadm_files]] end,
-          },
-        },
+        lib.component.git_diff {},
         lib.component.diagnostics(),
         lib.component.fill(),
         lib.component.cmd_info(),
         lib.component.fill(),
         lib.component.lsp(),
+        require("utils").is_available "fittencode.nvim"
+            and {
+              provider = "    Fitten",
+              hl = function()
+                if require("fittencode").get_current_status() ~= 1 then
+                  return { fg = "#82aa78" }
+                else
+                  return { fg = "#ed8796" }
+                end
+              end,
+              on_click = {
+                name = "heirline_fittencode",
+                callback = function() require("utils.toggle").fittencode(false) end,
+              },
+              update = {
+                "User", -- events that make this component refresh.
+                pattern = "ToggleFitten",
+              },
+            }
+          or nil,
         lib.component.compiler_state(),
         lib.component.virtual_env(),
         lib.component.nav(),
