@@ -11,3 +11,10 @@ vim.keymap.set(
   "<cmd>RustLsp run<CR>",
   { noremap = true, silent = true, buffer = 0, desc = "Rust Run" }
 )
+
+vim.keymap.set(
+  "n",
+  "<leader>rt",
+  "<cmd> RustLsp testables<CR>",
+  { noremap = true, silent = true, buffer = 0, desc = "Rust Run" }
+)
