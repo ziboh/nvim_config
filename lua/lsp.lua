@@ -191,7 +191,7 @@ require("mason-lspconfig").setup {
 
 require("mason-nvim-dap").setup {
   -- A list of servers to automatically install if they're not already installed
-  ensure_installed = config.lsp.ensure_installed_dap,
+  ensure_installed = config.lsp.ensurer_installed_dap,
 }
 
 local rustacean_logfile = vim.fn.tempname() .. "-rustacean.log"

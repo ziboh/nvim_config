@@ -15,6 +15,6 @@ vim.keymap.set(
 vim.keymap.set(
   "n",
   "<leader>rt",
-  function() require("neotest").run.run() end,
+  "<cmd> RustLsp testables<CR>",
   { noremap = true, silent = true, buffer = 0, desc = "Rust Run" }
 )
