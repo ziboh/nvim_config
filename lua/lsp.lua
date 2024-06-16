@@ -176,9 +176,11 @@ end
 local function get_lspserver()
   local lsp_server = "rust-anlayzer"
   if require("mason-registry").has_package "rust-analyzer" then
-    if vim.fn.has "win32" then lsp_server = vim.fn.stdpath "data" .. "\\mason\\bin\\rust-analyzer.cmd" end
-  elseif vim.fn.has "linux" then
-    lsp_server = vim.fn.stdpath "data" .. "/mason/bin/rust-analyzer"
+    if vim.fn.has "win32" then
+      lsp_server = vim.fn.stdpath "data" .. "\\mason\\bin\\rust-analyzer.cmd"
+    elseif vim.fn.has "linux" then
+      lsp_server = vim.fn.stdpath "data" .. "/mason/bin/rust-analyzer"
+    end
   end
   return lsp_server
 end
@@ -202,7 +204,7 @@ vim.g.rustaceanvim = {
   -- LSP configuration
   server = {
     on_attach = rust_on_attach,
-    cmd = function() return { get_lspserver(), "--log-file", rustacean_logfile } end,
+    cmd = function() return { "rust-analyzer", "--log-file", rustacean_logfile } end,
 
     ---@type string The path to the rust-analyzer log file.
     logfile = rustacean_logfile,
