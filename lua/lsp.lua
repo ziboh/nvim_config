@@ -179,7 +179,7 @@ local function get_lspserver()
   local lsp_server = "rust-anlayzer"
   if require("mason-registry").has_package "rust-analyzer" then
     ---@diagnostic disable-next-line:undefined-field
-    if vim.loop.os_uname().sysname == "Windows_Nt" then
+    if vim.loop.os_uname().sysname == "Windows_NT" then
       lsp_server = vim.fn.stdpath "data" .. "\\mason\\bin\\rust-analyzer.cmd"
     ---@diagnostic disable-next-line:undefined-field
     elseif vim.loop.os_uname().sysname == "Linux" then
