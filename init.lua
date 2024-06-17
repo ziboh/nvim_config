@@ -1,6 +1,6 @@
 require "options"
 require "lazy-setup"
-require "lsp"
 require "keymaps"
 require "autocmd"
 require "colorcheme"
+require "lsp"

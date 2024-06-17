@@ -159,12 +159,14 @@ local function get_dap_adapter()
     local liblldb_path = package_path .. "/extension/lldb/lib/liblldb"
 
     -- the path in windows is different
-    if vim.fn.has "win32" then
+    ---@diagnostic disable-next-line:undefined-field
+    if vim.loop.os_uname().sysname == "Windows_NT" then
       codelldb_path = package_path .. "\\extension\\adapter\\codelldb.exe"
       liblldb_path = package_path .. "\\extension\\lldb\\bin\\liblldb.dll"
     else
       -- the liblldb extension is .so for linux and .dylib for macos
-      liblldb_path = liblldb_path .. (vim.fn.has "linux" and ".so" or ".dylib")
+      ---@diagnostic disable-next-line:undefined-field
+      liblldb_path = liblldb_path .. (vim.loop.os_uname().sysname == "linux" and ".so" or ".dylib")
     end
     adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path)
   else
@@ -176,9 +178,11 @@ end
 local function get_lspserver()
   local lsp_server = "rust-anlayzer"
   if require("mason-registry").has_package "rust-analyzer" then
-    if vim.fn.has "win32" then
+    ---@diagnostic disable-next-line:undefined-field
+    if vim.loop.os_uname().sysname == "Windows_Nt" then
       lsp_server = vim.fn.stdpath "data" .. "\\mason\\bin\\rust-analyzer.cmd"
-    elseif vim.fn.has "linux" then
+    ---@diagnostic disable-next-line:undefined-field
+    elseif vim.loop.os_uname().sysname == "Linux" then
       lsp_server = vim.fn.stdpath "data" .. "/mason/bin/rust-analyzer"
     end
   end
@@ -204,7 +208,7 @@ vim.g.rustaceanvim = {
   -- LSP configuration
   server = {
     on_attach = rust_on_attach,
-    cmd = function() return { "rust-analyzer", "--log-file", rustacean_logfile } end,
+    cmd = function() return { get_lspserver(), "--log-file", rustacean_logfile } end,
 
     ---@type string The path to the rust-analyzer log file.
     logfile = rustacean_logfile,
