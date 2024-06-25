@@ -1,6 +1,6 @@
-
 local M = {}
-
+local latest_buf_id = nil
+M.user_terminals = {}
 --- Adds autocmds to a specific buffer if they don't already exist.
 ---
 --- @param augroup string       The name of the autocmd group to which the autocmds belong.
@@ -238,4 +238,59 @@ function M.on_load(plugins, load_op)
   end
 end
 
+--- Toggle a user terminal if it exists, if not then create a new one and save it
+---@param opts string|table A terminal command string or a table of options for Terminal:new() (Check toggleterm.nvim documentation for table format)
+function M.toggle_term_cmd(opts)
+  local terms = M.user_terminals
+  -- if a command string is provided, create a basic table for Terminal:new() options
+  if type(opts) == "string" then opts = { cmd = opts } end
+  opts = vim.tbl_deep_extend("force", { hidden = true }, opts)
+  local num = vim.v.count > 0 and vim.v.count or 1
+  -- if terminal doesn't exist yet, create it
+  if not terms[opts.cmd] then terms[opts.cmd] = {} end
+  if not terms[opts.cmd][num] then
+    if not opts.count then opts.count = vim.tbl_count(terms) * 100 + num end
+    local on_exit = opts.on_exit
+    opts.on_exit = function(...)
+      terms[opts.cmd][num] = nil
+      if on_exit then on_exit(...) end
+    end
+    terms[opts.cmd][num] = require("toggleterm.terminal").Terminal:new(opts)
+  end
+  -- toggle the terminal
+  terms[opts.cmd][num]:toggle()
+end
+
+function M.execute_command(command, args, cwd, _)
+  local shell = require "rustaceanvim.shell"
+  local ui = require "rustaceanvim.ui"
+  local commands = {}
+  if cwd then table.insert(commands, shell.make_cd_command(cwd)) end
+  table.insert(commands, shell.make_command_from_args(command, args))
+  local full_command = shell.chain_commands(commands)
+
+  -- check if a buffer with the latest id is already open, if it is then
+  -- delete it and continue
+  ui.delete_buf(latest_buf_id)
+
+  -- create the new buffer
+  latest_buf_id = vim.api.nvim_create_buf(false, true)
+
+  -- split the window to create a new buffer and set it to our window
+  ui.split(false, latest_buf_id)
+
+  -- make the new buffer smaller
+  ui.resize(false, "-5")
+
+  -- close the buffer when escape is pressed :)
+  vim.keymap.set("n", "<Esc>", "<CMD>q<CR>", { buffer = latest_buf_id, noremap = true })
+
+  -- run the command
+  vim.fn.termopen(full_command)
+
+  -- when the buffer is closed, set the latest buf id to nil else there are
+  -- some edge cases with the id being sit but a buffer not being open
+  local function onDetach(_, _) latest_buf_id = nil end
+  vim.api.nvim_buf_attach(latest_buf_id, false, { on_detach = onDetach })
+end
 return M

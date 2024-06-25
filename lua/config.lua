@@ -41,7 +41,7 @@ local diagnostics_config = {
   diagnostics_default_config,
 }
 
-local ensure_installed_lspconfig = { "pyright", "lua_ls", "bashls", "taplo", "rust_analyzer" }
+local ensure_installed_lspconfig = { "pyright", "lua_ls", "bashls", "taplo", "rust_analyzer","clangd" }
 local ensure_installed_dap = { "codelldb", "python" }
 local ignore_setup_lspconfig = { "bashls", "rust_analyzer" }
 

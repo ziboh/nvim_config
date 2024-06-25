@@ -2,10 +2,32 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     branch = "0.1.x",
-    dependencies = { "nvim-lua/plenary.nvim", "pschmitt/telescope-yadm.nvim" },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "pschmitt/telescope-yadm.nvim",
+      "nvim-telescope/telescope-project.nvim",
+    },
     config = function()
+      local project_actions = require "telescope._extensions.project.actions"
       require("telescope").setup {
         extensions = {
+          project = {
+            base_dirs = {
+              "~/project",
+              "~/.config",
+              "~/gitdir",
+            },
+            hidden_files = true, -- default: false
+            theme = "dropdown",
+            -- order_by = "asc",
+            search_by = "title",
+            sync_with_nvim_tree = false, -- default false
+            -- default for on_project_selected = find project files
+            -- on_project_selected = function(prompt_bufnr)
+            --   -- Do anything you want in here. For example:
+            --   project_actions.change_working_directory(prompt_bufnr, false)
+            -- end,
+          },
           -- Your extension configuration goes here:
           -- extension_name = {
           --   extension_config_key = value,
@@ -28,6 +50,7 @@ return {
       require("telescope").load_extension "yadm_files"
       require("telescope").load_extension "git_or_files"
       require("telescope").load_extension "git_or_yadm_files"
+      require("telescope").load_extension "project"
     end,
   },
   {

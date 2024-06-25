@@ -7,6 +7,7 @@ return {
     local utils = require "utils"
     local get_icon = utils.get_icon
     return {
+      use_image_nvim = true,
       auto_clean_after_session_restore = true,
       close_if_last_window = true,
       buffers = {
@@ -133,6 +134,14 @@ return {
             cwd = node.type == "directory" and path or vim.fn.fnamemodify(path, ":h"),
           }
         end,
+        toggle_dir_or_open = function(state)
+          local node = state.tree:get_node()
+          if node.type == "directory" then
+            state.commands.toggle_node(state)
+          else -- if not a directory just open it
+            state.commands.open(state)
+          end
+        end,
       },
       window = {
         width = 30,
@@ -146,6 +155,7 @@ return {
           Y = "copy_selector",
           h = "parent_or_close",
           l = "child_or_open",
+          -- ["<space>"] = "toggle_dir_or_open",
         },
       },
       filesystem = {

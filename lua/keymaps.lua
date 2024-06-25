@@ -18,6 +18,7 @@ local icons = {
   g = { desc = get_icon("Git", 1, true) .. "Git" },
   s = { desc = get_icon("Session", 1, true) .. "Session" },
   t = { desc = get_icon("Terminal", 1, true) .. "Terminal" },
+  a = { desc = get_icon("Ai", 1, true) .. "Ai" },
 }
 
 -- Normal mode --
@@ -26,9 +27,11 @@ vim.keymap.set("n", "<C-n>", "5j", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-p>", "5k", { noremap = true, silent = true })
 vim.keymap.set("n", "<Space>", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "q", "<NOP>", { noremap = true, silent = true })
+vim.keymap.set("n", "J", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "<c-s>", "<cmd>w<cr>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Space>q", "<cmd>q<cr>", { noremap = true, silent = true, desc = "quit" })
 vim.keymap.set("n", "<tab>", "w", { noremap = true, silent = true })
+-- vim.keymap.set("n", "z<space>", "za", { noremap = true, silent = true, desc ="Toggle fold under cursor" })
 
 vim.keymap.set("n", "L", "$", { noremap = true, silent = true, desc = "Move to end of line" })
 vim.keymap.set("n", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
@@ -86,6 +89,9 @@ vim.keymap.set("v", "<Tab>", ">gv", { noremap = true, silent = true, desc = "Uni
 vim.keymap.set("v", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv-gv", { noremap = true, silent = true, desc = "Move line down" })
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv-gv", { noremap = true, silent = true, desc = "Move line up" })
+vim.keymap.set("v", "J", "<NOP>", { noremap = true, silent = true })
+vim.keymap.set("v", "J", "j", { noremap = true, silent = true })
+vim.keymap.set("v", "K", "k", { noremap = true, silent = true })
 
 -----------------
 -- Insert mode --
@@ -111,10 +117,7 @@ maps.n["<leader>C"] = { -- Close buffer keeping the window.
   desc = "Close buffer",
 }
 
-maps.n["<leader>ba"] = {
-  function() vim.cmd "wa" end,
-  desc = "Write all changed buffers",
-}
+maps.n["<leader>ba"] = { function() vim.cmd "wa" end, desc = "Write all changed buffers" }
 maps.n["]]"] = {
   function() require("heirline-components.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end,
   desc = "Next buffer",
@@ -141,14 +144,24 @@ maps.n["<b"] = {
 }
 
 maps.n["<leader>b"] = icons.b
-maps.n["<leader>bc"] = {
-  function() require("heirline-components.buffer").close_all(true) end,
-  desc = "Close all buffers except current",
-}
-maps.n["<leader>bC"] = {
-  function() require("heirline-components.buffer").close_all() end,
-  desc = "Close all buffers",
-}
+maps.n["<leader>bs"] = { desc = "Sort Buffer" }
+maps.n["<leader>bl"] =
+  { function() require("heirline-components.buffer").close_left() end, desc = "Close all buffers to the left" }
+maps.n["<leader>br"] =
+  { function() require("heirline-components.buffer").close_right() end, desc = "Close all buffers to the right" }
+maps.n["<leader>bse"] =
+  { function() require("heirline-components.buffer").sort "extension" end, desc = "Sort by extension (buffers)" }
+maps.n["<leader>bsr"] =
+  { function() require("heirline-components.buffer").sort "unique_path" end, desc = "Sort by relative path (buffers)" }
+maps.n["<leader>bsp"] =
+  { function() require("heirline-components.buffer").sort "full_path" end, desc = "Sort by full path (buffers)" }
+maps.n["<leader>bsi"] =
+  { function() require("heirline-components.buffer").sort "bufnr" end, desc = "Sort by buffer number (buffers)" }
+maps.n["<leader>bsm"] =
+  { function() require("heirline-components.buffer").sort "modified" end, desc = "Sort by modification (buffers)" }
+maps.n["<leader>bc"] =
+  { function() require("heirline-components.buffer").close_all(true) end, desc = "Close all buffers except current" }
+maps.n["<leader>bC"] = { function() require("heirline-components.buffer").close_all() end, desc = "Close all buffers" }
 maps.n["<leader>bb"] = {
   function()
     require("heirline-components.all").heirline.buffer_picker(function(bufnr) vim.api.nvim_win_set_buf(0, bufnr) end)
@@ -162,35 +175,6 @@ maps.n["<leader>bd"] = {
     )
   end,
   desc = "Delete buffer from tabline",
-}
-maps.n["<leader>bl"] = {
-  function() require("heirline-components.buffer").close_left() end,
-  desc = "Close all buffers to the left",
-}
-maps.n["<leader>br"] = {
-  function() require("heirline-components.buffer").close_right() end,
-  desc = "Close all buffers to the right",
-}
-maps.n["<leader>bs"] = { desc = "Sort Buffer" }
-maps.n["<leader>bse"] = {
-  function() require("heirline-components.buffer").sort "extension" end,
-  desc = "Sort by extension (buffers)",
-}
-maps.n["<leader>bsr"] = {
-  function() require("heirline-components.buffer").sort "unique_path" end,
-  desc = "Sort by relative path (buffers)",
-}
-maps.n["<leader>bsp"] = {
-  function() require("heirline-components.buffer").sort "full_path" end,
-  desc = "Sort by full path (buffers)",
-}
-maps.n["<leader>bsi"] = {
-  function() require("heirline-components.buffer").sort "bufnr" end,
-  desc = "Sort by buffer number (buffers)",
-}
-maps.n["<leader>bsm"] = {
-  function() require("heirline-components.buffer").sort "modified" end,
-  desc = "Sort by modification (buffers)",
 }
 maps.n["<leader>b\\"] = {
   function()
@@ -225,30 +209,36 @@ maps.n["<leader>gn"] = { name = "Neogit" }
 -- For telescope
 if is_available "telescope.nvim" then
   maps.n["<leader>f"] = icons.f
-  maps.n["<leader>gb"] = {
-    function() require("telescope.builtin").git_branches() end,
-    desc = "Git branches",
-  }
-
-  maps.n["<leader>gc"] = {
-    function() require("telescope.builtin").git_commits() end,
-    desc = "Git commits (repository)",
-  }
-  maps.n["<leader>gC"] = {
-    function() require("telescope.builtin").git_bcommits() end,
-    desc = "Git commits (current file)",
-  }
-  maps.n["<leader>gt"] = {
-    function() require("telescope.builtin").git_status() end,
-    desc = "Git status",
-  }
-  maps.n["<leader>f<CR>"] = {
-    function() require("telescope.builtin").resume() end,
-    desc = "Resume previous search",
-  }
-  maps.n["<leader>f'"] = {
-    function() require("telescope.builtin").marks() end,
-    desc = "Find marks",
+  maps.n["<leader>gb"] = { function() require("telescope.builtin").git_branches() end, desc = "Git branches" }
+  maps.n["<leader>gc"] =
+    { function() require("telescope.builtin").git_commits() end, desc = "Git commits (repository)" }
+  maps.n["<leader>gC"] =
+    { function() require("telescope.builtin").git_bcommits() end, desc = "Git commits (current file)" }
+  maps.n["<leader>gt"] = { function() require("telescope.builtin").git_status() end, desc = "Git status" }
+  maps.n["<leader>f<CR>"] = { function() require("telescope.builtin").resume() end, desc = "Resume previous search" }
+  maps.n["<leader>f'"] = { function() require("telescope.builtin").marks() end, desc = "Find marks" }
+  maps.n["<leader>fb"] = { function() require("telescope.builtin").buffers() end, desc = "Find buffers" }
+  maps.n["<leader>fp"] =
+    { function() require("telescope").extensions.project.project { display_type = "full" } end, desc = "Find Project" }
+  maps.n["<leader>fw"] =
+    { function() require("telescope.builtin").grep_string() end, desc = "Find word under cursor in project" }
+  maps.n["<leader>fc"] = { function() require("telescope.builtin").commands() end, desc = "Find commands" }
+  maps.n["<leader>fh"] = { function() require("telescope.builtin").help_tags() end, desc = "Find help" }
+  maps.n["<leader>fk"] = { function() require("telescope.builtin").keymaps() end, desc = "Find keymaps" }
+  maps.n["<leader>fm"] = { function() require("telescope.builtin").man_pages() end, desc = "Find man" }
+  maps.n["<leader>fo"] = { function() require("telescope.builtin").oldfiles() end, desc = "Find recent" }
+  maps.n["<leader>fv"] = { function() require("telescope.builtin").registers() end, desc = "Find vim registers" }
+  maps.n["<leader>ff"] = { function() require("telescope.builtin").live_grep() end, desc = "Find words in project" }
+  maps.n["<leader> "] = { function() require("telescope.builtin").find_files() end, desc = "Find file" }
+  maps.n["<leader>fH"] = { function() require("telescope.builtin").highlights() end, desc = "Lists highlights" }
+  maps.n["<leader>f/"] =
+    { function() require("telescope.builtin").current_buffer_fuzzy_find() end, desc = "Find words in current buffer" }
+  maps.n["<leader>ft"] = {
+    function()
+      pcall(vim.api.nvim_command, "doautocmd User LoadColorSchemes")
+      pcall(require("telescope.builtin").colorscheme, { enable_preview = true })
+    end,
+    desc = "Find themes",
   }
   maps.n["<leader>fa"] = {
     function()
@@ -264,75 +254,12 @@ if is_available "telescope.nvim" then
     end,
     desc = "Find nvim config files",
   }
-  maps.n["<leader>fb"] = {
-    function() require("telescope.builtin").buffers() end,
-    desc = "Find buffers",
-  }
-  maps.n["<leader>fw"] = {
-    function() require("telescope.builtin").grep_string() end,
-    desc = "Find word under cursor in project",
-  }
-  maps.n["<leader>fc"] = {
-    function() require("telescope.builtin").commands() end,
-    desc = "Find commands",
-  }
-  maps.n["<leader>fh"] = {
-    function() require("telescope.builtin").help_tags() end,
-    desc = "Find help",
-  }
-  maps.n["<leader>fk"] = {
-    function() require("telescope.builtin").keymaps() end,
-    desc = "Find keymaps",
-  }
-  maps.n["<leader>fm"] = {
-    function() require("telescope.builtin").man_pages() end,
-    desc = "Find man",
-  }
 
   if is_available "nvim-notify" then
-    maps.n["<leader>fn"] = {
-      function() require("telescope").extensions.notify.notify() end,
-      desc = "Find notifications",
-    }
+    maps.n["<leader>fn"] =
+      { function() require("telescope").extensions.notify.notify() end, desc = "Find notifications" }
   end
-  maps.n["<leader>fo"] = {
-    function() require("telescope.builtin").oldfiles() end,
-    desc = "Find recent",
-  }
-  maps.n["<leader>fv"] = {
-    function() require("telescope.builtin").registers() end,
-    desc = "Find vim registers",
-  }
-  maps.n["<leader>ft"] = {
-    function()
-      -- load color schemes before listing them
-      pcall(vim.api.nvim_command, "doautocmd User LoadColorSchemes")
 
-      -- Open telescope
-      pcall(require("telescope.builtin").colorscheme, { enable_preview = true })
-    end,
-    desc = "Find themes",
-  }
-  maps.n["<leader>ff"] = {
-    function() require("telescope.builtin").live_grep() end,
-    desc = "Find words in project",
-  }
-
-  maps.n["<leader> "] = {
-    function() require("telescope.builtin").find_files() end,
-    desc = "Find file",
-  }
-  maps.n["<leader>fH"] = {
-    function() require("telescope.builtin").highlights() end,
-    desc = "Lists highlights",
-  }
-  maps.n["<leader>f/"] = {
-    function() require("telescope.builtin").current_buffer_fuzzy_find() end,
-    desc = "Find words in current buffer",
-  }
-
-  -- Some lsp keymappings are here because they depend on telescope
-  maps.n["<leader>l"] = icons.l
   maps.n["<leader>ls"] = {
     function()
       local aerial_avail, _ = pcall(require, "aerial")
@@ -356,25 +283,6 @@ if is_available "telescope.nvim" then
     desc = "Search symbol in buffer", -- Useful to find every time a variable is assigned.
   }
 
-  -- extra - project.nvim
-  if is_available "project.nvim" then
-    maps.n["<leader>fp"] = {
-      function() vim.cmd "Telescope projects" end,
-      desc = "Find project",
-    }
-  end
-
-  -- extra - spectre.nvim (search and replace in project)
-  if is_available "nvim-spectre" then
-    maps.n["<leader>fr"] = {
-      function() require("spectre").toggle() end,
-      desc = "Find and replace word in project",
-    }
-    maps.n["<leader>fb"] = {
-      function() require("spectre").toggle { path = vim.fn.expand "%:t:p" } end,
-      desc = "Find and replace word in buffer",
-    }
-  end
   -- extra - luasnip
   if is_available "LuaSnip" and is_available "telescope-luasnip.nvim" then
     maps.n["<leader>fs"] = {
@@ -407,71 +315,26 @@ if is_available "telescope.nvim" then
   -- extra - compiler
   if is_available "compiler.nvim" and is_available "overseer.nvim" then
     maps.n["<leader>m"] = icons.c
-    maps.n["<leader>mm"] = {
-      function() vim.cmd "CompilerOpen" end,
-      desc = "Open compiler",
-    }
-    maps.n["<leader>mr"] = {
-      function() vim.cmd "CompilerRedo" end,
-      desc = "Compiler redo",
-    }
-    maps.n["<leader>mt"] = {
-      function() vim.cmd "CompilerToggleResults" end,
-      desc = "compiler results",
-    }
-    maps.n["<F6>"] = {
-      function() vim.cmd "CompilerOpen" end,
-      desc = "Open compiler",
-    }
-    maps.n["<S-F6>"] = {
-      function() vim.cmd "CompilerRedo" end,
-      desc = "Compiler redo",
-    }
-    maps.n["<S-F7>"] = {
-      function() vim.cmd "CompilerToggleResults" end,
-      desc = "compiler resume",
-    }
-    maps.n["<leader>fn"] = {
-      function() vim.cmd [[Telescope notify]] end,
-      desc = "Search notify",
-    }
+    maps.n["<leader>mm"] = { function() vim.cmd "CompilerOpen" end, desc = "Open compiler" }
+    maps.n["<leader>mr"] = { function() vim.cmd "CompilerRedo" end, desc = "Compiler redo" }
+    maps.n["<leader>mt"] = { function() vim.cmd "CompilerToggleResults" end, desc = "compiler results" }
+    maps.n["<F6>"] = { function() vim.cmd "CompilerOpen" end, desc = "Open compiler" }
+    maps.n["<S-F6>"] = { function() vim.cmd "CompilerRedo" end, desc = "Compiler redo" }
+    maps.n["<S-F7>"] = { function() vim.cmd "CompilerToggleResults" end, desc = "compiler resume" }
+    maps.n["<leader>fn"] = { function() vim.cmd [[Telescope notify]] end, desc = "Search notify" }
   end
 end
 
 -- smart-splits.nivm
 if is_available "smart-splits.nvim" then
-  maps.n["<C-h>"] = {
-    function() require("smart-splits").move_cursor_left() end,
-    desc = "Move to left split",
-  }
-  maps.n["<C-j>"] = {
-    function() require("smart-splits").move_cursor_down() end,
-    desc = "Move to below split",
-  }
-  maps.n["<C-k>"] = {
-    function() require("smart-splits").move_cursor_up() end,
-    desc = "Move to above split",
-  }
-  maps.n["<C-l>"] = {
-    function() require("smart-splits").move_cursor_right() end,
-    desc = "Move to right split",
-  }
-  maps.n["<C-Up>"] = {
-    function() require("smart-splits").resize_up() end,
-    desc = "Resize split up",
-  }
-  maps.n["<C-Down>"] = {
-    function() require("smart-splits").resize_down() end,
-    desc = "Resize split down",
-  }
-  maps.n["<C-Left>"] = {
-    function() require("smart-splits").resize_left() end,
-    desc = "Resize split left",
-  }
-  maps.n["<C-Right>"] = {
-    function() require("smart-splits").resize_right() end,
-    desc = "Resize split right",
-  }
+  maps.n["<C-h>"] = { function() require("smart-splits").move_cursor_left() end, desc = "Move to left split" }
+  maps.n["<C-j>"] = { function() require("smart-splits").move_cursor_down() end, desc = "Move to below split" }
+  maps.n["<C-k>"] = { function() require("smart-splits").move_cursor_up() end, desc = "Move to above split" }
+  maps.n["<C-l>"] = { function() require("smart-splits").move_cursor_right() end, desc = "Move to right split" }
+  maps.n["<C-Up>"] = { function() require("smart-splits").resize_up() end, desc = "Resize split up" }
+  maps.n["<C-Down>"] = { function() require("smart-splits").resize_down() end, desc = "Resize split down" }
+  maps.n["<C-Left>"] = { function() require("smart-splits").resize_left() end, desc = "Resize split left" }
+  maps.n["<C-Right>"] = { function() require("smart-splits").resize_right() end, desc = "Resize split right" }
 else
   maps.n["<C-h>"] = { "<C-w>h", desc = "Move to left split" }
   maps.n["<C-j>"] = { "<C-w>j", desc = "Move to below split" }
@@ -498,26 +361,14 @@ maps.n["<leader>wj"] = { "<c-w>s", desc = "splite window below" }
 maps.n["<leader>wo"] = { "<c-w>o", desc = "only window" }
 maps.n["<leader>wx"] = { "<c-w>x", desc = "Swap current with next" }
 maps.n["<leader>wf"] = { "<c-w>pa", desc = "switch window" }
-
 maps.n["|"] = { "<cmd>vsplit<cr>", desc = "Vertical Split" }
 maps.n["\\"] = { "<cmd>split<cr>", desc = "Horizontal Split" }
 
-maps.n["<leader>ss"] = {
-  function() require("resession").save() end,
-  desc = "Session Save",
-}
-maps.n["<leader>sf"] = {
-  function() require("resession").load() end,
-  desc = "Session load",
-}
-maps.n["<leader>sd"] = {
-  function() require("resession").delete() end,
-  desc = "Session delete",
-}
-maps.n["<leader>sl"] = {
-  function() require("resession").load "last" end,
-  desc = "Load last Session",
-}
+-- For resession
+maps.n["<leader>ss"] = { function() require("resession").save() end, desc = "Session Save" }
+maps.n["<leader>sf"] = { function() require("resession").load() end, desc = "Session load" }
+maps.n["<leader>sd"] = { function() require("resession").delete() end, desc = "Session delete" }
+maps.n["<leader>sl"] = { function() require("resession").load "last" end, desc = "Load last Session" }
 maps.n["<leader>o"] = { "<cmd>Oil<CR>", desc = "Oil" }
 
 -- For package
@@ -538,71 +389,57 @@ maps.i["<F7>"] = { "<Esc><Cmd>ToggleTerm<CR>", desc = "Toggle terminl" }
 maps.n["<C-'>"] = { '<Cmd>execute v:count . "ToggleTerm"<CR>', desc = "Toggle terminal" } -- requires terminal that supports binding <C-'>
 maps.t["<C-'>"] = { "<Cmd>ToggleTerm<CR>", desc = "Toggle terminal" } -- requires terminal that supports binding <C-'>
 maps.i["<C-'>"] = { "<Esc><Cmd>ToggleTerm<CR>", desc = "Toggle terminl" } -- requires terminal that supports binding <C-'>
+maps.n["<leader>tc"] = {
+  function()
+    local input_opts = { prompt = "Put Commands", default = "" }
+    vim.ui.input(input_opts, function(cmd)
+      if not cmd or #cmd == 0 then return end
+      utils.toggle_term_cmd(cmd)
+    end)
+  end,
+  desc = "chat with Fitten Code",
+}
 
 -- For ui
 maps.n["<leader>u"] = icons.u
-maps.n["<leader>ub"] = {
-  function() toggle.background() end,
-  desc = "Toggle Background",
-}
-maps.n["<leader>un"] = {
-  function() require("notify").dismiss { silent = true, pending = true } end,
-  desc = "Dismiss Notifications",
-}
-maps.n["<leader>ua"] = {
-  function() toggle.autopairs() end,
-  desc = "Toggle Autopairs",
-}
-maps.n["<leader>uw"] = {
-  function() toggle.wrap() end,
-  desc = "Toggle Wrap",
-}
-maps.n["<leader>uz"] = {
-  function() toggle.foldcolumn() end,
-  desc = "Toggle Foldcolumu",
-}
-
-maps.n["<leader>ud"] = {
-  function() toggle.diagnostics(true) end,
-  desc = "Toggle Diagnostics",
-}
-maps.n["<leader>ut"] = {
-  function() toggle.tabline() end,
-  desc = "Toggle Tabline",
-}
-maps.n["<leader>uc"] = {
-  function() toggle.conceal() end,
-  desc = "Toggle Conceal",
-}
-maps.n["<leader>us"] = {
-  function() toggle.statusline() end,
-  desc = "Toggle Statusline",
-}
-maps.n["<leader>ui"] = {
-  function() toggle.indent() end,
-  desc = "Toggle Indent",
-}
-maps.n["<leader>uN"] = {
-  function() toggle.number() end,
-  desc = "Toggle Number",
-}
-maps.n["<leader>us"] = {
-  function() toggle.spell() end,
-  desc = "Toggle Spell",
-}
+maps.n["<leader>ub"] = { function() toggle.background() end, desc = "Toggle Background" }
+maps.n["<leader>ua"] = { function() toggle.autopairs() end, desc = "Toggle Autopairs" }
+maps.n["<leader>uw"] = { function() toggle.wrap() end, desc = "Toggle Wrap" }
+maps.n["<leader>uz"] = { function() toggle.foldcolumn() end, desc = "Toggle Foldcolumu" }
+maps.n["<leader>ud"] = { function() toggle.diagnostics(true) end, desc = "Toggle Diagnostics" }
+maps.n["<leader>ut"] = { function() toggle.tabline() end, desc = "Toggle Tabline" }
+maps.n["<leader>uc"] = { function() toggle.conceal() end, desc = "Toggle Conceal" }
+maps.n["<leader>us"] = { function() toggle.statusline() end, desc = "Toggle Statusline" }
+maps.n["<leader>ui"] = { function() toggle.indent() end, desc = "Toggle Indent" }
+maps.n["<leader>uN"] = { function() toggle.number() end, desc = "Toggle Number" }
+maps.n["<leader>us"] = { function() toggle.spell() end, desc = "Toggle Spell" }
+maps.n["<leader>un"] =
+  { function() require("notify").dismiss { silent = true, pending = true } end, desc = "Dismiss Notifications" }
 
 -- Dap
 maps.n["<Leader>d"] = icons.d
 -- modified function keys found with `showkey -a` in the terminal to get key code
 -- run `nvim -V3log +quit` and search through the "Terminal info" in the `log` file for the correct keyname
-maps.n["<F5>"] = {
-  function() require("dap").continue() end,
-  desc = "Debugger: Start",
-}
-maps.n["<F17>"] = {
-  function() require("dap").terminate() end,
-  desc = "Debugger: Stop",
-} -- Shift+F5
+maps.n["<F5>"] = { function() require("dap").continue() end, desc = "Debugger: Start" }
+maps.n["<F17>"] = { function() require("dap").terminate() end, desc = "Debugger: Stop" } -- Shift+F5
+maps.n["<F29>"] = { function() require("dap").restart_frame() end, desc = "Debugger: Restart" } -- Control+F5
+maps.n["<F6>"] = { function() require("dap").pause() end, desc = "Debugger: Pause" }
+maps.n["<F9>"] = { function() require("dap").toggle_breakpoint() end, desc = "Debugger: Toggle Breakpoint" }
+maps.n["<F10>"] = { function() require("dap").step_over() end, desc = "Debugger: Step Over" }
+maps.n["<F11>"] = { function() require("dap").step_into() end, desc = "Debugger: Step Into" }
+maps.n["<F23>"] = { function() require("dap").step_out() end, desc = "Debugger: Step Out" } -- Shift+F11
+maps.n["<Leader>db"] = { function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint (F9)" }
+maps.n["<Leader>dB"] = { function() require("dap").clear_breakpoints() end, desc = "Clear Breakpoints" }
+maps.n["<Leader>dc"] = { function() require("dap").continue() end, desc = "Start/Continue (F5)" }
+maps.n["<Leader>di"] = { function() require("dap").step_into() end, desc = "Step Into (F11)" }
+maps.n["<Leader>do"] = { function() require("dap").step_over() end, desc = "Step Over (F10)" }
+maps.n["<Leader>dO"] = { function() require("dap").step_out() end, desc = "Step Out (S-F11)" }
+maps.n["<Leader>dq"] = { function() require("dap").close() end, desc = "Close Session" }
+maps.n["<Leader>dQ"] = { function() require("dap").terminate() end, desc = "Terminate Session (S-F5)" }
+maps.n["<Leader>dp"] = { function() require("dap").pause() end, desc = "Pause (F6)" }
+maps.n["<Leader>dr"] = { function() require("dap").restart_frame() end, desc = "Restart (C-F5)" }
+maps.n["<Leader>dR"] = { function() require("dap").repl.toggle() end, desc = "Toggle REPL" }
+maps.n["<Leader>ds"] = { function() require("dap").run_to_cursor() end, desc = "Run To Cursor" }
 maps.n["<F21>"] = { -- Shift+F9
   function()
     vim.ui.input({ prompt = "Condition: " }, function(condition)
@@ -610,42 +447,6 @@ maps.n["<F21>"] = { -- Shift+F9
     end)
   end,
   desc = "Debugger: Conditional Breakpoint",
-}
-maps.n["<F29>"] = {
-  function() require("dap").restart_frame() end,
-  desc = "Debugger: Restart",
-} -- Control+F5
-maps.n["<F6>"] = {
-  function() require("dap").pause() end,
-  desc = "Debugger: Pause",
-}
-maps.n["<F9>"] = {
-  function() require("dap").toggle_breakpoint() end,
-  desc = "Debugger: Toggle Breakpoint",
-}
-maps.n["<F10>"] = {
-  function() require("dap").step_over() end,
-  desc = "Debugger: Step Over",
-}
-maps.n["<F11>"] = {
-  function() require("dap").step_into() end,
-  desc = "Debugger: Step Into",
-}
-maps.n["<F23>"] = {
-  function() require("dap").step_out() end,
-  desc = "Debugger: Step Out",
-} -- Shift+F11
-maps.n["<Leader>db"] = {
-  function() require("dap").toggle_breakpoint() end,
-  desc = "Toggle Breakpoint (F9)",
-}
-maps.n["<Leader>dB"] = {
-  function() require("dap").clear_breakpoints() end,
-  desc = "Clear Breakpoints",
-}
-maps.n["<Leader>dc"] = {
-  function() require("dap").continue() end,
-  desc = "Start/Continue (F5)",
 }
 maps.n["<Leader>dC"] = {
   function()
@@ -655,59 +456,10 @@ maps.n["<Leader>dC"] = {
   end,
   desc = "Conditional Breakpoint (S-F9)",
 }
-maps.n["<Leader>di"] = {
-  function() require("dap").step_into() end,
-  desc = "Step Into (F11)",
-}
-maps.n["<Leader>do"] = {
-  function() require("dap").step_over() end,
-  desc = "Step Over (F10)",
-}
-maps.n["<Leader>dO"] = {
-  function() require("dap").step_out() end,
-  desc = "Step Out (S-F11)",
-}
-maps.n["<Leader>dq"] = {
-  function() require("dap").close() end,
-  desc = "Close Session",
-}
-maps.n["<Leader>dQ"] = {
-  function() require("dap").terminate() end,
-  desc = "Terminate Session (S-F5)",
-}
-maps.n["<Leader>dp"] = {
-  function() require("dap").pause() end,
-  desc = "Pause (F6)",
-}
-maps.n["<Leader>dr"] = {
-  function() require("dap").restart_frame() end,
-  desc = "Restart (C-F5)",
-}
-maps.n["<Leader>dR"] = {
-  function() require("dap").repl.toggle() end,
-  desc = "Toggle REPL",
-}
-maps.n["<Leader>ds"] = {
-  function() require("dap").run_to_cursor() end,
-  desc = "Run To Cursor",
-}
 
 -- For Fittencode
 if utils.is_available "fittencode.nvim" then
-  maps.n["<leader>ac"] = {
-    function()
-      local input_opts = { prompt = "Ask... (Fitten Code Fast): ", default = "" }
-      vim.ui.input(input_opts, function(content)
-        if not content or #content == 0 then return end
-        require("fittencode").start_chat {
-          prompt = "使用中文回答上面问题",
-          content = content,
-        }
-      end)
-    end,
-    desc = "chat with Fitten Code",
-  }
-  maps.n["<leader>at"] = {
+  maps.n["<leader>aa"] = {
     function() toggle.fittencode() end,
     desc = "Toggle Fitten Code",
   }
@@ -721,7 +473,6 @@ end
 vim.keymap.set("n", "<leader>lf", function()
   vim.lsp.buf.format {
     async = true,
-    -- Only request null-ls for formatting
     filter = function(client) return client.name == "null-ls" end,
   }
 end, { noremap = true, silent = true, desc = "Formatting" })
@@ -730,5 +481,25 @@ end, { noremap = true, silent = true, desc = "Formatting" })
 maps.n["<Leader>uC"] = { "<Cmd>CccHighlighterToggle<CR>", desc = "Toggle colorizer" }
 maps.n["<Leader>pg"] = { "<Cmd>CccConvert<CR>", desc = "Convert color" }
 maps.n["<Leader>pc"] = { "<Cmd>CccPick<CR>", desc = "Pick Color" }
+
+-- For ChatGpt
+maps.n["<leader>a"] = icons.a
+maps.v["<leader>a"] = icons.a
+maps.n["<Leader>ac"] = { "<Cmd>GpChatToggle<CR>", desc = "Toggle Chat" }
+maps.n["<Leader>an"] = { "<Cmd>GpChatNew vsplit<CR>", desc = "New Chat" }
+maps.n["<Leader>af"] = { "<Cmd>GpChatFinder<CR>", desc = "Find Chat" }
+maps.n["<Leader>ad"] = { "<Cmd>GpChatDelete<CR>", desc = "Delete Chat" }
+maps.n["<Leader>ar"] = { "<Cmd>GpChatRespond<CR>", desc = "Respond Chat" }
+maps.v["<Leader>ap"] = { ":<C-u>'<,'>GpChatPaste vsplit<cr>", desc = "Paste Chat" }
+maps.v["<Leader>an"] = { ":<C-u>'<,'>GpChatNew vsplit<cr>", desc = "New Chat" }
+maps.v["<Leader>ac"] = { ":<C-u>'<,'>GpChatToggle<cr>", desc = "Toggle Chat" }
+maps.v["<Leader>at"] = { ":<C-u>'<,'>GpTranslator vsplit<cr>", desc = "Gpt Translate" }
+maps.n["<Leader>at"] = { "<cmd>GpTranslator vsplit<cr>", desc = "Gpt Translate" }
+
+-- For cargo
+vim.keymap.set("n", "<leader>rR", function()
+  local termopen = require "rustaceanvim.executors.termopen"
+  termopen.execute_command("cargo run", {})
+end, { noremap = true, silent = true, desc = "Cargo run" })
 
 require("utils").set_mappings(maps)

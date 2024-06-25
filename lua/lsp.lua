@@ -1,6 +1,5 @@
 local config = require "config"
 local lspconfig = require "lspconfig"
-
 -- See `:help vim.lsp.buf.inlay_hint` for documentation on the inlay_hint API
 vim.lsp.inlay_hint.enable(true)
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -147,6 +146,18 @@ local rust_on_attach = function(client, bufnr)
     "<cmd>RustLsp hover actions<CR>",
     { noremap = true, silent = true, buffer = bufnr, desc = "Hover actions" }
   )
+  -- vim.keymap.set(
+  --   "n",
+  --   "]]",
+  --   function() require("heirline-components.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end,
+  --   { noremap = true, silent = true, buffer = bufnr, desc = "Next buffer" }
+  -- )
+  -- vim.keymap.set(
+  --   "n",
+  --   "[[",
+  --   function() require("heirline-components.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
+  --   { noremap = true, silent = true, buffer = bufnr, desc = "Previous buffer" }
+  -- )
 end
 
 local function get_dap_adapter()
@@ -166,7 +177,7 @@ local function get_dap_adapter()
     else
       -- the liblldb extension is .so for linux and .dylib for macos
       ---@diagnostic disable-next-line:undefined-field
-      liblldb_path = liblldb_path .. (vim.loop.os_uname().sysname == "linux" and ".so" or ".dylib")
+      liblldb_path = liblldb_path .. (vim.loop.os_uname().sysname == "Linux" and ".so" or ".dylib")
     end
     adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path)
   else
@@ -202,9 +213,6 @@ require("mason-nvim-dap").setup {
 
 local rustacean_logfile = vim.fn.tempname() .. "-rustacean.log"
 vim.g.rustaceanvim = {
-  tools = {
-    test_executor = "background",
-  },
   -- LSP configuration
   server = {
     on_attach = rust_on_attach,
@@ -219,6 +227,11 @@ vim.g.rustaceanvim = {
   },
   -- DAP configuration
   dap = { adapter = get_dap_adapter() },
+}
+require("neotest").setup {
+  adapters = {
+    require "rustaceanvim.neotest",
+  },
 }
 
 local null_ls_ok, null_ls = pcall(require, "null-ls")
@@ -245,6 +258,24 @@ mason_null_ls.setup {
 }
 
 null_ls.setup()
+local clanhed_on_attach = function(_, buf)
+  local group = vim.api.nvim_create_augroup("clangd_no_inlay_hints_in_insert", { clear = true })
+
+  vim.keymap.set("n", "<leader>uh", function()
+    if require("clangd_extensions.inlay_hints").toggle_inlay_hints() then
+      vim.api.nvim_create_autocmd(
+        "InsertEnter",
+        { group = group, buffer = buf, callback = require("clangd_extensions.inlay_hints").disable_inlay_hints }
+      )
+      vim.api.nvim_create_autocmd(
+        { "TextChanged", "InsertLeave" },
+        { group = group, buffer = buf, callback = require("clangd_extensions.inlay_hints").set_inlay_hints }
+      )
+    else
+      vim.api.nvim_clear_autocmds { group = group, buffer = buf }
+    end
+  end, { buffer = buf, desc = "lsp hints toggle" })
+end
 
 for _, lspc in pairs(config.lsp.ensure_installed_lspconfig) do
   for _, ignore_lsp in pairs(config.lsp.ignore_setup_lspconfig) do

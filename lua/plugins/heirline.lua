@@ -77,14 +77,20 @@ return {
         lib.component.cmd_info(),
         lib.component.fill(),
         lib.component.lsp(),
+        {
+          provider = '%{&ft == "toggleterm" ? "terminal [".b:toggle_number."]" : ""}',
+        },
+        {
+          provider = "   ",
+        },
         require("utils").is_available "fittencode.nvim"
             and {
-              provider = "    Fitten",
+              provider = " Fitten",
               hl = function()
                 if require("fittencode").get_current_status() ~= 1 then
-                  return { fg = "#82aa78" }
+                  return { fg = "#82aa78", bold = true }
                 else
-                  return { fg = "#ed8796" }
+                  return { fg = "#ed8796", bold = true }
                 end
               end,
               on_click = {

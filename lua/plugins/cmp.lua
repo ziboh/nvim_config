@@ -71,10 +71,10 @@ return {
           -- sourc: https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
           ["<Tab>"] = cmp.mapping(function(fallback)
             -- Hint: if the completion menu is visible select next one
-            -- if cmp.visible() then
-            --   cmp.select_next_item()
-            -- elseif luasnip.expand_or_jumpable() then
-            if luasnip.expand_or_jumpable() then
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+              -- if luasnip.expand_or_jumpable() then
               luasnip.expand_or_jump()
             else
               fallback()
@@ -121,13 +121,13 @@ return {
         },
         -- Set source precedence
         sources = cmp.config.sources {
-          { name = "crates", source_index = 1 }, -- For crates completion
-          { name = "fittencode", source_index = 1 },
-          { name = "lazydev", source_index = 1 },
-          { name = "nvim_lsp", source_index = 1 }, -- For nvim-lsp
-          { name = "luasnip", source_index = 1 }, -- For luasnip user
-          { name = "buffer", source_index = 1 }, -- For buffer word completion
-          { name = "path", source_index = 1 }, -- For path completion
+          { name = "crates", group_index = 2 }, -- For crates completion
+          { name = "fittencode", group_index = 2 },
+          { name = "lazydev", group_index = 2 },
+          { name = "nvim_lsp", group_index = 2 }, -- For nvim-lsp
+          { name = "luasnip", group_index = 2 }, -- For luasnip user
+          { name = "buffer", group_index = 2 }, -- For buffer word completion
+          { name = "path", group_index = 2 }, -- For path completion
         },
       }
 
@@ -175,6 +175,7 @@ return {
       luasnip.filetype_extend("c", { "cdoc" })
       luasnip.filetype_extend("cpp", { "cppdoc" })
       luasnip.filetype_extend("sh", { "shelldoc" })
+      require("snip")
     end,
   },
 }

@@ -21,7 +21,7 @@ require("lazy").setup {
   },
   spec = {
     { import = "plugins" },
-    "williamboman/mason.nvim",
+    { "mrjones2014/smart-splits.nvim" },
   },
   change_detection = {
     -- automatically check for config file changes and reload the ui

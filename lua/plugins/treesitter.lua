@@ -2,7 +2,7 @@ return {
   "nvim-treesitter/nvim-treesitter",
   config = function()
     require("nvim-treesitter.configs").setup {
-      ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "toml", "rust" },
+      ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "toml", "rust", "cpp", "objc", "cuda", "proto" },
       sync_install = false,
       auto_install = true,
       ignore_install = { "javascript" },
