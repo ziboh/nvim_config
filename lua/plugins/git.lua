@@ -4,11 +4,7 @@ return {
     config = function()
       local is_ok, gitsigns = pcall(require, "gitsigns")
       if not is_ok then return end
-      gitsigns.setup {
-        yadm = {
-          enable = true,
-        },
-      }
+      gitsigns.setup()
     end,
     event = "VeryLazy",
     keys = {

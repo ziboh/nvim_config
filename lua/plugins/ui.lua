@@ -91,7 +91,7 @@ return {
       dashboard.section.buttons.val = {
         dashboard.button("n", "📄 New     ", "<cmd>ene<CR>"),
         dashboard.button("e", "🌺 Recent  ", "<cmd>Telescope oldfiles<CR>"),
-        dashboard.button("l", "🌺 Leet  ", "<cmd>Leet<CR>"),
+        dashboard.button("l", "🚀 Leet  ", "<cmd>Leet<CR>"),
         dashboard.button("s", "🔎 Sessions", "<cmd>Sessionl<CR>"),
         dashboard.button("p", "💼 Projects", "<cmd>FindProject<CR>"),
         dashboard.button("", ""),
@@ -132,22 +132,22 @@ return {
       })
     end,
   },
-  {
-    "vhyrro/luarocks.nvim",
-    priority = 1001, -- this plugin needs to run before anything else
-    opts = {
-      rocks = { "magick" },
-    },
-  },
-  {
-    "3rd/image.nvim",
-    dependencies = { "luarocks.nvim" },
-    config = function()
-      -- ...
-      -- default config
-      require("image").setup {
-        backend = "ueberzug",
-      }
-    end,
-  },
+  -- {
+  --   "vhyrro/luarocks.nvim",
+  --   priority = 1001, -- this plugin needs to run before anything else
+  --   opts = {
+  --     rocks = { "magick" },
+  --   },
+  -- },
+  -- {
+  --   "3rd/image.nvim",
+  --   dependencies = { "luarocks.nvim" },
+  --   config = function()
+  --     -- ...
+  --     -- default config
+  --     require("image").setup {
+  --       backend = "ueberzug",
+  --     }
+  --   end,
+  -- },
 }

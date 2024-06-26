@@ -13,9 +13,9 @@ return {
         extensions = {
           project = {
             base_dirs = {
-              "~/project",
+              -- "~/project",
               "~/.config",
-              "~/gitdir",
+              -- "~/gitdir",
             },
             hidden_files = true, -- default: false
             theme = "dropdown",
