@@ -1,9 +1,17 @@
 local config = require "config"
 local lspconfig = require "lspconfig"
 -- See `:help vim.lsp.buf.inlay_hint` for documentation on the inlay_hint API
-vim.lsp.inlay_hint.enable(true)
+if vim.fn.has "nvim-0.10" ~= 0 then vim.lsp.inlay_hint.enable(true) end
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.diagnostic.config(config.diagnostics.diagnostics_config[config.diagnostics.diagnostics_mode])
+
+if vim.fn.has "nvim-0.9" == 1 then
+  local symbols = { Error = "󰅙", Info = "󰋼", Hint = "󰌵", Warn = "" }
+  for name, icon in pairs(symbols) do
+    local hl = "DiagnosticSign" .. name
+    vim.fn.sign_define(hl, { text = icon, numhl = hl, texthl = hl })
+  end
+end
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
@@ -134,12 +142,12 @@ local rust_on_attach = function(client, bufnr)
     })
   end
 
-  vim.keymap.set(
-    "n",
-    "<leader>lf",
-    "<cmd>RustFmt<CR>",
-    { noremap = true, silent = true, buffer = bufnr, desc = "Formatting" }
-  )
+  -- vim.keymap.set(
+  --   "n",
+  --   "<leader>lf",
+  --   "<cmd>RustFmt<CR>",
+  --   { noremap = true, silent = true, buffer = bufnr, desc = "Formatting" }
+  -- )
   vim.keymap.set(
     "n",
     "<leader>h",
@@ -188,7 +196,7 @@ local function get_dap_adapter()
 end
 local function get_lspserver()
   local lsp_server = "rust-anlayzer"
-  if require("mason-registry").has_package "rust-analyzer" then
+  if require("mason-registry").has_package "rust-analyzer" and vim.g.rust_analyzer_mason then
     ---@diagnostic disable-next-line:undefined-field
     if vim.loop.os_uname().sysname == "Windows_NT" then
       lsp_server = vim.fn.stdpath "data" .. "\\mason\\bin\\rust-analyzer.cmd"
@@ -233,49 +241,6 @@ require("neotest").setup {
     require "rustaceanvim.neotest",
   },
 }
-
-local null_ls_ok, null_ls = pcall(require, "null-ls")
-if not null_ls_ok then return end
-
-local mason_null_ls_ok, mason_null_ls = pcall(require, "mason-null-ls")
-if not mason_null_ls_ok then return end
-
-local shfmt_config = null_ls.builtins.formatting.shfmt
-shfmt_config.filetypes = { "sh", "zsh" }
-mason_null_ls.setup {
-  ensure_installed = {
-    "black",
-    "stylua",
-    "shfmt",
-  },
-  automatic_installation = false,
-  automatic_setup = true,
-  handlers = {
-    black = function(_, _) null_ls.register(null_ls.builtins.formatting.black) end,
-    stylua = function(_, _) null_ls.register(null_ls.builtins.formatting.stylua) end,
-    shfmt = function(_, _) null_ls.register(shfmt_config) end,
-  },
-}
-
-null_ls.setup()
-local clanhed_on_attach = function(_, buf)
-  local group = vim.api.nvim_create_augroup("clangd_no_inlay_hints_in_insert", { clear = true })
-
-  vim.keymap.set("n", "<leader>uh", function()
-    if require("clangd_extensions.inlay_hints").toggle_inlay_hints() then
-      vim.api.nvim_create_autocmd(
-        "InsertEnter",
-        { group = group, buffer = buf, callback = require("clangd_extensions.inlay_hints").disable_inlay_hints }
-      )
-      vim.api.nvim_create_autocmd(
-        { "TextChanged", "InsertLeave" },
-        { group = group, buffer = buf, callback = require("clangd_extensions.inlay_hints").set_inlay_hints }
-      )
-    else
-      vim.api.nvim_clear_autocmds { group = group, buffer = buf }
-    end
-  end, { buffer = buf, desc = "lsp hints toggle" })
-end
 
 for _, lspc in pairs(config.lsp.ensure_installed_lspconfig) do
   for _, ignore_lsp in pairs(config.lsp.ignore_setup_lspconfig) do

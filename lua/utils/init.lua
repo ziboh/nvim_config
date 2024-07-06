@@ -293,4 +293,35 @@ function M.execute_command(command, args, cwd, _)
   local function onDetach(_, _) latest_buf_id = nil end
   vim.api.nvim_buf_attach(latest_buf_id, false, { on_detach = onDetach })
 end
+function M.filter_exist_folders(folders)
+  -- 表格包含的文件夹路径
+  -- 获取用户的主目录
+  local home = os.getenv "HOME"
+
+
+  -- 替换文件夹路径中的 ~ 符号
+  for i, folder in ipairs(folders) do
+    folders[i] = folder:gsub("^~", home)
+  end
+
+  -- 检查文件夹是否存在的函数
+  local function folder_exists(path)
+    local ok, err, code = os.rename(path, path)
+    if not ok then
+      if code == 13 then
+        -- 权限不足，但路径存在
+        return true
+      end
+    end
+    return ok
+  end
+
+  -- 获取存在的文件夹
+  local existing_folders = {}
+  for _, folder in ipairs(folders) do
+    if folder_exists(folder) then table.insert(existing_folders, folder) end
+  end
+
+  return existing_folders
+end
 return M

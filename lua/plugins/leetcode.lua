@@ -19,6 +19,6 @@ return {
       translator = true, ---@type boolean
       translate_problems = true, ---@type boolean
     },
-    image_support = true,
+    image_support = false,
   },
 }

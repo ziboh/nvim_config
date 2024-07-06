@@ -3,12 +3,19 @@
     "plugins": {
       "lua_ls": {
         "enabled": true
-      },
+      }
     }
   },
+
   "lspconfig": {
     "lua_ls": {
-      "Lua.completion.callSnippet": "Replace",
+      "Lua.completion.callSnippet": "Replace"
     },
+
+    "clangd": {
+      "capabilities": {
+        "offsetEncoding": "utf-8"
+      }
+    }
   }
 }

@@ -1,5 +1,6 @@
 return {
   "rebelot/heirline.nvim",
+  enabled = vim.fn.has("nvim-0.10") == 1,
   dependencies = { "zeioth/heirline-components.nvim" },
   opts = function()
     local lib = require "heirline-components.all"
@@ -55,19 +56,6 @@ return {
         hl = { fg = "fg", bg = "bg" },
         lib.component.mode {
           mode_text = { pad_text = "center" }, -- if set, displays text.
-          paste = { str = "", icon = { kind = "Paste" }, show_empty = true }, -- if set, displays if paste is enabled.
-          spell = { str = "", icon = { kind = "Spellcheck" }, show_empty = true }, -- if set, displays if spellcheck is on.
-          surround = {
-            separator = "left", -- where to add the separator.
-            color = lib.hl.mode_bg, -- you can set a custom background color, for example "#444444".
-            update = { "ModeChanged", pattern = "*:*" },
-          }, -- events that make the surround provider refresh.
-          hl = { bold = true }, -- you can specify your own highlight group here.
-          update = {
-            "ModeChanged", -- events that make this component refresh.
-            pattern = "*:*",
-            callback = vim.schedule_wrap(function() vim.cmd.redrawstatus() end),
-          },
         },
         lib.component.git_branch(),
         lib.component.file_info(),

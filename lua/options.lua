@@ -117,3 +117,13 @@ vim.g.enabled_fittencode = false
 
 -- For ChatGpt
 vim.g["codegpt_chat_completions_url"] = "https:/35.yunai.xyz/v1/chat/completions"
+
+-- For rust-analyzer
+vim.g.rust_analyzer_mason = true
+
+-- For wrap
+vim.g.wrap_enable = true
+
+vim.g.mkdp_browserfunc = function (url)
+    print(url)
+end

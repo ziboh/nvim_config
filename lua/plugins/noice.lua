@@ -23,12 +23,24 @@ return {
           view = "mini",
         },
       },
+      notify = {
+        enabled = true,
+        view = "notify",
+      },
       presets = {
         bottom_search = true,
         command_palette = true,
         long_message_to_split = true,
       },
     },
+    config = function(_, opts)
+      require("noice").setup(opts)
+      -- local notify = require "notify"
+      -- vim.notify = function(msg, level, opts)
+      --   if string.find(msg, "Invalid offset") then return end
+      --   notify(msg, level, opts)
+      -- end
+    end,
     dependencies = {
       -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       "MunifTanjim/nui.nvim",

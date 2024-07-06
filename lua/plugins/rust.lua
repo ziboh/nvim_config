@@ -16,7 +16,7 @@ return {
           },
         },
         null_ls = {
-          enabled = true,
+          enabled = false,
           name = "crates.nvim",
         },
       }
@@ -26,5 +26,5 @@ return {
     "mrcjkb/rustaceanvim",
     version = "^4",
     ft = { "rust" },
-  },
+},
 }

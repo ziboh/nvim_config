@@ -471,10 +471,11 @@ if vim.fn.has "nvim-0.11" == 0 then
   maps.n["]d"] = { function() vim.diagnostic.goto_next() end, desc = "Next diagnostic" }
 end
 vim.keymap.set("n", "<leader>lf", function()
-  vim.lsp.buf.format {
-    async = true,
-    filter = function(client) return client.name == "null-ls" end,
-  }
+  -- vim.lsp.buf.format {
+  --   async = true,
+  --   filter = function(client) return client.name == "null-ls" end,
+  -- }
+  require("conform").format()
 end, { noremap = true, silent = true, desc = "Formatting" })
 
 -- FOr ccc
@@ -501,5 +502,9 @@ vim.keymap.set("n", "<leader>rR", function()
   local termopen = require "rustaceanvim.executors.termopen"
   termopen.execute_command("cargo run", {})
 end, { noremap = true, silent = true, desc = "Cargo run" })
+
+-- For Alpha
+maps.n["<Leader>pa"] = { "<cmd>Alpha<cr>", desc = "Alpha" }
+
 
 require("utils").set_mappings(maps)

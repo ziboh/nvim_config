@@ -12,9 +12,9 @@ return {
       -- openai_api_key = { "bw", "get", "password", "OPENAI_API_KEY" },
       -- openai_api_key: "sk-...",
       -- openai_api_key = os.getenv("env_name.."),
-      openai_api_key = os.getenv "OPENAI_API_KEY",
+      openai_api_key = os.getenv "QWEN_API_KEY",
       -- api endpoint (you can change this to azure endpoint)
-      openai_api_endpoint = "https://35.yunai.xyz/v1/chat/completions",
+      openai_api_endpoint = "https://dashscope.aliyuncs.com/compatible-mode/v1",
       -- openai_api_endpoint = "https://$URL.openai.azure.com/openai/deployments/{{model}}/chat/completions?api-version=2023-03-15-preview",
       -- prefix for all commands
       cmd_prefix = "Gp",

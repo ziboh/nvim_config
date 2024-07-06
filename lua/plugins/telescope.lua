@@ -9,14 +9,19 @@ return {
     },
     config = function()
       local project_actions = require "telescope._extensions.project.actions"
+      -- 表格包含的文件夹路径
+      local folders = {
+        "~/project",
+        "~/.config",
+        "~/gitdir",
+      }
+
+      -- 获取存在的文件夹
+      local existing_folders = require("utils").filter_exist_folders(folders)
       require("telescope").setup {
         extensions = {
           project = {
-            base_dirs = {
-              -- "~/project",
-              "~/.config",
-              -- "~/gitdir",
-            },
+            base_dirs = existing_folders,
             hidden_files = true, -- default: false
             theme = "dropdown",
             -- order_by = "asc",
