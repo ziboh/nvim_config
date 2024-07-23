@@ -4,21 +4,20 @@ local is_available = utils.is_available
 local maps = require("utils").get_mappings_template()
 local toggle = require "utils.toggle"
 local icons = {
-  w = { desc = get_icon("Window", 1, true) .. "Window" },
-  x = { desc = get_icon("DiagnosticWarn", 1, true) .. "Trouble" },
-  r = { desc = get_icon("Replace", 1, true) .. "Replace/" .. get_icon("Rust", 1, true) .. "Rust" },
-  f = { desc = get_icon("Search", 1, true) .. "Find" },
-  p = { desc = get_icon("Package", 1, true) .. "Packages/" .. get_icon("Python", 1, true) .. "Python" },
-  l = { desc = get_icon("ActiveLSP", 1, true) .. "LSP" },
-  u = { desc = get_icon("Window", 1, true) .. "UI" },
-  b = { desc = get_icon("Tab", 1, true) .. "Buffers" },
-  d = { desc = get_icon("Debugger", 1, true) .. "Debugger" },
-  tt = { desc = get_icon("Test", 1, true) .. "Test" },
-  dc = { desc = get_icon("Docs", 1, true) .. "Docs" },
-  g = { desc = get_icon("Git", 1, true) .. "Git" },
-  s = { desc = get_icon("Session", 1, true) .. "Session" },
-  t = { desc = get_icon("Terminal", 1, true) .. "Terminal" },
-  a = { desc = get_icon("Ai", 1, true) .. "Ai" },
+  w = { group = "Window", icon = get_icon("Window", 0, true) },
+  x = { group = "Trouble", icon = "" },
+  r = { group = "Replace/" .. get_icon("Rust", 1, true) .. "Rust", icon = get_icon("Replace", 0, true) },
+  f = { group = "Find" },
+  p = { group = "Packages/" .. get_icon("Python", 1, true) .. "Python", icon = get_icon("Packages", 0, true) },
+  l = { group = "LSP", icon = "" },
+  u = { group = "UI", icon = get_icon("UI", 0, true) },
+  b = { group = "Buffers", icon = "" },
+  d = { group = "Debugger" },
+  g = { group = "GIt" },
+  s = { group = "Session", icon = get_icon("Session", 0, true) },
+  t = { group = "Terminal" },
+  a = { group = "Ai", icon = get_icon("Ai", 0, true) },
+  o = { group = "Overseer", icon = get_icon("Overseer", 0, true) },
 }
 
 -- Normal mode --
@@ -41,42 +40,10 @@ vim.keymap.set("n", "M", "J", { noremap = true, silent = true, desc = "Join the 
 
 vim.keymap.set("t", "<C-_>", [[<C-\><C-n>]], {})
 vim.keymap.set("t", "jk", [[<C-\><C-n>]], {})
-vim.keymap.set(
-  "n",
-  "<C-_>",
-  ":lua require('Comment.api').toggle.linewise.current(); vim.cmd('normal j')<CR>",
-  { noremap = true, silent = true, desc = "Toggle Comment linewise" }
-)
-vim.keymap.set(
-  "n",
-  "<leader>/",
-  ":lua require('Comment.api').toggle.linewise.current(); vim.cmd('normal j')<CR>",
-  { noremap = true, silent = true, desc = "Toggle Comment linewise" }
-)
-vim.keymap.set(
-  "v",
-  "<C-_>",
-  ":lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>",
-  { noremap = true, desc = "Toggle Comment lineise" }
-)
-vim.keymap.set(
-  "v",
-  "<leader>/",
-  ":lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>",
-  { noremap = true, desc = "Toggle Comment lineise" }
-)
-vim.keymap.set(
-  "n",
-  "<C-\\>",
-  ":lua require('Comment.api').toggle.blockwise.current(); vim.cmd('normal j')<CR>",
-  { noremap = true, silent = true, desc = "Toggle blockwise Comment" }
-)
-vim.keymap.set(
-  "v",
-  "<C-\\>",
-  ":lua require('Comment.api').toggle.blockwise(vim.fn.visualmode())<CR>",
-  { noremap = true, desc = "Toggle blockwise Comment" }
-)
+vim.keymap.set("n", "<C-_>", "gcc", { remap = true, silent = true, desc = "Toggle Comment linewise" })
+vim.keymap.set("n", "<leader>/", "gcc", { remap = true, silent = true, desc = "Toggle Comment linewise" })
+vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "Toggle Comment lineise" })
+vim.keymap.set("v", "<leader>/", "gc", { remap = true, desc = "Toggle Comment lineise" })
 
 -----------------
 -- Visual mode --
@@ -196,7 +163,6 @@ maps.n["<leader>b|"] = {
 }
 
 -- For which-key
-maps.n["<leader>,"] = { ":WhichKey<CR>", desc = "Which key" }
 maps.n["<leader>l"] = icons.l
 maps.n["<leader>g"] = icons.g
 maps.n["<leader>x"] = icons.x
@@ -218,8 +184,7 @@ if is_available "telescope.nvim" then
   maps.n["<leader>f<CR>"] = { function() require("telescope.builtin").resume() end, desc = "Resume previous search" }
   maps.n["<leader>f'"] = { function() require("telescope.builtin").marks() end, desc = "Find marks" }
   maps.n["<leader>fb"] = { function() require("telescope.builtin").buffers() end, desc = "Find buffers" }
-  maps.n["<leader>fp"] =
-    { function() require("telescope").extensions.project.project { display_type = "full" } end, desc = "Find Project" }
+  maps.n["<leader>fp"] = { function() require("telescope").extensions.projects.projects {} end, desc = "Find Project" }
   maps.n["<leader>fw"] =
     { function() require("telescope.builtin").grep_string() end, desc = "Find word under cursor in project" }
   maps.n["<leader>fc"] = { function() require("telescope.builtin").commands() end, desc = "Find commands" }
@@ -369,7 +334,6 @@ maps.n["<leader>ss"] = { function() require("resession").save() end, desc = "Ses
 maps.n["<leader>sf"] = { function() require("resession").load() end, desc = "Session load" }
 maps.n["<leader>sd"] = { function() require("resession").delete() end, desc = "Session delete" }
 maps.n["<leader>sl"] = { function() require("resession").load "last" end, desc = "Load last Session" }
-maps.n["<leader>o"] = { "<cmd>Oil<CR>", desc = "Oil" }
 
 -- For package
 maps.n["<leader>p"] = icons.p
@@ -470,12 +434,15 @@ if vim.fn.has "nvim-0.11" == 0 then
   maps.n["[d"] = { function() vim.diagnostic.goto_prev() end, desc = "Previous diagnostic" }
   maps.n["]d"] = { function() vim.diagnostic.goto_next() end, desc = "Next diagnostic" }
 end
+
 vim.keymap.set("n", "<leader>lf", function()
-  -- vim.lsp.buf.format {
-  --   async = true,
-  --   filter = function(client) return client.name == "null-ls" end,
-  -- }
-  require("conform").format()
+  if require("utils").stringInTable(vim.g.ignore_conform, vim.bo.filetype) then
+    vim.lsp.buf.format {
+      async = true,
+    }
+  else
+    require("conform").format()
+  end
 end, { noremap = true, silent = true, desc = "Formatting" })
 
 -- FOr ccc
@@ -484,8 +451,8 @@ maps.n["<Leader>pg"] = { "<Cmd>CccConvert<CR>", desc = "Convert color" }
 maps.n["<Leader>pc"] = { "<Cmd>CccPick<CR>", desc = "Pick Color" }
 
 -- For ChatGpt
-maps.n["<leader>a"] = icons.a
 maps.v["<leader>a"] = icons.a
+maps.n["<leader>a"] = icons.a
 maps.n["<Leader>ac"] = { "<Cmd>GpChatToggle<CR>", desc = "Toggle Chat" }
 maps.n["<Leader>an"] = { "<Cmd>GpChatNew vsplit<CR>", desc = "New Chat" }
 maps.n["<Leader>af"] = { "<Cmd>GpChatFinder<CR>", desc = "Find Chat" }
@@ -504,7 +471,11 @@ vim.keymap.set("n", "<leader>rR", function()
 end, { noremap = true, silent = true, desc = "Cargo run" })
 
 -- For Alpha
+maps.n["<leader>o"] = icons.o
 maps.n["<Leader>pa"] = { "<cmd>Alpha<cr>", desc = "Alpha" }
-
+maps.n["<Leader>or"] = { "<cmd>OverseerRun<cr>", desc = "Overseer Run" }
+maps.n["<Leader>oc"] = { "<cmd>OverseerRun<cr>", desc = "Overseer Runcmd" }
+maps.n["<Leader>ot"] = { "<cmd>OverseerToggle<cr>", desc = "Overseer Run" }
+maps.n["<Leader>oo"] = { "<cmd>Oil<cr>", desc = "Oil" }
 
 require("utils").set_mappings(maps)

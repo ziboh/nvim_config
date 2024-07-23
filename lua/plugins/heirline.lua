@@ -1,7 +1,7 @@
 return {
   "rebelot/heirline.nvim",
-  enabled = vim.fn.has("nvim-0.10") == 1,
-  dependencies = { "zeioth/heirline-components.nvim" },
+  enabled = vim.fn.has "nvim-0.10" == 1,
+  dependencies = { { "mathjiajia/heirline-components.nvim", branch = "fix_conform" } },
   opts = function()
     local lib = require "heirline-components.all"
     return {

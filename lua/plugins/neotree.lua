@@ -62,7 +62,15 @@ return {
       },
       -- A command is a function that we can assign to a mapping (below)
       commands = {
-        system_open = function(state) require("utils").open_with_program(state.tree:get_node():get_id()) end,
+        image_wezterm = function(state)
+          local node = state.tree:get_node()
+          if node.type == "file" then require("image_preview").PreviewImage(node.path) end
+        end,
+        system_open = function(state)
+          local node = state.tree:get_node()
+          local path = node:get_id()
+          if vim.fn.has "win32" then vim.cmd("silent !start " .. path) end
+        end,
         parent_or_close = function(state)
           local node = state.tree:get_node()
           if (node.type == "directory" or node:has_children()) and node:is_expanded() then
@@ -138,7 +146,9 @@ return {
           local node = state.tree:get_node()
           if node.type == "directory" then
             state.commands.toggle_node(state)
-          else -- if not a directory just open it
+          elseif require("utils").is_image(node.path) then
+            state.commands.image_wezterm(state)
+          else
             state.commands.open(state)
           end
         end,
@@ -146,8 +156,10 @@ return {
       window = {
         width = 30,
         mappings = {
+          ["<leader>p"] = "image_wezterm", -- " or another map
           -- ["<space>"] = false, -- disable space until we figure out which-key disabling
           ["<S-CR>"] = "system_open",
+          ["<CR>"] = "toggle_dir_or_open",
           ["[b"] = "prev_source",
           ["]b"] = "next_source",
           F = utils.is_available "telescope.nvim" and "find_in_dir" or nil,

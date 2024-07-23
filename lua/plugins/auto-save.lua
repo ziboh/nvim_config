@@ -1,9 +1,10 @@
 return {
   "pocco81/auto-save.nvim",
+  enabled = false, -- start auto-save when the plugin is loaded (i.e. when your package manager loads it)
   opts = {
     enabled = true, -- start auto-save when the plugin is loaded (i.e. when your package manager loads it)
     execution_message = {
-      message = '',
+      message = "",
       dim = 0.18, -- dim the color of `message`
       cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
     },
@@ -12,7 +13,7 @@ return {
     -- return true: if buffer is ok to be saved
     -- return false: if it's not ok to be saved
     condition = function(buf)
-      local ignore_filename = { "Cargo.toml", "" }
+      local ignore_filename = { "Cargo.toml" }
       local ignore_ft = { "oil", "telescopetrompt" }
       for _, fn in ipairs(ignore_filename) do
         if fn == vim.fn.expand "%:t" then return false end

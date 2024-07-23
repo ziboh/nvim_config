@@ -53,7 +53,7 @@ return {
   LSPLoading2 = "󰀚",
   LSPLoading3 = "",
   MacroRecording = "",
-  Package = "󰏖",
+  Packages = "󰏖",
   Paste = "󰅌",
   Refresh = "",
   Run = "󰑮",
@@ -73,4 +73,5 @@ return {
   Replace = "󰛔",
   Rust = "󱘗",
   Ai = "",
+  Overseer = " "
 }

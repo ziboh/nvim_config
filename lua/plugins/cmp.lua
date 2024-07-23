@@ -1,41 +1,45 @@
 return {
-  "onsails/lspkind.nvim",
-  config = function()
-    require("lspkind").init {
-      mode = "symbol_text",
-      preset = "codicons",
-      symbol_map = {
-        Text = "󰉿",
-        Method = "󰆧",
-        Function = "󰊕",
-        Constructor = "",
-        Field = "󰜢",
-        Variable = "󰀫",
-        Class = "󰠱",
-        Interface = "",
-        Module = "",
-        Property = "󰜢",
-        Unit = "󰑭",
-        Enum = "",
-        Value = "󰎠",
-        Keyword = "󰌋",
-        Snippet = "",
-        Color = "󰏘",
-        File = "󰈙",
-        Reference = "󰈇",
-        Folder = "󰉋",
-        EnumMember = "",
-        Constant = "󰏿",
-        Struct = "󰙅",
-        Event = "",
-        Operator = "󰆕",
-        TypeParameter = "",
-        FittenCode = "",
-      },
-    }
-  end,
+  {
+    "onsails/lspkind.nvim",
+    config = function()
+      require("lspkind").init {
+        mode = "symbol_text",
+        preset = "codicons",
+        symbol_map = {
+          Text = "󰉿",
+          Method = "󰆧",
+          Function = "󰊕",
+          Constructor = "",
+          Field = "󰜢",
+          Variable = "󰀫",
+          Class = "󰠱",
+          Interface = "",
+          Module = "",
+          Property = "󰜢",
+          Unit = "󰑭",
+          Enum = "",
+          Value = "󰎠",
+          Keyword = "󰌋",
+          Snippet = "",
+          Color = "󰏘",
+          File = "󰈙",
+          Reference = "󰈇",
+          Folder = "󰉋",
+          EnumMember = "",
+          Constant = "󰏿",
+          Struct = "󰙅",
+          Event = "",
+          Operator = "󰆕",
+          TypeParameter = "",
+          FittenCode = "",
+        },
+      }
+      vim.api.nvim_set_hl(0, "CmpItemKindFittenCode", { fg = "#6CC644" })
+    end,
+  },
   {
     "hrsh7th/nvim-cmp",
+    lazy = true,
     dependencies = {
       "hrsh7th/cmp-nvim-lsp", --   helsp auto-completion
       "hrsh7th/cmp-buffer", -- buffer auto-completion
@@ -69,10 +73,12 @@ return {
           ["<CR>"] = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Insert, select = false },
           -- A super tab
           -- sourc: https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
+          ["<C-B>"] = cmp.mapping.select_next_item(),
           ["<Tab>"] = cmp.mapping(function(fallback)
             -- Hint: if the completion menu is visible select next one
             if cmp.visible() then
-              cmp.select_next_item()
+              -- cmp.select_next_item()
+              return
             elseif luasnip.expand_or_jumpable() then
               -- if luasnip.expand_or_jumpable() then
               luasnip.expand_or_jump()
@@ -81,9 +87,10 @@ return {
             end
           end, { "i", "s" }), -- i - insert mode; s - select mode
           ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
+            -- if cmp.visible() then
+            --   cmp.select_prev_item()
+            -- elseif luasnip.jumpable(-1) then
+            if luasnip.jumpable(-1) then
               luasnip.jump(-1)
             else
               fallback()
@@ -101,20 +108,36 @@ return {
             -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
             maxwidth = 100,
             -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
-            symbol_map = { FittenCode = "" },
+            -- symbol_map = { FittenCode = "" },
             ellipsis_char = "...",
             -- The function below will be called before any actual modifications from lspkind
             -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
             before = function(entry, vim_item)
-              vim_item.menu = ({
-                nvim_lsp = "[Lsp]",
-                luasnip = "[Luasnip]",
-                buffer = "[File]",
-                path = "[Path]",
-                lazydev = "[Lazy]",
-                fittencode = "[Fitten]",
-                crates = "[Crates]",
-              })[entry.source.name]
+              --- 创建一个表，让lsp的名称简写
+              local lsp_abbreviations = {
+                emmet_language_server = "Emmet",
+              }
+              if entry.source.name == "nvim_lsp" then
+                -- Display which LSP servers this item came from.
+                local lspserver_name = nil
+                pcall(function()
+                  lspserver_name = entry.source.source.client.name
+                  if lsp_abbreviations[lspserver_name] then lspserver_name = lsp_abbreviations[lspserver_name] end
+                  -- 大写开头
+                  lspserver_name = string.upper(string.sub(lspserver_name, 1, 1)) .. string.sub(lspserver_name, 2)
+                  vim_item.menu = lspserver_name
+                end)
+              else
+                vim_item.menu = ({
+                  nvim_lsp = "[Lsp]",
+                  luasnip = "[Luasnip]",
+                  buffer = "[File]",
+                  path = "[Path]",
+                  lazydev = "[Lazy]",
+                  fittencode = "[Fitten]",
+                  crates = "[Crates]",
+                })[entry.source.name]
+              end
               return vim_item
             end,
           },
@@ -123,7 +146,7 @@ return {
         sources = cmp.config.sources {
           { name = "crates", group_index = 2 }, -- For crates completion
           { name = "fittencode", group_index = 2 },
-          { name = "lazydev", group_index = 2 },
+          { name = "lazydev", group_index = 0 },
           { name = "nvim_lsp", group_index = 2 }, -- For nvim-lsp
           { name = "luasnip", group_index = 2 }, -- For luasnip user
           { name = "buffer", group_index = 2 }, -- For buffer word completion
@@ -153,6 +176,7 @@ return {
   -- Code snippet engine
   {
     "L3MON4D3/LuaSnip",
+    lazy = true,
     dependencies = {
       "rafamadriz/friendly-snippets",
       "benfowler/telescope-luasnip.nvim",
@@ -175,7 +199,7 @@ return {
       luasnip.filetype_extend("c", { "cdoc" })
       luasnip.filetype_extend("cpp", { "cppdoc" })
       luasnip.filetype_extend("sh", { "shelldoc" })
-      require("snip")
+      require "snip"
     end,
   },
 }

@@ -70,3 +70,17 @@ if require("utils").is_available "alpha-nvim" then
     end,
   })
 end
+-- 创建一个函数来设置键映射
+local function set_keymaps()
+  -- 设置文件类型为 myfiletype 的键映射
+  vim.api.nvim_buf_set_keymap(0, "n", "<C-_>", "<Nop>", { noremap = true, silent = true }) -- 在普通模式下，<leader>w 保存文件
+  vim.api.nvim_buf_set_keymap(0, "v", "<C-_>", "<Nop>", { noremap = true, silent = true }) -- 在普通模式下，<leader>q 退出文件
+  vim.api.nvim_buf_set_keymap(0, "v", "<leader>/", "<Nop>", { noremap = true, silent = true }) -- 在普通模式下，<leader>q 退出文件
+  vim.api.nvim_buf_set_keymap(0, "n", "<leader>/", "<Nop>", { noremap = true, silent = true }) -- 在普通模式下，<leader>q 退出文件
+end
+
+-- 在自定义文件类型时调用 set_keymaps 函数
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "toggleterm",
+  callback = set_keymaps,
+})

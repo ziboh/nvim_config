@@ -2,7 +2,7 @@ local utils = require "utils"
 local get_icon = utils.get_icon
 
 local diagnostics_default_config = {
-  virtual_text = true,
+  virtual_text = false,
   signs = {
     text = {
       [vim.diagnostic.severity.ERROR] = get_icon "DiagnosticError",
@@ -31,24 +31,39 @@ local diagnostics_config = {
   [0] = vim.tbl_deep_extend(
     "force",
     diagnostics_default_config,
-    { underline = false, virtual_text = false, signs = false, update_in_insert = false }
+    { underline = false, signs = false, update_in_insert = false }
   ) --[[@as vim.diagnostic.Opts]],
   -- status only
-  vim.tbl_deep_extend("force", diagnostics_default_config, { virtual_text = false, signs = false }),
+  vim.tbl_deep_extend("force", diagnostics_default_config, { signs = false }),
   -- virtual text off, signs on
-  vim.tbl_deep_extend("force", diagnostics_default_config, { virtual_text = false }),
+  -- vim.tbl_deep_extend("force", diagnostics_default_config, { virtual_text = false }),
   -- all diagnostics on
   diagnostics_default_config,
 }
 
-local ensure_installed_lspconfig = { "pyright", "lua_ls", "bashls", "taplo", "clangd", "rust_analyzer" }
+local ensure_installed_lspconfig = {
+  "pyright",
+  "lua_ls",
+  "bashls",
+  "taplo",
+  "clangd",
+  "rust_analyzer",
+  "vtsls",
+  "volar",
+  "eslint",
+  "html",
+  "cssls",
+  "emmet_language_server",
+  "svelte",
+}
 local ensure_installed_dap = { "codelldb", "python" }
-local ignore_setup_lspconfig = { "bashls", "rust_analyzer" }
+local ignore_setup_lspconfig =
+  { "bashls", "rust_analyzer", "tsserver", "volar", "vtsls", "emmet_language_server", "cssls", "html" }
 
 return {
   diagnostics = {
     diagnostics_config = diagnostics_config,
-    diagnostics_mode = 3,
+    diagnostics_mode = 2,
   },
   lsp = {
     ensure_installed_lspconfig = ensure_installed_lspconfig,

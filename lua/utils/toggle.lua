@@ -135,18 +135,17 @@ end
 ---@param silent? boolean if true then don't sent a notification
 function M.diagnostics(silent)
   local config = require "config"
-  config.diagnostics.diagnostics_mode = (config.diagnostics.diagnostics_mode - 1) % 4
+  config.diagnostics.diagnostics_mode = (config.diagnostics.diagnostics_mode - 1) % 3
   vim.diagnostic.config(config.diagnostics.diagnostics_config[config.diagnostics.diagnostics_mode])
   if vim.g.diagnostics_mode == 0 then
     ui_notify(silent, "diagnostics off")
   elseif vim.g.diagnostics_mode == 1 then
     ui_notify(silent, "only status diagnostics")
-  elseif vim.g.diagnostics_mode == 2 then
-    ui_notify(silent, "virtual text off")
   else
     ui_notify(silent, "all diagnostics on")
   end
 end
+
 
 function M.fittencode(slient)
   local ok, fittencode = pcall(require, "fittencode")

@@ -6,7 +6,10 @@ return {
       group = vim.g.icons_enabled ~= false and "" or "+",
       separator = "-",
     },
-    disable = { filetypes = { "TelescopePrompt" } },
+    spec = {
+      { "<leader>,", "<CMD>WhichKey<CR>", desc = "Which key", icon = "󱕴" },
+      { "<leader>e", icon = "" },
+    },
   },
   config = function(_, opts)
     require("which-key").setup(opts)

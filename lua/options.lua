@@ -40,7 +40,7 @@ vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 
 -- For nvim-ufo
-vim.opt.foldcolumn = "1" -- '0' is not bad
+vim.opt.foldcolumn = "2" -- '0' is not bad
 vim.opt.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
 vim.opt.foldlevelstart = 99
 vim.opt.foldenable = true
@@ -122,8 +122,4 @@ vim.g["codegpt_chat_completions_url"] = "https:/35.yunai.xyz/v1/chat/completions
 vim.g.rust_analyzer_mason = true
 
 -- For wrap
-vim.g.wrap_enable = true
-
-vim.g.mkdp_browserfunc = function (url)
-    print(url)
-end
+vim.wo.wrap = true -- local to window

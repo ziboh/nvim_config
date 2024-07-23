@@ -1,43 +1,17 @@
 return {
   {
     "nvim-telescope/telescope.nvim",
+    lazy = true,
+    cmd = { "Telescope" },
     branch = "0.1.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "pschmitt/telescope-yadm.nvim",
-      "nvim-telescope/telescope-project.nvim",
+      "ahmedkhalf/project.nvim",
     },
     config = function()
-      local project_actions = require "telescope._extensions.project.actions"
-      -- 表格包含的文件夹路径
-      local folders = {
-        "~/project",
-        "~/.config",
-        "~/gitdir",
-      }
-
-      -- 获取存在的文件夹
-      local existing_folders = require("utils").filter_exist_folders(folders)
       require("telescope").setup {
         extensions = {
-          project = {
-            base_dirs = existing_folders,
-            hidden_files = true, -- default: false
-            theme = "dropdown",
-            -- order_by = "asc",
-            search_by = "title",
-            sync_with_nvim_tree = false, -- default false
-            -- default for on_project_selected = find project files
-            -- on_project_selected = function(prompt_bufnr)
-            --   -- Do anything you want in here. For example:
-            --   project_actions.change_working_directory(prompt_bufnr, false)
-            -- end,
-          },
-          -- Your extension configuration goes here:
-          -- extension_name = {
-          --   extension_config_key = value,
-          -- }
-          -- please take a look at the readme of the extension you want to configure
           fzf = {
             fuzzy = true, -- false will only do exact matching
             override_generic_sorter = true, -- override the generic sorter
@@ -54,12 +28,24 @@ return {
       require("telescope").load_extension "fzf"
       require("telescope").load_extension "yadm_files"
       require("telescope").load_extension "git_or_files"
+      require("telescope").load_extension "projects"
       require("telescope").load_extension "git_or_yadm_files"
-      require("telescope").load_extension "project"
     end,
   },
   {
     "nvim-telescope/telescope-fzf-native.nvim",
+    lazy = true,
     build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
+  },
+  {
+    "ahmedkhalf/project.nvim",
+    lazy = false,
+    config = function()
+      require("project_nvim").setup {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+    end,
   },
 }

@@ -156,7 +156,7 @@ function M.set_mappings(map_table, base)
           keymap_opts[1] = nil
         end
         if not cmd or keymap_opts.name then -- if which-key mapping, queue it
-          if not keymap_opts.name then keymap_opts.name = keymap_opts.desc end
+          -- if not keymap_opts.name then keymap_opts.name = keymap_opts.desc end
           if not M.which_key_queue then M.which_key_queue = {} end
           if not M.which_key_queue[mode] then M.which_key_queue[mode] = {} end
           M.which_key_queue[mode][keymap] = keymap_opts
@@ -200,11 +200,16 @@ end
 function M.which_key_register()
   if M.which_key_queue then
     local wk_avail, wk = pcall(require, "which-key")
+    local spec = {}
     if wk_avail then
-      for mode, registration in pairs(M.which_key_queue) do
-        wk.register(registration, { mode = mode })
+      for mode, opts in pairs(M.which_key_queue) do
+        for k, v in pairs(opts) do
+          local result = { k, mode = mode }
+          table.insert(spec, vim.tbl_extend("force", v, result))
+        end
       end
       M.which_key_queue = nil
+      wk.add(spec)
     end
   end
 end
@@ -296,8 +301,7 @@ end
 function M.filter_exist_folders(folders)
   -- 表格包含的文件夹路径
   -- 获取用户的主目录
-  local home = os.getenv "HOME"
-
+  local home = vim.fn.expand "$HOME"
 
   -- 替换文件夹路径中的 ~ 符号
   for i, folder in ipairs(folders) do
@@ -324,4 +328,37 @@ function M.filter_exist_folders(folders)
 
   return existing_folders
 end
+
+--- 获取 pwsh 中设置的变量，不是环境变量
+--- @param variable_name any
+--- @return any
+function M.get_pwsh_variable(variable_name)
+  local handle = io.popen('pwsh -Command "$' .. variable_name .. '"')
+  local result = handle:read "*a"
+  handle:close()
+  return result
+end
+--- 判断字符串是否在表中
+---@param table any
+---@param searchString any
+---@return boolean
+function M.stringInTable(table, searchString)
+  for _, value in ipairs(table) do
+    if value == searchString then return true end
+  end
+  return false
+end
+
+function M.is_image(file_path)
+  -- 创建一个图片后缀的表
+  local image_suffix = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" }
+  -- 获取文件后缀
+  local file_suffix = string.lower(string.sub(file_path, -4))
+  -- 判断文件后缀是否在图片后缀表中
+  for _, v in ipairs(image_suffix) do
+    if file_suffix == v then return true end
+  end
+  return false
+end
+
 return M

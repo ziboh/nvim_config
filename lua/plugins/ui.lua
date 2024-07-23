@@ -1,4 +1,4 @@
-local is_windows = vim.loop.os_uname().os_sysname == "Windows_NT"
+local is_windows = vim.uv.os_uname().os_sysname == "Windows_NT"
 return {
   {
     "AstroNvim/astrotheme",
@@ -25,6 +25,7 @@ return {
   },
   {
     "sainnhe/everforest",
+    lazy = true,
     config = function()
       vim.g.everforest_background = "hard"
       vim.cmd.colorscheme "everforest"
@@ -38,6 +39,7 @@ return {
   {
     "uga-rosa/ccc.nvim",
     event = "VeryLazy",
+    enabled = false;
     cmd = { "CccPick", "CccConvert", "CccHighlighterEnable", "CccHighlighterDisable", "CccHighlighterToggle" },
     opts = {
       highlighter = {
@@ -93,7 +95,7 @@ return {
         dashboard.button("e", "🌺 Recent  ", "<cmd>Telescope oldfiles<CR>"),
         dashboard.button("l", "🚀 Leet  ", "<cmd>Leet<CR>"),
         dashboard.button("s", "🔎 Sessions", "<cmd>Sessionl<CR>"),
-        dashboard.button("p", "💼 Projects", "<cmd>FindProject<CR>"),
+        dashboard.button("p", "💼 Projects", "<cmd>lua require'telescope'.extensions.projects.projects{}<CR>"),
         dashboard.button("", ""),
         dashboard.button("q", "󰈆  Quit", "<cmd>exit<CR>"),
         --  --button("LDR f '", "  Bookmarks  "),
@@ -132,22 +134,4 @@ return {
       })
     end,
   },
-  -- {
-  --   "vhyrro/luarocks.nvim",
-  --   priority = 1001, -- this plugin needs to run before anything else
-  --   opts = {
-  --     rocks = { "magick" },
-  --   },
-  -- },
-  -- {
-  --   "3rd/image.nvim",
-  --   dependencies = { "luarocks.nvim" },
-  --   config = function()
-  --     -- ...
-  --     -- default config
-  --     require("image").setup {
-  --       backend = "ueberzug",
-  --     }
-  --   end,
-  -- },
 }

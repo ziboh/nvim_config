@@ -1,6 +1,7 @@
 return {
   {
     "nvim-neotest/nvim-nio",
+    lazy = true,
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "mfussenegger/nvim-dap",
@@ -13,6 +14,7 @@ return {
   },
   {
     "rcarriga/nvim-dap-ui",
+    lazy = true,
     dependencies = {
       "mfussenegger/nvim-dap",
       "theHamsta/nvim-dap-virtual-text",
