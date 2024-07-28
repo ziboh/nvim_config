@@ -39,7 +39,7 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
-    lazy = true,
+    event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp", --   helsp auto-completion
       "hrsh7th/cmp-buffer", -- buffer auto-completion
@@ -63,8 +63,8 @@ return {
         },
         mapping = cmp.mapping.preset.insert {
           -- Use <C-b/f> to scroll the docs
-          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          ["<C-f>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-b>"] = cmp.mapping.scroll_docs(4),
           -- Use <C-k/j> to switch in items
           ["<C-k>"] = cmp.mapping.select_prev_item(),
           ["<C-j>"] = cmp.mapping.select_next_item(),
@@ -75,21 +75,13 @@ return {
           -- sourc: https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
           ["<C-B>"] = cmp.mapping.select_next_item(),
           ["<Tab>"] = cmp.mapping(function(fallback)
-            -- Hint: if the completion menu is visible select next one
-            if cmp.visible() then
-              -- cmp.select_next_item()
-              return
-            elseif luasnip.expand_or_jumpable() then
-              -- if luasnip.expand_or_jumpable() then
+            if luasnip.expand_or_jumpable() then
               luasnip.expand_or_jump()
             else
               fallback()
             end
           end, { "i", "s" }), -- i - insert mode; s - select mode
           ["<S-Tab>"] = cmp.mapping(function(fallback)
-            -- if cmp.visible() then
-            --   cmp.select_prev_item()
-            -- elseif luasnip.jumpable(-1) then
             if luasnip.jumpable(-1) then
               luasnip.jump(-1)
             else

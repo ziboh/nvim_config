@@ -11,8 +11,8 @@ vim.keymap.set(
   { noremap = true, silent = true, buffer = 0, desc = "Previous buffer" }
 )
 vim.keymap.set(
-  "n",
+  "i",
   "<C-CR>",
-  "<CMD>GpChatResponse<CR>",
+  "<CMD>GpChatResponse 1<CR>",
   { noremap = true, silent = true, buffer = 0, desc = "Send GpChat" }
 )

@@ -34,43 +34,24 @@ return {
         priority = 100,
       },
       ast = {
-        -- These are unicode, should be available in any font
         role_icons = {
-          type = "🄣",
-          declaration = "🄓",
-          expression = "🄔",
-          statement = ";",
-          specifier = "🄢",
-          ["template argument"] = "🆃",
+          type = "",
+          declaration = "",
+          expression = "",
+          specifier = "",
+          statement = "",
+          ["template argument"] = "",
         },
-        kind_icons = {
-          Compound = "🄲",
-          Recovery = "🅁",
-          TranslationUnit = "🅄",
-          PackExpansion = "🄿",
-          TemplateTypeParm = "🅃",
-          TemplateTemplateParm = "🅃",
-          TemplateParamObject = "🅃",
-        },
-        --[[ These require codicons (https://github.com/microsoft/vscode-codicons)
-            role_icons = {
-                type = "",
-                declaration = "",
-                expression = "",
-                specifier = "",
-                statement = "",
-                ["template argument"] = "",
-            },
 
-            kind_icons = {
-                Compound = "",
-                Recovery = "",
-                TranslationUnit = "",
-                PackExpansion = "",
-                TemplateTypeParm = "",
-                TemplateTemplateParm = "",
-                TemplateParamObject = "",
-            }, ]]
+        kind_icons = {
+          Compound = "",
+          Recovery = "",
+          TranslationUnit = "",
+          PackExpansion = "",
+          TemplateTypeParm = "",
+          TemplateTemplateParm = "",
+          TemplateParamObject = "",
+        },
 
         highlights = {
           detail = "Comment",

@@ -11,6 +11,7 @@ local icons = {
   p = { group = "Packages/" .. get_icon("Python", 1, true) .. "Python", icon = get_icon("Packages", 0, true) },
   l = { group = "LSP", icon = "" },
   u = { group = "UI", icon = get_icon("UI", 0, true) },
+  du = { group = "DAP-UI", icon = get_icon("Debugger", 0, true) },
   b = { group = "Buffers", icon = "" },
   d = { group = "Debugger" },
   g = { group = "GIt" },
@@ -27,6 +28,7 @@ vim.keymap.set("n", "<C-p>", "5k", { noremap = true, silent = true })
 vim.keymap.set("n", "<Space>", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "q", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "J", "<NOP>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-b>", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "<c-s>", "<cmd>w<cr>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Space>q", "<cmd>q<cr>", { noremap = true, silent = true, desc = "quit" })
 vim.keymap.set("n", "<tab>", "w", { noremap = true, silent = true })
@@ -225,7 +227,7 @@ if is_available "telescope.nvim" then
       { function() require("telescope").extensions.notify.notify() end, desc = "Find notifications" }
   end
 
-  maps.n["<leader>ls"] = {
+  maps.n["<leader>lS"] = {
     function()
       local aerial_avail, _ = pcall(require, "aerial")
       if aerial_avail then
@@ -382,6 +384,7 @@ maps.n["<leader>un"] =
 
 -- Dap
 maps.n["<Leader>d"] = icons.d
+maps.n["<Leader>du"] = icons.du
 -- modified function keys found with `showkey -a` in the terminal to get key code
 -- run `nvim -V3log +quit` and search through the "Terminal info" in the `log` file for the correct keyname
 maps.n["<F5>"] = { function() require("dap").continue() end, desc = "Debugger: Start" }
@@ -419,6 +422,14 @@ maps.n["<Leader>dC"] = {
     end)
   end,
   desc = "Conditional Breakpoint (S-F9)",
+}
+maps.n["<Leader>duc"] = {
+  function() require("dapui").close() end,
+  desc = "Close Dap UI",
+}
+maps.n["<Leader>duo"] = {
+  function() require("dapui").open() end,
+  desc = "Open Dap UI",
 }
 
 -- For Fittencode
@@ -463,12 +474,6 @@ maps.v["<Leader>an"] = { ":<C-u>'<,'>GpChatNew vsplit<cr>", desc = "New Chat" }
 maps.v["<Leader>ac"] = { ":<C-u>'<,'>GpChatToggle<cr>", desc = "Toggle Chat" }
 maps.v["<Leader>at"] = { ":<C-u>'<,'>GpTranslator vsplit<cr>", desc = "Gpt Translate" }
 maps.n["<Leader>at"] = { "<cmd>GpTranslator vsplit<cr>", desc = "Gpt Translate" }
-
--- For cargo
-vim.keymap.set("n", "<leader>rR", function()
-  local termopen = require "rustaceanvim.executors.termopen"
-  termopen.execute_command("cargo run", {})
-end, { noremap = true, silent = true, desc = "Cargo run" })
 
 -- For Alpha
 maps.n["<leader>o"] = icons.o

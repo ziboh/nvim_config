@@ -38,3 +38,8 @@ vim.keymap.set("n", "<leader>ra", function()
     vim.cmd(cmd)
   end)
 end, { noremap = true, silent = true, buffer = 0, desc = "Rust Run with arguments" })
+
+vim.keymap.set("n", "<leader>rR", function()
+  local termopen = require "rustaceanvim.executors.termopen"
+  termopen.execute_command("cargo run", {})
+end, { buffer = 0, noremap = true, silent = true, desc = "Cargo run" })

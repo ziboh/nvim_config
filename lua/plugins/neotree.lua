@@ -7,7 +7,6 @@ return {
     local utils = require "utils"
     local get_icon = utils.get_icon
     return {
-      use_image_nvim = true,
       auto_clean_after_session_restore = true,
       close_if_last_window = true,
       buffers = {

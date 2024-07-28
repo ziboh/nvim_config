@@ -55,6 +55,7 @@ local ensure_installed_lspconfig = {
   "cssls",
   "emmet_language_server",
   "svelte",
+  "yamlls",
 }
 local ensure_installed_dap = { "codelldb", "python" }
 local ignore_setup_lspconfig =
