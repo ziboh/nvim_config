@@ -246,6 +246,7 @@ return function()
     },
   }
 
+  require("neoconf").setup {}
   local lspconfig = require "lspconfig"
 
   lspconfig.vtsls.setup {
