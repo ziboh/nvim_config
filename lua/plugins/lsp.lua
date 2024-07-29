@@ -28,4 +28,5 @@ return {
     opts = {},
   },
   { "kevinhwang91/nvim-bqf", ft = "qf" },
+  "b0o/schemastore.nvim",
 }
