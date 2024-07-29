@@ -11,6 +11,7 @@ return {
         highlights = {
           global = { -- Add or modify hl groups globally, theme specific hl groups take priority.
             ["LspCodeLens"] = { fg = "#9DA9A0", bg = "NONE" },
+            ["BqfPreviewBorder"] = { fg = "#87c05f", bg = "NONE" },
             ["LspInlayHint"] = { fg = "#696c76", bg = "NONE" },
             ["Visual"] = { fg = "NONE", bg = "#45475a" },
             ["@lsp.type.function.rust"] = { link = "Funtion" },

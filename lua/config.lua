@@ -59,7 +59,7 @@ local ensure_installed_lspconfig = {
 }
 local ensure_installed_dap = { "codelldb", "python" }
 local ignore_setup_lspconfig =
-  { "bashls", "rust_analyzer", "tsserver", "volar", "vtsls", "emmet_language_server", "cssls", "html" }
+  { "bashls", "rust_analyzer", "tsserver", "volar", "vtsls", "emmet_language_server", "cssls", "html", "yamlls" }
 
 return {
   diagnostics = {

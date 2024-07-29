@@ -3,6 +3,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 vim.g.icons_enabled = true
 vim.opt.wrap = false
+vim.opt.fileformat = 'unix'
 
 vim.g.transparent_enabled = false
 vim.opt.laststatus = 3 --Global statusline.

@@ -347,4 +347,25 @@ return function()
     on_attach = on_attach,
     filetypes = { "sh", "zsh" },
   }
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true,
+  }
+  lspconfig.yamlls.setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+      yaml = {
+        schemaStore = {
+          -- You must disable built-in schemaStore support if you want to use
+          -- this plugin and its advanced options like `ignore`.
+          enable = false,
+          -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+          url = "",
+        },
+        schemas = require("schemastore").yaml.schemas(),
+      },
+    },
+  }
 end

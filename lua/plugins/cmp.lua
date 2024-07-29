@@ -53,8 +53,30 @@ return {
       local lspkind_ok, lspkind = pcall(require, "lspkind")
 
       if not luasnip_ok or not cmp_ok or not lspkind_ok then return end
-
+      vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+      vim.api.nvim_set_hl(0, "CmpBorder", { bg = "NONE", fg = "#6587CE" })
+      local auto_select = true
       cmp.setup {
+        window = {
+          documentation = {
+            border = "rounded",
+            scrollbar = true,
+            winhighlight = "FloatBorder:CmpBorder",
+          },
+          completion = {
+            border = "rounded",
+            scrollbar = true,
+            winhighlight = "FloatBorder:CmpBorder",
+          },
+        },
+        completion = {
+          completeopt = "menu,menuone,noinsert" .. (auto_select and "" or ",noselect"),
+        },
+        experimental = {
+          ghost_text = {
+            hl_group = "CmpGhostText",
+          },
+        },
         snippet = {
           -- REQUIRED - you must specify a snippet engine
           expand = function(args)
@@ -62,18 +84,11 @@ return {
           end,
         },
         mapping = cmp.mapping.preset.insert {
-          -- Use <C-b/f> to scroll the docs
           ["<C-f>"] = cmp.mapping.scroll_docs(-4),
           ["<C-b>"] = cmp.mapping.scroll_docs(4),
-          -- Use <C-k/j> to switch in items
           ["<C-k>"] = cmp.mapping.select_prev_item(),
           ["<C-j>"] = cmp.mapping.select_next_item(),
-          -- Use <CR>(Enter) to confirm selection
-          -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
           ["<CR>"] = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Insert, select = false },
-          -- A super tab
-          -- sourc: https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
-          ["<C-B>"] = cmp.mapping.select_next_item(),
           ["<Tab>"] = cmp.mapping(function(fallback)
             if luasnip.expand_or_jumpable() then
               luasnip.expand_or_jump()
@@ -90,20 +105,11 @@ return {
           end, { "i", "s" }),
         },
 
-        -- Let's configure the item's appearance
-        -- source: https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
         formatting = {
-          -- customize the appearance of the completion menu
           format = lspkind.cmp_format {
-            -- show only symbol annotations
             mode = "symbol",
-            -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-            maxwidth = 100,
-            -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
-            -- symbol_map = { FittenCode = "" },
+            maxwidth = 40,
             ellipsis_char = "...",
-            -- The function below will be called before any actual modifications from lspkind
-            -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
             before = function(entry, vim_item)
               --- 创建一个表，让lsp的名称简写
               local lsp_abbreviations = {
