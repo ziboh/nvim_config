@@ -1,43 +1,5 @@
 return {
   {
-    "onsails/lspkind.nvim",
-    config = function()
-      require("lspkind").init {
-        mode = "symbol_text",
-        preset = "codicons",
-        symbol_map = {
-          Text = "󰉿",
-          Method = "󰆧",
-          Function = "󰊕",
-          Constructor = "",
-          Field = "󰜢",
-          Variable = "󰀫",
-          Class = "󰠱",
-          Interface = "",
-          Module = "",
-          Property = "󰜢",
-          Unit = "󰑭",
-          Enum = "",
-          Value = "󰎠",
-          Keyword = "󰌋",
-          Snippet = "",
-          Color = "󰏘",
-          File = "󰈙",
-          Reference = "󰈇",
-          Folder = "󰉋",
-          EnumMember = "",
-          Constant = "󰏿",
-          Struct = "󰙅",
-          Event = "",
-          Operator = "󰆕",
-          TypeParameter = "",
-          FittenCode = "",
-        },
-      }
-      vim.api.nvim_set_hl(0, "CmpItemKindFittenCode", { fg = "#6CC644" })
-    end,
-  },
-  {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
     dependencies = {
@@ -72,11 +34,11 @@ return {
         completion = {
           completeopt = "menu,menuone,noinsert" .. (auto_select and "" or ",noselect"),
         },
-        experimental = {
-          ghost_text = {
-            hl_group = "CmpGhostText",
-          },
-        },
+        -- experimental = {
+        --   ghost_text = {
+        --     hl_group = "CmpGhostText",
+        --   },
+        -- },
         snippet = {
           -- REQUIRED - you must specify a snippet engine
           expand = function(args)
@@ -111,17 +73,14 @@ return {
             maxwidth = 40,
             ellipsis_char = "...",
             before = function(entry, vim_item)
-              --- 创建一个表，让lsp的名称简写
               local lsp_abbreviations = {
                 emmet_language_server = "Emmet",
               }
               if entry.source.name == "nvim_lsp" then
-                -- Display which LSP servers this item came from.
                 local lspserver_name = nil
                 pcall(function()
                   lspserver_name = entry.source.source.client.name
                   if lsp_abbreviations[lspserver_name] then lspserver_name = lsp_abbreviations[lspserver_name] end
-                  -- 大写开头
                   lspserver_name = string.upper(string.sub(lspserver_name, 1, 1)) .. string.sub(lspserver_name, 2)
                   vim_item.menu = lspserver_name
                 end)
@@ -198,6 +157,44 @@ return {
       luasnip.filetype_extend("cpp", { "cppdoc" })
       luasnip.filetype_extend("sh", { "shelldoc" })
       require "snip"
+    end,
+  },
+  {
+    "onsails/lspkind.nvim",
+    config = function()
+      require("lspkind").init {
+        mode = "symbol_text",
+        preset = "codicons",
+        symbol_map = {
+          Text = "󰉿",
+          Method = "󰆧",
+          Function = "󰊕",
+          Constructor = "",
+          Field = "󰜢",
+          Variable = "󰀫",
+          Class = "󰠱",
+          Interface = "",
+          Module = "",
+          Property = "󰜢",
+          Unit = "󰑭",
+          Enum = "",
+          Value = "󰎠",
+          Keyword = "󰌋",
+          Snippet = "",
+          Color = "󰏘",
+          File = "󰈙",
+          Reference = "󰈇",
+          Folder = "󰉋",
+          EnumMember = "",
+          Constant = "󰏿",
+          Struct = "󰙅",
+          Event = "",
+          Operator = "󰆕",
+          TypeParameter = "",
+          FittenCode = "",
+        },
+      }
+      vim.api.nvim_set_hl(0, "CmpItemKindFittenCode", { fg = "#6CC644" })
     end,
   },
 }

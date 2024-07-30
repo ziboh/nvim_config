@@ -1,5 +1,5 @@
 return {
-  "ziboh/gp.nvim",
+  "Robitx/gp.nvim",
   event = "VeryLazy",
   config = function()
     require("gp").setup {

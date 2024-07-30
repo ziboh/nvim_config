@@ -10,6 +10,7 @@ return {
         },
         highlights = {
           global = { -- Add or modify hl groups globally, theme specific hl groups take priority.
+            ["RenderMarkdownCodeInline"] = { fg = "#ff838b",bg = "#1a1b23"},
             ["LspCodeLens"] = { fg = "#9DA9A0", bg = "NONE" },
             ["BqfPreviewBorder"] = { fg = "#87c05f", bg = "NONE" },
             ["LspInlayHint"] = { fg = "#696c76", bg = "NONE" },
