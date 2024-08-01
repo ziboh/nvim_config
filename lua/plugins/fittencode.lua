@@ -1,5 +1,6 @@
 return {
   "ziboh/fittencode.nvim",
+  init = function() vim.g.enabled_fittencode = false end,
   config = function()
     require("fittencode").setup {
       completion_mode = "source",

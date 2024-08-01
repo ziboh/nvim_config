@@ -24,18 +24,6 @@ return {
       winbar = { -- UI breadcrumbs bar
         init = function(self) self.bufnr = vim.api.nvim_get_current_buf() end,
         fallthrough = false,
-        -- Winbar for terminal, neotree, and aerial.
-        {
-          condition = function() return not lib.condition.is_active() end,
-          {
-            lib.component.neotree(),
-            lib.component.compiler_play(),
-            lib.component.fill(),
-            lib.component.compiler_redo(),
-            lib.component.aerial(),
-          },
-        },
-        -- Regular winbar
         {
           lib.component.neotree(),
           lib.component.compiler_play(),
@@ -43,7 +31,6 @@ return {
           lib.component.breadcrumbs(),
           lib.component.fill(),
           lib.component.compiler_redo(),
-          lib.component.aerial(),
         },
       },
       statuscolumn = { -- UI left column
@@ -55,6 +42,11 @@ return {
       statusline = { -- UI statusbar
         hl = { fg = "fg", bg = "bg" },
         lib.component.mode {
+          hl = {
+            fg = "#1a1d23",
+            bg = "mode_bg",
+            bold = true,
+          },
           mode_text = { pad_text = "center" }, -- if set, displays text.
         },
         lib.component.git_branch(),
@@ -68,30 +60,45 @@ return {
         {
           provider = '%{&ft == "toggleterm" ? "terminal [".b:toggle_number."]" : ""}',
         },
-        {
-          provider = "   ",
-        },
         require("utils").is_available "fittencode.nvim"
             and {
-              provider = " Fitten",
-              hl = function()
-                if require("fittencode").get_current_status() ~= 1 then
-                  return { fg = "#82aa78", bold = true }
-                else
-                  return { fg = "#ed8796", bold = true }
-                end
-              end,
-              on_click = {
-                name = "heirline_fittencode",
-                callback = function() require("utils.toggle").fittencode(false) end,
-              },
-              update = {
-                "User", -- events that make this component refresh.
-                pattern = "ToggleFitten",
+              { provider = "   " },
+              {
+                provider = " Fitten",
+                hl = function()
+                  if require("fittencode").get_current_status() ~= 1 then
+                    return { fg = "#82aa78", bold = true }
+                  else
+                    return { fg = "#ed8796", bold = true }
+                  end
+                end,
+                on_click = {
+                  name = "heirline_fittencode",
+                  callback = function() require("utils.toggle").fittencode(false) end,
+                },
+                update = {
+                  "User", -- events that make this component refresh.
+                  pattern = "ToggleFitten",
+                },
               },
             }
           or nil,
         lib.component.compiler_state(),
+        {
+
+          condition = function() return vim.bo.fenc ~= "" end,
+          {
+            provider = "    ",
+          },
+          {
+            hl = { fg = "#50a4e9", bold = true },
+            provider = function()
+              local enc = vim.bo.fenc
+              if enc == "euc-cn" then enc = "gbk" end
+              return enc ~= "" and enc:upper() .. "[" .. vim.bo.ff:sub(1, 1):upper() .. vim.bo.ff:sub(2) .. "]"
+            end,
+          },
+        },
         lib.component.virtual_env(),
         lib.component.nav(),
         -- lib.component.mode({ surround = { separator = "right" } }),

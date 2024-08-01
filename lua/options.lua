@@ -113,12 +113,6 @@ vim.opt.timeoutlen = 300
 -- turn off swapfile
 vim.opt.swapfile = false
 
--- Enabled Fittencode
-vim.g.enabled_fittencode = false
-
--- For ChatGpt
-vim.g["codegpt_chat_completions_url"] = "https:/35.yunai.xyz/v1/chat/completions"
-
 -- For rust-analyzer
 vim.g.rust_analyzer_mason = true
 

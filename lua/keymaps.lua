@@ -14,7 +14,8 @@ local icons = {
   du = { group = "DAP-UI", icon = get_icon("Debugger", 0, true) },
   b = { group = "Buffers", icon = "" },
   d = { group = "Debugger" },
-  g = { group = "GIt" },
+  g = { group = "GIt", icon = { icon = get_icon "Git", hl = "DevIconGitAttributes" } },
+  gt = { group = "GItsign Toggle", icon = { icon = get_icon "Git", hl = "DevIconGitAttributes" } },
   s = { group = "Session", icon = get_icon("Session", 0, true) },
   t = { group = "Terminal" },
   a = { group = "Ai", icon = get_icon("Ai", 0, true) },
@@ -172,7 +173,8 @@ maps.n["<leader>t"] = icons.t
 maps.n["<leader>r"] = icons.r
 maps.n["<leader>f"] = icons.f
 maps.n["<leader>s"] = icons.s
-maps.n["<leader>gn"] = { name = "Neogit" }
+maps.n["<leader>gn"] = { group = "Neogit" }
+maps.n["<leader>gt"] = icons.gt
 
 -- For telescope
 if is_available "telescope.nvim" then
@@ -182,7 +184,6 @@ if is_available "telescope.nvim" then
     { function() require("telescope.builtin").git_commits() end, desc = "Git commits (repository)" }
   maps.n["<leader>gC"] =
     { function() require("telescope.builtin").git_bcommits() end, desc = "Git commits (current file)" }
-  maps.n["<leader>gt"] = { function() require("telescope.builtin").git_status() end, desc = "Git status" }
   maps.n["<leader>f<CR>"] = { function() require("telescope.builtin").resume() end, desc = "Resume previous search" }
   maps.n["<leader>f'"] = { function() require("telescope.builtin").marks() end, desc = "Find marks" }
   maps.n["<leader>fb"] = { function() require("telescope.builtin").buffers() end, desc = "Find buffers" }

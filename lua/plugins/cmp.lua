@@ -17,6 +17,7 @@ return {
       if not luasnip_ok or not cmp_ok or not lspkind_ok then return end
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
       vim.api.nvim_set_hl(0, "CmpBorder", { bg = "NONE", fg = "#6587CE" })
+      vim.api.nvim_set_hl(0, "CmpCursorLine", { bg = "#26343f", fg = "fg" })
       local auto_select = true
       cmp.setup {
         window = {
@@ -28,17 +29,12 @@ return {
           completion = {
             border = "rounded",
             scrollbar = true,
-            winhighlight = "FloatBorder:CmpBorder",
+            winhighlight = "Normal:Pmenu,Search:None,CursorLine:CmpCursorLine,FloatBorder:CmpBorder",
           },
         },
         completion = {
           completeopt = "menu,menuone,noinsert" .. (auto_select and "" or ",noselect"),
         },
-        -- experimental = {
-        --   ghost_text = {
-        --     hl_group = "CmpGhostText",
-        --   },
-        -- },
         snippet = {
           -- REQUIRED - you must specify a snippet engine
           expand = function(args)
@@ -46,7 +42,7 @@ return {
           end,
         },
         mapping = cmp.mapping.preset.insert {
-          ["<C-f>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-h>"] = cmp.mapping.scroll_docs(-4),
           ["<C-b>"] = cmp.mapping.scroll_docs(4),
           ["<C-k>"] = cmp.mapping.select_prev_item(),
           ["<C-j>"] = cmp.mapping.select_next_item(),

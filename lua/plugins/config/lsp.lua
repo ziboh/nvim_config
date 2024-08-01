@@ -1,4 +1,7 @@
 return function()
+  vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { underline = true })
+  vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { underline = true })
+  vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { underline = true })
   local config = require "config"
   -- See `:help vim.lsp.buf.inlay_hint` for documentation on the inlay_hint API
   if vim.fn.has "nvim-0.10" ~= 0 then vim.lsp.inlay_hint.enable(true) end

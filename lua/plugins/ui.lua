@@ -10,7 +10,10 @@ return {
         },
         highlights = {
           global = { -- Add or modify hl groups globally, theme specific hl groups take priority.
-            ["RenderMarkdownCodeInline"] = { fg = "#ff838b",bg = "#1a1b23"},
+            ["TelescopeNormal"] = { fg = "fg", bg = "NONE" },
+            ["StatusLine"] = { fg = "#9b9fa9", bg = "NONE" },
+            ["EndOfBuffer"] = { fg = "bg" },
+            ["RenderMarkdownCodeInline"] = { fg = "#ff838b", bg = "#1a1b23" },
             ["LspCodeLens"] = { fg = "#9DA9A0", bg = "NONE" },
             ["BqfPreviewBorder"] = { fg = "#87c05f", bg = "NONE" },
             ["LspInlayHint"] = { fg = "#696c76", bg = "NONE" },
@@ -41,7 +44,7 @@ return {
   {
     "uga-rosa/ccc.nvim",
     event = "VeryLazy",
-    enabled = false;
+    enabled = false,
     cmd = { "CccPick", "CccConvert", "CccHighlighterEnable", "CccHighlighterDisable", "CccHighlighterToggle" },
     opts = {
       highlighter = {
