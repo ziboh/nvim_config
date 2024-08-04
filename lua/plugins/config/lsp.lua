@@ -106,7 +106,7 @@ return function()
       vim.keymap.set(
         "n",
         "<leader>lr",
-        vim.lsp.buf.rename,
+        ":IncRename ",
         { noremap = true, silent = true, buffer = bufnr, desc = "Rename" }
       )
     end
@@ -187,7 +187,6 @@ return function()
 
   require("mason").setup()
 
-  vim.g.ignore_conform = { "svelte" }
   require("conform").setup {
     formatters_by_ft = {
       lua = { "stylua" },

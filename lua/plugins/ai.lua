@@ -86,7 +86,6 @@ return {
         })
         :find()
     end
-
     vim.keymap.set(
       "n",
       "<C-g>z",

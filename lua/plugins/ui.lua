@@ -10,6 +10,8 @@ return {
         },
         highlights = {
           global = { -- Add or modify hl groups globally, theme specific hl groups take priority.
+            ["FloatBorder"] = { fg = "#6587CE", bg = "bg" },
+            ["Normal"] = { fg = "#c9d1d9", bg = "#161b22" },
             ["TelescopeNormal"] = { fg = "fg", bg = "NONE" },
             ["StatusLine"] = { fg = "#9b9fa9", bg = "NONE" },
             ["EndOfBuffer"] = { fg = "bg" },
@@ -99,7 +101,7 @@ return {
         dashboard.button("n", "📄 New     ", "<cmd>ene<CR>"),
         dashboard.button("e", "🌺 Recent  ", "<cmd>Telescope oldfiles<CR>"),
         dashboard.button("l", "🚀 Leet  ", "<cmd>Leet<CR>"),
-        dashboard.button("s", "🔎 Sessions", "<cmd>Sessionl<CR>"),
+        -- dashboard.button("s", "🔎 Sessions", "<cmd>Sessionl<CR>"),
         dashboard.button("p", "💼 Projects", "<cmd>lua require'telescope'.extensions.projects.projects{}<CR>"),
         dashboard.button("", ""),
         dashboard.button("q", "󰈆  Quit", "<cmd>exit<CR>"),

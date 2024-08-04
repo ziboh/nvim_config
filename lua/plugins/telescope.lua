@@ -42,7 +42,8 @@ return {
     lazy = false,
     config = function()
       require("project_nvim").setup {
-        patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json","!=my_plugin" },
+        patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json", "!=my_plugin" },
+        detection_methods = { "pattern", "lsp" },
       }
     end,
   },

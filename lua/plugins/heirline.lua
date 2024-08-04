@@ -56,7 +56,9 @@ return {
         lib.component.fill(),
         lib.component.cmd_info(),
         lib.component.fill(),
-        lib.component.lsp(),
+        lib.component.lsp {
+          lsp_progress = false,
+        },
         {
           provider = '%{&ft == "toggleterm" ? "terminal [".b:toggle_number."]" : ""}',
         },

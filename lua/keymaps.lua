@@ -172,7 +172,6 @@ maps.n["<leader>x"] = icons.x
 maps.n["<leader>t"] = icons.t
 maps.n["<leader>r"] = icons.r
 maps.n["<leader>f"] = icons.f
-maps.n["<leader>s"] = icons.s
 maps.n["<leader>gn"] = { group = "Neogit" }
 maps.n["<leader>gt"] = icons.gt
 
@@ -332,12 +331,6 @@ maps.n["<leader>wf"] = { "<c-w>pa", desc = "switch window" }
 maps.n["|"] = { "<cmd>vsplit<cr>", desc = "Vertical Split" }
 maps.n["\\"] = { "<cmd>split<cr>", desc = "Horizontal Split" }
 
--- For resession
-maps.n["<leader>ss"] = { function() require("resession").save() end, desc = "Session Save" }
-maps.n["<leader>sf"] = { function() require("resession").load() end, desc = "Session load" }
-maps.n["<leader>sd"] = { function() require("resession").delete() end, desc = "Session delete" }
-maps.n["<leader>sl"] = { function() require("resession").load "last" end, desc = "Load last Session" }
-
 -- For package
 maps.n["<leader>p"] = icons.p
 maps.n["<leader>pl"] = { "<cmd>Lazy<CR>", desc = "Lazy" }
@@ -356,6 +349,7 @@ maps.i["<F7>"] = { "<Esc><Cmd>ToggleTerm<CR>", desc = "Toggle terminl" }
 maps.n["<C-'>"] = { '<Cmd>execute v:count . "ToggleTerm"<CR>', desc = "Toggle terminal" } -- requires terminal that supports binding <C-'>
 maps.t["<C-'>"] = { "<Cmd>ToggleTerm<CR>", desc = "Toggle terminal" } -- requires terminal that supports binding <C-'>
 maps.i["<C-'>"] = { "<Esc><Cmd>ToggleTerm<CR>", desc = "Toggle terminl" } -- requires terminal that supports binding <C-'>
+maps.n["<leader>gg"] = { function() require("utils.toggle").toggle_cmd "lazygit" end, desc = "Toggle Lazygit" }
 maps.n["<leader>tc"] = {
   function()
     local input_opts = { prompt = "Put Commands", default = "" }
@@ -447,15 +441,12 @@ if vim.fn.has "nvim-0.11" == 0 then
   maps.n["]d"] = { function() vim.diagnostic.goto_next() end, desc = "Next diagnostic" }
 end
 
-vim.keymap.set("n", "<leader>lf", function()
-  if require("utils").stringInTable(vim.g.ignore_conform, vim.bo.filetype) then
-    vim.lsp.buf.format {
-      async = true,
-    }
-  else
-    require("conform").format()
-  end
-end, { noremap = true, silent = true, desc = "Formatting" })
+vim.keymap.set(
+  "n",
+  "<leader>lf",
+  function() require("conform").format() end,
+  { noremap = true, silent = true, desc = "Formatting" }
+)
 
 -- FOr ccc
 maps.n["<Leader>uC"] = { "<Cmd>CccHighlighterToggle<CR>", desc = "Toggle colorizer" }

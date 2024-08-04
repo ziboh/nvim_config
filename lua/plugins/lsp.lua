@@ -63,11 +63,12 @@ return {
   },
   {
     "p00f/clangd_extensions.nvim",
-    lazy = true,
-    config = function(opts)
+    event = "Lspattach",
+    config = function(_)
       require("clangd_extensions").setup {
         inlay_hints = {
-          inline = vim.fn.has "nvim-0.10" == 1,
+          -- inline = vim.fn.has "nvim-0.10" == 1,
+          inline = false,
           only_current_line = false,
           only_current_line_autocmd = { "CursorHold" },
           show_parameter_hints = true,
@@ -112,5 +113,9 @@ return {
         },
       }
     end,
+  },
+  {
+    "smjonas/inc-rename.nvim",
+    config = function() require("inc_rename").setup() end,
   },
 }

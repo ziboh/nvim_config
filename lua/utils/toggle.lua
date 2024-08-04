@@ -2,7 +2,7 @@
 ---license GNU General Public License v3.0
 ---@class astrocore.toggles
 local M = {}
-
+local T = {}
 local function bool2str(bool) return bool and "on" or "off" end
 local function ui_notify(silent, ...) return not silent and require("utils").notify(...) end
 
@@ -146,7 +146,6 @@ function M.diagnostics(silent)
   end
 end
 
-
 function M.fittencode(slient)
   local ok, fittencode = pcall(require, "fittencode")
   if ok then
@@ -163,6 +162,43 @@ function M.fittencode(slient)
       modeline = false,
     })
   end
+end
+
+--- 使用 toggleterm 打开外部命令
+---@param opts string | table
+function M.toggle_cmd(opts)
+  local cmd
+  local terminal
+  local Terminal = require("toggleterm.terminal").Terminal
+  local default_opts = {
+    dir = "git_dir",
+    direction = "float",
+    float_opts = {
+      border = "double",
+    },
+    -- function to run on opening the terminal
+    on_open = function(term)
+      vim.cmd "startinsert!"
+      vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+    end,
+    -- function to run on closing the terminal
+    on_close = function(term) vim.cmd "startinsert!" end,
+  }
+  if type(opts) == "string" then
+    cmd = opts
+    opts = vim.tbl_deep_extend("force", default_opts, { cmd = opts })
+  elseif type(opts) == "table" then
+    cmd = opts.cmd
+    opts = vim.tbl_deep_extend("force", default_opts, opts)
+  end
+  if T[cmd] then
+    terminal = T[cmd]
+  else
+    terminal = Terminal:new(opts)
+    T[cmd] = terminal
+  end
+
+  terminal:toggle()
 end
 
 return M
