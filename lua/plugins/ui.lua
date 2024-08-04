@@ -93,7 +93,6 @@ return {
         function() require("telescope").extensions.project.project { display_type = "full" } end,
         {}
       )
-      vim.api.nvim_create_user_command("Sessionload", function() require("resession").load() end, {})
       dashboard.section.header.opts.hl = "DashboardHeader"
       vim.cmd "highlight DashboardHeader guifg=#F7778F"
       -- Buttons
@@ -101,7 +100,6 @@ return {
         dashboard.button("n", "📄 New     ", "<cmd>ene<CR>"),
         dashboard.button("e", "🌺 Recent  ", "<cmd>Telescope oldfiles<CR>"),
         dashboard.button("l", "🚀 Leet  ", "<cmd>Leet<CR>"),
-        -- dashboard.button("s", "🔎 Sessions", "<cmd>Sessionl<CR>"),
         dashboard.button("p", "💼 Projects", "<cmd>lua require'telescope'.extensions.projects.projects{}<CR>"),
         dashboard.button("", ""),
         dashboard.button("q", "󰈆  Quit", "<cmd>exit<CR>"),

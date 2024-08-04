@@ -349,7 +349,23 @@ maps.i["<F7>"] = { "<Esc><Cmd>ToggleTerm<CR>", desc = "Toggle terminl" }
 maps.n["<C-'>"] = { '<Cmd>execute v:count . "ToggleTerm"<CR>', desc = "Toggle terminal" } -- requires terminal that supports binding <C-'>
 maps.t["<C-'>"] = { "<Cmd>ToggleTerm<CR>", desc = "Toggle terminal" } -- requires terminal that supports binding <C-'>
 maps.i["<C-'>"] = { "<Esc><Cmd>ToggleTerm<CR>", desc = "Toggle terminl" } -- requires terminal that supports binding <C-'>
-maps.n["<leader>gg"] = { function() require("utils.toggle").toggle_cmd "lazygit" end, desc = "Toggle Lazygit" }
+maps.n["<leader>gg"] = {
+  function()
+    require("utils.toggle").toggle_cmd {
+      cmd = "lazygit",
+      dir = "git_dir",
+      direction = "tab",
+      -- function to run on opening the terminal
+      on_open = function(term)
+        vim.cmd "startinsert!"
+        vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+      end,
+      -- function to run on closing the terminal
+      on_close = function(term) vim.cmd "startinsert!" end,
+    }
+  end,
+  desc = "Toggle Lazygit",
+}
 maps.n["<leader>tc"] = {
   function()
     local input_opts = { prompt = "Put Commands", default = "" }

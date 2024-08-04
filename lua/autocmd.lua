@@ -9,19 +9,9 @@ end
 
 -- if you only want these mappings for toggle term use term://*toggleterm#* instead
 vim.cmd "autocmd! TermOpen term://* lua set_terminal_keymaps()"
-vim.api.nvim_create_autocmd("VimLeavePre", {
-  callback = function()
-    -- Always save a special session named "last"
-    require("resession").save "last"
-  end,
-})
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function() vim.highlight.on_yank() end,
-})
-
-vim.api.nvim_create_autocmd("VimLeavePre", {
-  callback = function() require("resession").save(vim.fn.getcwd(), { dir = "dirsession", notify = false }) end,
 })
 
 if require("utils").is_available "alpha-nvim" then

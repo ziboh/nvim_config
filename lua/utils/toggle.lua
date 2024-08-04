@@ -194,6 +194,7 @@ function M.toggle_cmd(opts)
   if T[cmd] then
     terminal = T[cmd]
   else
+    vim.notify("创建新的终端", vim.log.levels.INFO, {})
     terminal = Terminal:new(opts)
     T[cmd] = terminal
   end
