@@ -21,7 +21,7 @@ local icons = {
   a = { group = "Ai", icon = get_icon("Ai", 0, true) },
   o = { group = "Overseer", icon = get_icon("Overseer", 0, true) },
 }
-
+maps.n["<leader>a"] = icons.a
 -- Normal mode --
 -----------------
 vim.keymap.set("n", "<C-n>", "5j", { noremap = true, silent = true })
@@ -175,6 +175,8 @@ maps.n["<leader>f"] = icons.f
 maps.n["<leader>gn"] = { group = "Neogit" }
 maps.n["<leader>gt"] = icons.gt
 
+-- For Rest
+maps.n["<leader>rc"] = { "<cmd>Rest run<CR>", desc = "Run Rest" }
 -- For telescope
 if is_available "telescope.nvim" then
   maps.n["<leader>f"] = icons.f
@@ -258,19 +260,6 @@ if is_available "telescope.nvim" then
     }
   end
 
-  -- extra - nvim-neoclip (neovim internal clipboard)
-  --         Specially useful if you disable the shared clipboard in options.
-  if is_available "nvim-neoclip.lua" then
-    maps.n["<leader>fy"] = {
-      function() require("telescope").extensions.neoclip.default() end,
-      desc = "Find yank history",
-    }
-    maps.n["<leader>fq"] = {
-      function() require("telescope").extensions.macroscope.default() end,
-      desc = "Find macro history",
-    }
-  end
-
   -- extra - undotree
   if is_available "telescope-undo.nvim" then
     maps.n["<leader>fu"] = {
@@ -288,7 +277,6 @@ if is_available "telescope.nvim" then
     maps.n["<F6>"] = { function() vim.cmd "CompilerOpen" end, desc = "Open compiler" }
     maps.n["<S-F6>"] = { function() vim.cmd "CompilerRedo" end, desc = "Compiler redo" }
     maps.n["<S-F7>"] = { function() vim.cmd "CompilerToggleResults" end, desc = "compiler resume" }
-    maps.n["<leader>fn"] = { function() vim.cmd [[Telescope notify]] end, desc = "Search notify" }
   end
 end
 
@@ -329,7 +317,6 @@ maps.n["<leader>wo"] = { "<c-w>o", desc = "only window" }
 maps.n["<leader>wx"] = { "<c-w>x", desc = "Swap current with next" }
 maps.n["<leader>wf"] = { "<c-w>pa", desc = "switch window" }
 maps.n["|"] = { "<cmd>vsplit<cr>", desc = "Vertical Split" }
-maps.n["\\"] = { "<cmd>split<cr>", desc = "Horizontal Split" }
 
 -- For package
 maps.n["<leader>p"] = icons.p
@@ -361,7 +348,7 @@ maps.n["<leader>gg"] = {
         vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
       end,
       -- function to run on closing the terminal
-      on_close = function(term) vim.cmd "startinsert!" end,
+      on_close = function(_) vim.cmd "startinsert!" end,
     }
   end,
   desc = "Toggle Lazygit",
@@ -445,11 +432,12 @@ maps.n["<Leader>duo"] = {
 
 -- For Fittencode
 if utils.is_available "fittencode.nvim" then
-  maps.n["<leader>aa"] = {
+  maps.n["<leader>aF"] = {
     function() toggle.fittencode() end,
     desc = "Toggle Fitten Code",
   }
 end
+
 -- For diagnostic
 maps.n["<leader>ld"] = { function() vim.diagnostic.open_float() end, desc = "Hover diagnostics" }
 if vim.fn.has "nvim-0.11" == 0 then
@@ -469,26 +457,135 @@ maps.n["<Leader>uC"] = { "<Cmd>CccHighlighterToggle<CR>", desc = "Toggle coloriz
 maps.n["<Leader>pg"] = { "<Cmd>CccConvert<CR>", desc = "Convert color" }
 maps.n["<Leader>pc"] = { "<Cmd>CccPick<CR>", desc = "Pick Color" }
 
--- For ChatGpt
-maps.v["<leader>a"] = icons.a
-maps.n["<leader>a"] = icons.a
-maps.n["<Leader>ac"] = { "<Cmd>GpChatToggle<CR>", desc = "Toggle Chat" }
-maps.n["<Leader>an"] = { "<Cmd>GpChatNew vsplit<CR>", desc = "New Chat" }
-maps.n["<Leader>af"] = { "<Cmd>GpChatFinder<CR>", desc = "Find Chat" }
-maps.n["<Leader>ad"] = { "<Cmd>GpChatDelete<CR>", desc = "Delete Chat" }
-maps.n["<Leader>ar"] = { "<Cmd>GpChatRespond<CR>", desc = "Respond Chat" }
-maps.v["<Leader>ap"] = { ":<C-u>'<,'>GpChatPaste vsplit<cr>", desc = "Paste Chat" }
-maps.v["<Leader>an"] = { ":<C-u>'<,'>GpChatNew vsplit<cr>", desc = "New Chat" }
-maps.v["<Leader>ac"] = { ":<C-u>'<,'>GpChatToggle<cr>", desc = "Toggle Chat" }
-maps.v["<Leader>at"] = { ":<C-u>'<,'>GpTranslator vsplit<cr>", desc = "Gpt Translate" }
-maps.n["<Leader>at"] = { "<cmd>GpTranslator vsplit<cr>", desc = "Gpt Translate" }
+-- For Gp
+-- Chat commands
 
--- For Alpha
+maps.n["<C-g>"] = icons.a
+maps.n["<C-g>c"] = { "<cmd>GpChatNew vsplit<cr>", desc = "New Chat" }
+maps.i["<C-g>c"] = { "<cmd>GpChatNew vsplit<cr>", desc = "New Chat" }
+
+maps.n["<C-g>t"] = { "<cmd>GpChatToggle<cr>", desc = "Toggle Chat" }
+maps.i["<C-g>t"] = { "<cmd>GpChatToggle<cr>", desc = "Toggle Chat" }
+
+maps.n["<C-g>f"] = { "<cmd>GpChatFinder<cr>", desc = "Chat Finder" }
+maps.i["<C-g>f"] = { "<cmd>GpChatFinder<cr>", desc = "Chat Finder" }
+
+maps.v["<C-g>c"] = { ":'<,'>GpChatNew vsplit<cr>", desc = "Visual Chat New" }
+maps.v["<C-g>p"] = { ":'<,'>GpChatPaste<cr>", desc = "Visual Chat Paste" }
+maps.v["<C-g>t"] = { ":'<,'>GpChatToggle<cr>", desc = "Visual Toggle Chat" }
+
+maps.n["<C-g><C-x>"] = { "<cmd>GpChatNew split<cr>", desc = "New Chat split" }
+maps.i["<C-g><C-x>"] = { "<cmd>GpChatNew split<cr>", desc = "New Chat split" }
+
+maps.n["<C-g><C-v>"] = { "<cmd>GpChatNew vsplit<cr>", desc = "New Chat vsplit" }
+maps.i["<C-g><C-v>"] = { "<cmd>GpChatNew vsplit<cr>", desc = "New Chat vsplit" }
+
+maps.n["<C-g><C-t>"] = { "<cmd>GpChatNew tabnew<cr>", desc = "New Chat tabnew" }
+maps.i["<C-g><C-t>"] = { "<cmd>GpChatNew tabnew<cr>", desc = "New Chat tabnew" }
+
+maps.v["<C-g><C-x>"] = { ":'<,'>GpChatNew split<cr>", desc = "Visual Chat New split" }
+maps.v["<C-g><C-v>"] = { ":'<,'>GpChatNew vsplit<cr>", desc = "Visual Chat New vsplit" }
+maps.v["<C-g><C-t>"] = { ":'<,'>GpChatNew tabnew<cr>", desc = "Visual Chat New tabnew" }
+
+-- Prompt commands
+maps.n["<C-g>r"] = { "<cmd>GpRewrite<cr>", desc = "Inline Rewrite" }
+maps.i["<C-g>r"] = { "<cmd>GpRewrite<cr>", desc = "Inline Rewrite" }
+
+maps.n["<C-g>a"] = { "<cmd>GpAppend<cr>", desc = "Append (after)" }
+maps.i["<C-g>a"] = { "<cmd>GpAppend<cr>", desc = "Append (after)" }
+
+maps.n["<C-g>b"] = { "<cmd>GpPrepend<cr>", desc = "Prepend (before)" }
+maps.i["<C-g>b"] = { "<cmd>GpPrepend<cr>", desc = "Prepend (before)" }
+
+maps.v["<C-g>r"] = { ":'<,'>GpRewrite<cr>", desc = "Visual Rewrite" }
+maps.v["<C-g>a"] = { ":'<,'>GpAppend<cr>", desc = "Visual Append (after)" }
+maps.v["<C-g>b"] = { ":'<,'>GpPrepend<cr>", desc = "Visual Prepend (before)" }
+maps.v["<C-g>i"] = { ":'<,'>GpImplement<cr>", desc = "Implement selection" }
+
+maps.n["<C-g>g"] = { group = "Gp", icon = get_icon("Ai", 0, true) }
+maps.n["<C-g>gp"] = { "<cmd>GpPopup<cr>", desc = "Popup" }
+maps.i["<C-g>gp"] = { "<cmd>GpPopup<cr>", desc = "Popup" }
+
+maps.n["<C-g>ge"] = { "<cmd>GpEnew<cr>", desc = "GpEnew" }
+maps.i["<C-g>ge"] = { "<cmd>GpEnew<cr>", desc = "GpEnew" }
+
+maps.n["<C-g>gn"] = { "<cmd>GpNew<cr>", desc = "GpNew" }
+maps.i["<C-g>gn"] = { "<cmd>GpNew<cr>", desc = "GpNew" }
+
+maps.n["<C-g>gv"] = { "<cmd>GpVnew<cr>", desc = "GpVnew" }
+maps.i["<C-g>gv"] = { "<cmd>GpVnew<cr>", desc = "GpVnew" }
+
+maps.n["<C-g>gt"] = { "<cmd>GpTabnew<cr>", desc = "GpTabnew" }
+maps.i["<C-g>gt"] = { "<cmd>GpTabnew<cr>", desc = "GpTabnew" }
+
+maps.v["<C-g>gp"] = { ":'<,'>GpPopup<cr>", desc = "Visual Popup" }
+maps.v["<C-g>ge"] = { ":'<,'>GpEnew<cr>", desc = "Visual GpEnew" }
+maps.v["<C-g>gn"] = { ":'<,'>GpNew<cr>", desc = "Visual GpNew" }
+maps.v["<C-g>gv"] = { ":'<,'>GpVnew<cr>", desc = "Visual GpVnew" }
+maps.v["<C-g>gt"] = { ":'<,'>GpTabnew<cr>", desc = "Visual GpTabnew" }
+
+maps.n["<C-g>x"] = { "<cmd>GpContext<cr>", desc = "Toggle Context" }
+maps.i["<C-g>x"] = { "<cmd>GpContext<cr>", desc = "Toggle Context" }
+maps.v["<C-g>x"] = { ":'<,'>GpContext<cr>", desc = "Visual Toggle Context" }
+
+maps.n["<C-g>s"] = { "<cmd>GpStop<cr>", desc = "Stop" }
+maps.i["<C-g>s"] = { "<cmd>GpStop<cr>", desc = "Stop" }
+maps.v["<C-g>s"] = { "<cmd>GpStop<cr>", desc = "Stop" }
+maps.x["<C-g>s"] = { "<cmd>GpStop<cr>", desc = "Stop" }
+
+maps.n["<C-g>n"] = { "<cmd>GpNextAgent<cr>", desc = "Next Agent" }
+maps.i["<C-g>n"] = { "<cmd>GpNextAgent<cr>", desc = "Next Agent" }
+maps.v["<C-g>n"] = { "<cmd>GpNextAgent<cr>", desc = "Next Agent" }
+maps.x["<C-g>n"] = { "<cmd>GpNextAgent<cr>", desc = "Next Agent" }
+
+-- Optional Whisper commands with prefix <C-g>w
+maps.n["<C-g>w"] = { group = "whisper", icon = get_icon("Ai", 0, true) }
+maps.n["<C-g>ww"] = { "<cmd>GpWhisper<cr>", desc = "Whisper" }
+maps.i["<C-g>ww"] = { "<cmd>GpWhisper<cr>", desc = "Whisper" }
+maps.v["<C-g>ww"] = { ":'<,'>GpWhisper<cr>", desc = "Visual Whisper" }
+
+maps.n["<C-g>wr"] = { "<cmd>GpWhisperRewrite<cr>", desc = "Whisper Inline Rewrite" }
+maps.i["<C-g>wr"] = { "<cmd>GpWhisperRewrite<cr>", desc = "Whisper Inline Rewrite" }
+
+maps.n["<C-g>wa"] = { "<cmd>GpWhisperAppend<cr>", desc = "Whisper Append (after)" }
+maps.i["<C-g>wa"] = { "<cmd>GpWhisperAppend<cr>", desc = "Whisper Append (after)" }
+
+maps.n["<C-g>wb"] = { "<cmd>GpWhisperPrepend<cr>", desc = "Whisper Prepend (before)" }
+maps.i["<C-g>wb"] = { "<cmd>GpWhisperPrepend<cr>", desc = "Whisper Prepend (before)" }
+
+maps.v["<C-g>wr"] = { ":'<,'>GpWhisperRewrite<cr>", desc = "Visual Whisper Rewrite" }
+maps.v["<C-g>wa"] = { ":'<,'>GpWhisperAppend<cr>", desc = "Visual Whisper Append (after)" }
+maps.v["<C-g>wb"] = { ":'<,'>GpWhisperPrepend<cr>", desc = "Visual Whisper Prepend (before)" }
+
+maps.n["<C-g>wp"] = { "<cmd>GpWhisperPopup<cr>", desc = "Whisper Popup" }
+maps.i["<C-g>wp"] = { "<cmd>GpWhisperPopup<cr>", desc = "Whisper Popup" }
+
+maps.n["<C-g>we"] = { "<cmd>GpWhisperEnew<cr>", desc = "Whisper Enew" }
+maps.i["<C-g>we"] = { "<cmd>GpWhisperEnew<cr>", desc = "Whisper Enew" }
+
+maps.n["<C-g>wn"] = { "<cmd>GpWhisperNew<cr>", desc = "Whisper New" }
+maps.i["<C-g>wn"] = { "<cmd>GpWhisperNew<cr>", desc = "Whisper New" }
+
+maps.n["<C-g>wv"] = { "<cmd>GpWhisperVnew<cr>", desc = "Whisper Vnew" }
+maps.i["<C-g>wv"] = { "<cmd>GpWhisperVnew<cr>", desc = "Whisper Vnew" }
+
+maps.n["<C-g>wt"] = { "<cmd>GpWhisperTabnew<cr>", desc = "Whisper Tabnew" }
+maps.i["<C-g>wt"] = { "<cmd>GpWhisperTabnew<cr>", desc = "Whisper Tabnew" }
+
+maps.v["<C-g>wp"] = { ":'<,'>GpWhisperPopup<cr>", desc = "Visual Whisper Popup" }
+maps.v["<C-g>we"] = { ":'<,'>GpWhisperEnew<cr>", desc = "Visual Whisper Enew" }
+maps.v["<C-g>wn"] = { ":'<,'>GpWhisperNew<cr>", desc = "Visual Whisper New" }
+maps.v["<C-g>wv"] = { ":'<,'>GpWhisperVnew<cr>", desc = "Visual Whisper Vnew" }
+maps.v["<C-g>wt"] = { ":'<,'>GpWhisperTabnew<cr>", desc = "Visual Whisper Tabnew" }
+
+-- For  Overseer
 maps.n["<leader>o"] = icons.o
 maps.n["<Leader>pa"] = { "<cmd>Alpha<cr>", desc = "Alpha" }
 maps.n["<Leader>or"] = { "<cmd>OverseerRun<cr>", desc = "Overseer Run" }
-maps.n["<Leader>oc"] = { "<cmd>OverseerRun<cr>", desc = "Overseer Runcmd" }
-maps.n["<Leader>ot"] = { "<cmd>OverseerToggle<cr>", desc = "Overseer Run" }
+maps.n["<Leader>oR"] = { "<cmd>OverseerRunCmd<cr>", desc = "Overseer RunCmd" }
+maps.n["<Leader>ot"] = { "<cmd>OverseerToggle<cr>", desc = "Overseer Toggle" }
+maps.n["<Leader>ob"] = { "<cmd>OverseerBuild<cr>", desc = "Overseer Build" }
+maps.n["<Leader>oi"] = { "<cmd>OverseerInfo<cr>", desc = "Overseer Info" }
 maps.n["<Leader>oo"] = { "<cmd>Oil<cr>", desc = "Oil" }
 
 require("utils").set_mappings(maps)

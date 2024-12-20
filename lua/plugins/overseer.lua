@@ -4,7 +4,9 @@ return {
   config = function(_)
     local overseer = require "overseer"
     overseer.setup {
+      templates = { "builtin","user.run_current_python","user.run_rye_script" },
       task_list = {
+        direction = "right",
         bindings = {
           ["K"] = "ScrollOutputUp",
           ["J"] = "ScrollOutputDown",

@@ -361,4 +361,12 @@ function M.is_image(file_path)
   return false
 end
 
+function M.url_repo()
+  local cursorword = vim.fn.expand "<cfile>"
+  if string.find(cursorword, "^[a-zA-Z0-9-_.]*/[a-zA-Z0-9-_.]*$") then
+    cursorword = "https://github.com/" .. cursorword
+  end
+  return cursorword or ""
+end
+
 return M

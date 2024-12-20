@@ -8,6 +8,7 @@ return {
       "nvim-lua/plenary.nvim",
       "pschmitt/telescope-yadm.nvim",
       "ahmedkhalf/project.nvim",
+      "debugloop/telescope-undo.nvim",
     },
     config = function()
       require("telescope").setup {
@@ -23,9 +24,13 @@ return {
             -- keep insert mode after selection in the picker, default is false
             keep_insert = true,
           },
+          undo = {
+            -- telescope-undo.nvim config, see below
+          },
         },
       }
       require("telescope").load_extension "fzf"
+      require("telescope").load_extension "undo"
       require("telescope").load_extension "yadm_files"
       require("telescope").load_extension "git_or_files"
       require("telescope").load_extension "projects"
@@ -44,6 +49,7 @@ return {
       require("project_nvim").setup {
         patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json", "!=my_plugin" },
         detection_methods = { "pattern", "lsp" },
+        exclude_dirs = { "c:", "d:" },
       }
     end,
   },

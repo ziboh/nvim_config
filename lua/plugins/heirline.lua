@@ -84,7 +84,7 @@ return {
                 },
               },
             }
-          or nil,
+          or { provider = "" },
         lib.component.compiler_state(),
         {
 

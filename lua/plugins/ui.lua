@@ -1,6 +1,10 @@
 local is_windows = vim.uv.os_uname().os_sysname == "Windows_NT"
 return {
   {
+    "stevearc/dressing.nvim",
+    opts = {},
+  },
+  {
     "AstroNvim/astrotheme",
     config = function()
       require("astrotheme").setup {
