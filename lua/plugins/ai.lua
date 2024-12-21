@@ -48,7 +48,8 @@ return {
         },
       }
     end,
-    build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false",
+    build = vim.fn.has "win32" ~= 0 and "powershell -executionpolicy bypass -file build.ps1 -buildfromsource false"
+      or "make",
     dependencies = {
       {
         -- support for image pasting
