@@ -1,23 +1,15 @@
-local colorscheme = "astrodark"
+local colorscheme = "tokyonight"
 
+---@diagnostic disable-next-line: param-type-mismatch
 local is_ok, _ = pcall(vim.cmd, "colorscheme " .. colorscheme)
 if not is_ok then
   vim.notify("colorscheme " .. colorscheme .. " not found!")
   return
 end
 
--- 设置垂直分割线的显示字符和颜色
-vim.opt.fillchars:append {
-  vert = "│", -- 使用 Unicode 字符来显示垂直分割线
-  horiz = "─", -- 水平分割线
-  vertleft = "│",
-  vertright = "│",
-  horizup = "─",
-  horizdown = "─",
-}
+vim.api.nvim_set_hl(0, "VertSplit", { fg = "#504945" })
+vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#504945" })
 
--- 创建一个更显眼的分割线高亮
-vim.cmd [[
-  highlight WinSeparator guibg=NONE guifg=#504945
-  highlight VertSplit guibg=NONE guifg=#504945
-]]
+vim.api.nvim_set_hl(0, "LineNrAbove", { fg = "#82aaff", bold = false })
+vim.api.nvim_set_hl(0, "LineNr", { fg = "#82aaff", bold = true })
+vim.api.nvim_set_hl(0, "LineNrBelow", { fg = "#82aaff", bold = false })

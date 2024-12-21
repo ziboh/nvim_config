@@ -1,5 +1,5 @@
-local files = require "overseer.files"
-local overseer = require "overseer"
+local files = require("overseer.files")
+local overseer = require("overseer")
 
 ---@type overseer.TemplateFileDefinition
 local tmpl = {
@@ -27,7 +27,9 @@ local function get_candidate_pyproject_files(opts)
     stop = vim.fn.getcwd() .. "/..",
     limit = math.huge,
   })
-  if #matches > 0 then return matches end
+  if #matches > 0 then
+    return matches
+  end
   return vim.fs.find("pyproject.toml", {
     upward = true,
     type = "file",
@@ -40,7 +42,9 @@ end
 local function get_pyproject_file(opts)
   local candidate_files = get_candidate_pyproject_files(opts)
   for _, pyproject in ipairs(candidate_files) do
-    if files.exists(pyproject) then return pyproject end
+    if files.exists(pyproject) then
+      return pyproject
+    end
   end
   return nil
 end
@@ -51,13 +55,15 @@ local function get_scripts_from_pyproject(pyproject_file)
   local in_scripts_section = false
 
   for line in io.lines(pyproject_file) do
-    if line:match "^%[project%.scripts%]" then
+    if line:match("^%[project%.scripts%]") then
       in_scripts_section = true
-    elseif line:match "^%[" then
+    elseif line:match("^%[") then
       in_scripts_section = false
     elseif in_scripts_section then
-      local script_name = line:match "^(%w+)%s*="
-      if script_name then table.insert(scripts, script_name) end
+      local script_name = line:match("^(%w+)%s*=")
+      if script_name then
+        table.insert(scripts, script_name)
+      end
     end
   end
 
@@ -65,19 +71,25 @@ local function get_scripts_from_pyproject(pyproject_file)
 end
 
 return {
-  cache_key = function(opts) return get_pyproject_file(opts) end,
+  cache_key = function(opts)
+    return get_pyproject_file(opts)
+  end,
   condition = {
     callback = function(opts)
       local pyproject_file = get_pyproject_file(opts)
-      if not pyproject_file then return false, "No pyproject.toml file found" end
-      if vim.fn.executable "rye" == 0 then return false, "Could not find command 'rye'" end
+      if not pyproject_file then
+        return false, "No pyproject.toml file found"
+      end
+      if vim.fn.executable("rye") == 0 then
+        return false, "Could not find command 'rye'"
+      end
       return true
     end,
   },
   generator = function(opts, cb)
     local pyproject = get_pyproject_file(opts)
     if not pyproject then
-      cb {}
+      cb({})
       return
     end
 

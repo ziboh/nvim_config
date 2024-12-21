@@ -2,7 +2,8 @@ return {
   "nvim-treesitter/nvim-treesitter",
   lazy = true,
   config = function()
-    require("nvim-treesitter.configs").setup {
+    require("nvim-treesitter.configs").setup({
+      ignore_install = { "xdd" },
       ensure_installed = {
         "c",
         "lua",
@@ -22,9 +23,9 @@ return {
       auto_install = true,
       highlight = {
         enable = true,
-        disable = { "c", "rust" },
+        disable = { "c" },
         additional_vim_regex_highlighting = false,
       },
-    }
+    })
   end,
 }

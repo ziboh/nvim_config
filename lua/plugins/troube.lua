@@ -13,11 +13,6 @@ return {
       desc = "Buffer Diagnostics (Trouble)",
     },
     {
-      "<leader>xs",
-      "<cmd>Trouble symbols toggle focus=false<cr>",
-      desc = "Symbols (Trouble)",
-    },
-    {
       "<leader>xl",
       "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
       desc = "LSP Definitions / references / ... (Trouble)",
@@ -32,12 +27,42 @@ return {
       "<cmd>Trouble qflist toggle<cr>",
       desc = "Quickfix List (Trouble)",
     },
+    {
+      "[q",
+      function()
+        if require("trouble").is_open() then
+          require("trouble").prev({ skip_groups = true, jump = true })
+        else
+          local ok, err = pcall(vim.cmd.cprev)
+          if not ok then
+            vim.notify(err, vim.log.levels.ERROR)
+          end
+        end
+      end,
+      desc = "Previous Trouble/Quickfix Item",
+    },
+    {
+      "]q",
+      function()
+        if require("trouble").is_open() then
+          require("trouble").next({ skip_groups = true, jump = true })
+        else
+          local ok, err = pcall(vim.cmd.cnext)
+          if not ok then
+            vim.notify(err, vim.log.levels.ERROR)
+          end
+        end
+      end,
+      desc = "Next Trouble/Quickfix Item",
+    },
   },
   opts = function()
     local is_ok, trouble = pcall(require, "trouble")
-    if not is_ok then return end
+    if not is_ok then
+      return
+    end
 
-    trouble.setup {
+    trouble.setup({
       auto_close = false, -- auto close when there are no items
       auto_open = false, -- auto open when there are items
       auto_preview = true, -- automatically open preview when on an item
@@ -119,6 +144,6 @@ return {
           },
         },
       },
-    }
+    })
   end,
 }

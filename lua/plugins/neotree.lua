@@ -1,10 +1,11 @@
 return {
   "nvim-neo-tree/neo-tree.nvim",
   dependencies = "MunifTanjim/nui.nvim",
+  lazy = false,
   cmd = "Neotree",
   opts = function()
     vim.g.neo_tree_remove_legacy_commands = true
-    local utils = require "utils"
+    local utils = require("utils")
     local get_icon = utils.get_icon
     return {
       auto_clean_after_session_restore = true,
@@ -13,6 +14,7 @@ return {
         show_unloaded = true,
       },
       sources = { "filesystem", "buffers", "git_status" },
+      open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
       source_selector = {
         winbar = true,
         content_layout = "center",
@@ -38,24 +40,24 @@ return {
       default_component_configs = {
         indent = { padding = 0 },
         icon = {
-          folder_closed = get_icon "FolderClosed",
-          folder_open = get_icon "FolderOpen",
-          folder_empty = get_icon "FolderEmpty",
-          folder_empty_open = get_icon "FolderEmpty",
-          default = get_icon "DefaultFile",
+          folder_closed = get_icon("FolderClosed"),
+          folder_open = get_icon("FolderOpen"),
+          folder_empty = get_icon("FolderEmpty"),
+          folder_empty_open = get_icon("FolderEmpty"),
+          default = get_icon("DefaultFile"),
         },
-        modified = { symbol = get_icon "FileModified" },
+        modified = { symbol = get_icon("FileModified") },
         git_status = {
           symbols = {
-            added = get_icon "GitAdd",
-            deleted = get_icon "GitDelete",
-            modified = get_icon "GitChange",
-            renamed = get_icon "GitRenamed",
-            untracked = get_icon "GitUntracked",
-            ignored = get_icon "GitIgnored",
-            unstaged = get_icon "GitUnstaged",
-            staged = get_icon "GitStaged",
-            conflict = get_icon "GitConflict",
+            added = get_icon("GitAdd"),
+            deleted = get_icon("GitDelete"),
+            modified = get_icon("GitChange"),
+            renamed = get_icon("GitRenamed"),
+            untracked = get_icon("GitUntracked"),
+            ignored = get_icon("GitIgnored"),
+            unstaged = get_icon("GitUnstaged"),
+            staged = get_icon("GitStaged"),
+            conflict = get_icon("GitConflict"),
           },
         },
       },
@@ -63,12 +65,16 @@ return {
       commands = {
         image_wezterm = function(state)
           local node = state.tree:get_node()
-          if node.type == "file" then require("image_preview").PreviewImage(node.path) end
+          if node.type == "file" then
+            require("image_preview").PreviewImage(node.path)
+          end
         end,
         system_open = function(state)
           local node = state.tree:get_node()
           local path = node:get_id()
-          if vim.fn.has "win32" then vim.cmd("silent !start " .. path) end
+          if Utils.is_win() then
+            vim.cmd("silent !start " .. path)
+          end
         end,
         parent_or_close = function(state)
           local node = state.tree:get_node()
@@ -137,15 +143,15 @@ return {
         find_in_dir = function(state)
           local node = state.tree:get_node()
           local path = node:get_id()
-          require("telescope.builtin").find_files {
+          require("telescope.builtin").find_files({
             cwd = node.type == "directory" and path or vim.fn.fnamemodify(path, ":h"),
-          }
+          })
         end,
         toggle_dir_or_open = function(state)
           local node = state.tree:get_node()
           if node.type == "directory" then
             state.commands.toggle_node(state)
-          elseif require("utils").is_image(node.path) then
+          elseif Utils.is_image(node.path) then
             state.commands.image_wezterm(state)
           else
             state.commands.open(state)
@@ -161,7 +167,7 @@ return {
           ["<CR>"] = "toggle_dir_or_open",
           ["[b"] = "prev_source",
           ["]b"] = "next_source",
-          F = utils.is_available "telescope.nvim" and "find_in_dir" or nil,
+          F = utils.has("telescope.nvim") and "find_in_dir" or nil,
           O = "system_open",
           Y = "copy_selector",
           h = "parent_or_close",
@@ -170,6 +176,7 @@ return {
         },
       },
       filesystem = {
+        bind_to_cwd = false,
         follow_current_file = {
           enabled = true,
         },
@@ -179,14 +186,42 @@ return {
       event_handlers = {
         {
           event = "neo_tree_buffer_enter",
-          handler = function(_) vim.opt_local.signcolumn = "auto" end,
+          handler = function(_)
+            vim.opt_local.signcolumn = "auto"
+          end,
         },
       },
     }
   end,
-  keys = { {
-    "<leader>e",
-    "<cmd>Neotree toggle dir=./<CR>",
-    desc = "Neotree",
-  } },
+  keys = {
+    {
+      "<leader>e",
+      function()
+        require("neo-tree.command").execute({ toggle = true, dir = Utils.root() })
+      end,
+      desc = "Explorer NeoTree (Root Dir)",
+    },
+    {
+      "<leader>E",
+      function()
+        require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
+      end,
+      desc = "Explorer NeoTree (cwd)",
+    },
+    { "<leader>E", "<leader>fE", desc = "Explorer NeoTree (cwd)", remap = true },
+    {
+      "<leader>ge",
+      function()
+        require("neo-tree.command").execute({ source = "git_status", toggle = true })
+      end,
+      desc = "Git Explorer",
+    },
+    {
+      "<leader>be",
+      function()
+        require("neo-tree.command").execute({ source = "buffers", toggle = true })
+      end,
+      desc = "Buffer Explorer",
+    },
+  },
 }

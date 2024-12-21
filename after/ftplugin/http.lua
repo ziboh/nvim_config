@@ -1,24 +1,24 @@
-vim.api.nvim_set_keymap(
+vim.keymap.set(
   "n",
-  "<leader>hp",
+  "<leader>rp",
   ":lua require('kulala').jump_prev()<CR>",
   { noremap = true, silent = true, buffer = 0, desc = "Prev Http" }
 )
-vim.api.nvim_set_keymap(
+vim.keymap.set(
   "n",
-  "<leader>hc",
+  "<leader>rc",
   ":lua require('kulala').copy()<CR>",
   { noremap = true, silent = true, buffer = 0, desc = "Copy http" }
 )
-vim.api.nvim_set_keymap(
+vim.keymap.set(
   "n",
-  "<leader>hn",
+  "<leader>rn",
   ":lua require('kulala').jump_next()<CR>",
   { noremap = true, silent = true, buffer = 0, desc = "Next http" }
 )
-vim.api.nvim_set_keymap(
+vim.keymap.set(
   "n",
-  "<leader>hr",
+  "<leader>rr",
   ":lua require('kulala').run()<CR>",
   { noremap = true, silent = true, buffer = 0, desc = "Http Run" }
 )

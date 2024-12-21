@@ -19,18 +19,12 @@ vim.keymap.set(
   { noremap = true, silent = true, buffer = 0, desc = "Rust Test" }
 )
 
-vim.keymap.set(
-  "n",
-  "]]",
-  function() require("heirline-components.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end,
-  { noremap = true, silent = true, buffer = 0, desc = "Next buffer" }
-)
-vim.keymap.set(
-  "n",
-  "[[",
-  function() require("heirline-components.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
-  { noremap = true, silent = true, buffer = 0, desc = "Previous buffer" }
-)
+vim.keymap.set("n", "]]", function()
+  require("heirline-components.buffer").nav(vim.v.count > 0 and vim.v.count or 1)
+end, { noremap = true, silent = true, buffer = 0, desc = "Next buffer" })
+vim.keymap.set("n", "[[", function()
+  require("heirline-components.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1))
+end, { noremap = true, silent = true, buffer = 0, desc = "Previous buffer" })
 vim.keymap.set("n", "<leader>ra", function()
   local input_opts = { prompt = "Rust run with arguments: ", default = "" }
   vim.ui.input(input_opts, function(content)
@@ -40,6 +34,6 @@ vim.keymap.set("n", "<leader>ra", function()
 end, { noremap = true, silent = true, buffer = 0, desc = "Rust Run with arguments" })
 
 vim.keymap.set("n", "<leader>rR", function()
-  local termopen = require "rustaceanvim.executors.termopen"
+  local termopen = require("rustaceanvim.executors.termopen")
   termopen.execute_command("cargo run", {})
 end, { buffer = 0, noremap = true, silent = true, desc = "Cargo run" })
