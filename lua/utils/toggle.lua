@@ -3,23 +3,11 @@
 ---@class astrocore.toggles
 local M = {}
 local T = {}
-local function bool2str(bool) return bool and "on" or "off" end
-local function ui_notify(silent, ...) return not silent and require("utils").notify(...) end
-
---- Toggle autopairs
----@param silent? boolean if true then don't sent a notification
-function M.autopairs(silent)
-  local ok, autopairs = pcall(require, "nvim-autopairs")
-  if ok then
-    if autopairs.state.disabled then
-      autopairs.enable()
-    else
-      autopairs.disable()
-    end
-    ui_notify(silent, ("autopairs %s"):format(bool2str(not autopairs.state.disabled)))
-  else
-    ui_notify(silent, "autopairs not available")
-  end
+local function bool2str(bool)
+  return bool and "on" or "off"
+end
+local function ui_notify(silent, ...)
+  return not silent and require("utils").notify(...)
 end
 
 --- Toggle background="dark"|"light"
@@ -80,7 +68,9 @@ function M.indent(silent)
   local input_avail, input = pcall(vim.fn.input, "Set indent value (>0 expandtab, <=0 noexpandtab): ")
   if input_avail then
     local indent = tonumber(input)
-    if not indent or indent == 0 then return end
+    if not indent or indent == 0 then
+      return
+    end
     vim.bo.expandtab = (indent > 0) -- local to buffer
     indent = math.abs(indent)
     vim.bo.tabstop = indent -- local to buffer
@@ -126,24 +116,11 @@ local last_active_foldcolumn
 ---@param silent? boolean if true then don't sent a notification
 function M.foldcolumn(silent)
   local curr_foldcolumn = vim.wo.foldcolumn
-  if curr_foldcolumn ~= "0" then last_active_foldcolumn = curr_foldcolumn end
+  if curr_foldcolumn ~= "0" then
+    last_active_foldcolumn = curr_foldcolumn
+  end
   vim.wo.foldcolumn = curr_foldcolumn == "0" and (last_active_foldcolumn or "1") or "0"
   ui_notify(silent, ("foldcolumn=%s"):format(vim.wo.foldcolumn))
-end
-
---- Toggle diagnostics
----@param silent? boolean if true then don't sent a notification
-function M.diagnostics(silent)
-  local config = require "config"
-  config.diagnostics.diagnostics_mode = (config.diagnostics.diagnostics_mode - 1) % 3
-  vim.diagnostic.config(config.diagnostics.diagnostics_config[config.diagnostics.diagnostics_mode])
-  if vim.g.diagnostics_mode == 0 then
-    ui_notify(silent, "diagnostics off")
-  elseif vim.g.diagnostics_mode == 1 then
-    ui_notify(silent, "only status diagnostics")
-  else
-    ui_notify(silent, "all diagnostics on")
-  end
 end
 
 function M.fittencode(slient)
@@ -151,10 +128,10 @@ function M.fittencode(slient)
   if ok then
     local statuscode = fittencode.get_current_status()
     if statuscode == 1 then
-      fittencode.enable_completions { enable = true }
+      fittencode.enable_completions({ enable = true })
       ui_notify(slient, "Enable Fittencode")
     else
-      fittencode.enable_completions { enable = false }
+      fittencode.enable_completions({ enable = false })
       ui_notify(slient, "Disable Fittencode")
     end
     vim.api.nvim_exec_autocmds("User", {
@@ -178,11 +155,13 @@ function M.toggle_cmd(opts)
     },
     -- function to run on opening the terminal
     on_open = function(term)
-      vim.cmd "startinsert!"
+      vim.cmd("startinsert!")
       vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
     end,
     -- function to run on closing the terminal
-    on_close = function(term) vim.cmd "startinsert!" end,
+    on_close = function(term)
+      vim.cmd("startinsert!")
+    end,
   }
   if type(opts) == "string" then
     cmd = opts

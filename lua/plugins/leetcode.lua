@@ -3,14 +3,8 @@ return {
   build = ":TSUpdate html",
   cmd = "Leet",
   dependencies = {
-    "nvim-telescope/telescope.nvim",
-    "nvim-lua/plenary.nvim", -- required by telescope
+    "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
-
-    -- optional
-    "nvim-treesitter/nvim-treesitter",
-    "rcarriga/nvim-notify",
-    "nvim-tree/nvim-web-devicons",
   },
   opts = {
     -- configuration goes here
@@ -23,9 +17,9 @@ return {
     hooks = {
       ["question_enter"] = {
         function()
-          local file_extension = vim.fn.expand "%:e"
+          local file_extension = vim.fn.expand("%:e")
           if file_extension == "rs" then
-            local target_dir = vim.fn.stdpath "data" .. "/leetcode"
+            local target_dir = vim.fn.stdpath("data") .. "/leetcode"
             local output_file = target_dir .. "/rust-project.json"
 
             if vim.fn.isdirectory(target_dir) == 1 then
@@ -63,7 +57,9 @@ return {
                   end
                 end
 
-                if rust_analyzer_attached then vim.cmd "LspRestart rust_analyzer" end
+                if rust_analyzer_attached then
+                  vim.cmd("LspRestart rust_analyzer")
+                end
               else
                 print("Failed to open file: " .. output_file)
               end

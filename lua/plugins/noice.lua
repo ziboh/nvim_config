@@ -9,11 +9,16 @@ return {
         ["cmp.entry.get_documentation"] = true,
       },
     },
+    errors = {
+      view = "notify",
+    },
     routes = {
       {
         filter = {
           event = "msg_show",
           any = {
+            -- { find = "Starting Supermaven" },
+            -- { find = "Supermaven Free Tier" },
             { find = "%d+L, %d+B" },
             { find = "; after #%d+" },
             { find = "; before #%d+" },
@@ -21,10 +26,6 @@ return {
         },
         view = "mini",
       },
-    },
-    notify = {
-      enabled = true,
-      view = "notify",
     },
     presets = {
       bottom_search = true,
@@ -35,22 +36,23 @@ return {
     },
   },
   config = function(_, opts)
+    if vim.o.filetype == "lazy" then
+      vim.cmd([[messages clear]])
+    end
     require("noice").setup(opts)
-    -- local notify = require "notify"
-    -- vim.notify = function(msg, level, opts)
-    --   if string.find(msg, "Invalid offset") then return end
-    --   notify(msg, level, opts)
-    -- end
   end,
+
   dependencies = {
     "MunifTanjim/nui.nvim",
-    "rcarriga/nvim-notify",
+    -- "rcarriga/nvim-notify",
   },
   keys = {
     {
       "<c-f>",
       function()
-        if not require("noice.lsp").scroll(-4) then return "<c-f>" end
+        if not require("noice.lsp").scroll(-4) then
+          return "<c-f>"
+        end
       end,
       silent = true,
       expr = true,
@@ -60,7 +62,9 @@ return {
     {
       "<c-b>",
       function()
-        if not require("noice.lsp").scroll(4) then return "<c-b>" end
+        if not require("noice.lsp").scroll(4) then
+          return "<c-b>"
+        end
       end,
       silent = true,
       expr = true,

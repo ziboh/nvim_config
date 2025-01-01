@@ -73,5 +73,5 @@ return {
   Replace = "󰛔",
   Rust = "󱘗",
   Ai = "",
-  Overseer = " "
+  Overseer = " ",
 }

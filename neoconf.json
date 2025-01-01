@@ -1,4 +1,10 @@
 {
+  "neodev": {
+    "library": {
+      "enabled": true,
+      "plugins": ["nvim-lspconfig", "lsp"]
+    }
+  },
   "neoconf": {
     "plugins": {
       "lua_ls": {
@@ -6,16 +12,9 @@
       }
     }
   },
-
   "lspconfig": {
     "lua_ls": {
       "Lua.completion.callSnippet": "Replace"
     },
-
-    "clangd": {
-      "capabilities": {
-        "offsetEncoding": "utf-8"
-      }
-    }
   }
 }

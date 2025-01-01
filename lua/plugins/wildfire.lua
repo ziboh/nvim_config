@@ -3,7 +3,7 @@ return {
   event = "VeryLazy",
   dependencies = { "nvim-treesitter/nvim-treesitter" },
   config = function()
-    require("wildfire").setup {
+    require("wildfire").setup({
       surrounds = {
         { "(", ")" },
         { "{", "}" },
@@ -11,6 +11,6 @@ return {
         { "[", "]" },
       },
       filetype_exclude = { "qf" }, --keymaps will be unset in excluding filetypes
-    }
+    })
   end,
 }

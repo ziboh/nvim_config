@@ -1,5 +1,7 @@
 local lazy = false
-if vim.fn.expand "%" == "" then lazy = true end
+if vim.fn.expand("%") == "" then
+  lazy = true
+end
 return {
   "b0o/schemastore.nvim",
   "folke/neoconf.nvim",
@@ -21,7 +23,9 @@ return {
       "neovim/nvim-lspconfig",
       "jay-babu/mason-nvim-dap.nvim",
     },
-    config = function() require "plugins.config.lsp"() end,
+    config = function()
+      require("plugins.config.lsp")()
+    end,
   },
   {
     "hedyhli/outline.nvim",
@@ -38,7 +42,7 @@ return {
     event = { "BufRead Cargo.toml" },
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      require("crates").setup {
+      require("crates").setup({
         completion = {
           cmp = {
             enabled = true,
@@ -53,19 +57,19 @@ return {
           enabled = false,
           name = "crates.nvim",
         },
-      }
+      })
     end,
   },
   {
     "mrcjkb/rustaceanvim",
-    version = "^4",
+    version = "^5",
     ft = { "rust" },
   },
   {
     "p00f/clangd_extensions.nvim",
     event = "Lspattach",
     config = function(_)
-      require("clangd_extensions").setup {
+      require("clangd_extensions").setup({
         inlay_hints = {
           -- inline = vim.fn.has "nvim-0.10" == 1,
           inline = false,
@@ -111,11 +115,54 @@ return {
         symbol_info = {
           border = "none",
         },
-      }
+      })
     end,
   },
   {
     "smjonas/inc-rename.nvim",
-    config = function() require("inc_rename").setup() end,
+    config = function()
+      require("inc_rename").setup({ save_in_cmdline_history = false })
+    end,
+  },
+  {
+    "ziboh/vim-illuminate",
+    event = "BufReadPre",
+    opts = {
+      delay = 200,
+      min_count_to_highlight = 2,
+      large_file_cutoff = 2000,
+      large_file_overrides = { providers = { "lsp" } },
+      should_enable = function(bufnr)
+        return Utils.is_valid(bufnr) and not vim.b[bufnr].large_buf
+      end,
+    },
+    config = function(_, opts)
+      require("illuminate").configure(opts)
+      vim.api.nvim_set_hl(0, "IlluminatedWordText", { bg = "#45475a" })
+      vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bg = "#45475a" })
+      vim.api.nvim_set_hl(0, "IlluminatedWordRead", { bg = "#45475a" })
+    end,
+  },
+  {
+    "rachartier/tiny-inline-diagnostic.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("tiny-inline-diagnostic").setup({
+        preset = "ghost",
+        multilines = {
+          enabled = true,
+          always_show = true,
+        },
+      })
+    end,
+  },
+  {
+    "chrisgrieser/nvim-lsp-endhints",
+    event = "LspAttach",
+    opts = {
+      label = {
+        truncateAtChars = 40,
+      },
+    }, -- required, even if empty
   },
 }
