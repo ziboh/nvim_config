@@ -1,14 +1,12 @@
 {
-    "diagnostics.disable": [ "redefined-local",
-        "missing-fields",
-        "undefined-doc-name",
-        "cast-local-type",
-        "param-type-mismatch"
-    ],
-    "diagnostics.globals": [
-        "vim",
-        "eymap",
-        "require",
-    ],
-    "completion.autoRequire": false
+  "diagnostics.disable": [
+    "redefined-local",
+    "missing-fields",
+    "undefined-doc-name",
+    "cast-local-type",
+    "param-type-mismatch",
+    "need-check-nil"
+  ],
+  "diagnostics.globals": ["vim"],
+  "completion.autoRequire": false
 }

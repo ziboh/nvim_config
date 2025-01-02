@@ -1,11 +1,10 @@
 return {
   "folke/snacks.nvim",
-  priority = 1000,
+  -- priority = 1000,
   lazy = false,
   ---@type snacks.Config
   opts = {
     bigfile = { enabled = true },
-    dashboard = { enabled = true },
     indent = { enabled = true },
     input = { enabled = true },
     notifier = {
@@ -18,7 +17,7 @@ return {
     -- words = { enabled = true },
     styles = {
       notification = {
-        -- wo = { wrap = true } -- Wrap notifications
+        wo = { wrap = true } -- Wrap notifications
       },
     },
   },
