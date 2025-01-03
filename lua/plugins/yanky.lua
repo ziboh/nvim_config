@@ -1,6 +1,6 @@
 return {
   "gbprod/yanky.nvim",
-  -- enabled = true,
+  enabled = false,
   dependencies = {
     { "kkharji/sqlite.lua" },
   },

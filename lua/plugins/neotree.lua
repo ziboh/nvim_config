@@ -159,7 +159,7 @@ return {
         end,
       },
       window = {
-        width = 30,
+        width = 40,
         mappings = {
           ["<leader>p"] = "image_wezterm", -- " or another map
           -- ["<space>"] = false, -- disable space until we figure out which-key disabling

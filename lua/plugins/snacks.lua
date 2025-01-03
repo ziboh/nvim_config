@@ -93,13 +93,13 @@ return {
       end,
       desc = "Git Blame Line",
     },
-    {
-      "<leader>gf",
-      function()
-        Snacks.lazygit.log_file()
-      end,
-      desc = "Lazygit Current File History",
-    },
+    -- {
+    --   "<leader>gf",
+    --   function()
+    --     Snacks.lazygit.log_file()
+    --   end,
+    --   desc = "Lazygit Current File History",
+    -- },
     {
       "<leader>gg",
       function()

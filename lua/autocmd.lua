@@ -1,4 +1,3 @@
--- LazyFile
 -- 创建一个新的用户事件
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile", "BufWritePre" }, {
   group = vim.api.nvim_create_augroup("lazy_file", { clear = true }),
@@ -44,14 +43,3 @@ vim.api.nvim_create_autocmd("FileType", {
     end)
   end,
 })
-
--- vim.api.nvim_create_autocmd("BufEnter", {
---   callback = function()
---     local ignore_bufs = { "TelescopePrompt", "TelescopeResults", "TelescopePreview", "NvimTree","xxd" }
---     if vim.tbl_contains(ignore_bufs, vim.bo.filetype) then
---       return
---     end
---     vim.wo.foldmethod = "expr"
---     vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
---   end,
--- })
