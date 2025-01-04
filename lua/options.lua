@@ -25,7 +25,6 @@ opt.autowrite = true
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
 opt.laststatus = 3 --Global statusline.
-opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.mouse = "a" -- allow the mouse to be used in Nvim
 opt.scrolloff = 10 -- no less than 10 lines even if you keep scrolling down
@@ -79,3 +78,16 @@ opt.smoothscroll = true
 opt.foldexpr = "v:lua.require'utils'.ui.foldexpr()"
 opt.foldmethod = "expr"
 opt.foldtext = ""
+
+vim.g.clipboard = {
+  name = "win32yank-wsl",
+  copy = {
+    ["+"] = "clip.exe",
+    ["*"] = "clip.exe",
+  },
+  paste = {
+    ["+"] = "win32yank.exe -o --lf",
+    ["*"] = "win32yank.exe -o --lf",
+  },
+  cache_enabled = true,
+}

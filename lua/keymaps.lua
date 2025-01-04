@@ -2,7 +2,7 @@ local utils = require("utils")
 local has = utils.has
 local maps = require("utils").get_mappings_template()
 local toggle = require("utils.toggle")
-
+local safe_map = utils.safe_keymap_set
 -- Normal mode --
 -----------------
 vim.keymap.set("n", "<C-n>", "5j", { noremap = true, silent = true })
@@ -14,7 +14,6 @@ vim.keymap.set("n", "<C-b>", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "<c-s>", "<cmd>w<cr>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Space>q", "<cmd>q<cr>", { noremap = true, silent = true, desc = "quit" })
 vim.keymap.set("n", "<tab>", "w", { noremap = true, silent = true })
--- vim.keymap.set("n", "z<space>", "za", { noremap = true, silent = true, desc ="Toggle fold under cursor" })
 
 vim.keymap.set("n", "L", "$", { noremap = true, silent = true, desc = "Move to end of line" })
 vim.keymap.set("n", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
@@ -55,7 +54,15 @@ vim.keymap.set("v", "<", "<gv", { noremap = true, silent = true })
 vim.keymap.set("v", ">", ">gv", { noremap = true, silent = true })
 vim.keymap.set("o", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
 vim.keymap.set("o", "L", "$", { noremap = true, silent = true, desc = "Move to end of line" })
--- For toggletrem
+
+-- tabs
+safe_map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
+safe_map("n", "<leader><tab>o", "<cmd>tabonly<cr>", { desc = "Close Other Tabs" })
+safe_map("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "First Tab" })
+safe_map("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
+safe_map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
+safe_map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
+safe_map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 
 -- buffers/tabs [buffers ]--------------------------------------------------
 maps.n["<leader>c"] = {
@@ -285,7 +292,6 @@ maps.n["|"] = { "<cmd>vsplit<cr>", desc = "Vertical Split" }
 -- For package
 maps.n["<leader>pl"] = { "<cmd>Lazy<CR>", desc = "Lazy" }
 maps.n["<leader>pm"] = { "<cmd>Mason<CR>", desc = "Mason" }
-maps.n["<leader><tab>"] = { "<cmd>tabNext<CR>", desc = "Next tab" }
 
 -- For ToggleTerm
 maps.n["<Leader>tf"] = { "<Cmd>ToggleTerm direction=float<CR>", desc = "ToggleTerm float" }

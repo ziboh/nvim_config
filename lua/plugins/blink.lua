@@ -244,6 +244,7 @@ return {
     "Exafunction/codeium.nvim",
     cmd = "Codeium",
     event = "InsertEnter",
+    enabled = false,
     build = ":Codeium Auth",
     opts = {
       enable_cmp_source = vim.g.ai_cmp,
@@ -275,6 +276,7 @@ return {
   },
   {
     "supermaven-inc/supermaven-nvim",
+    enabled = false,
     event = "InsertEnter",
     cmd = {
       "SupermavenUseFree",

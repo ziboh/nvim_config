@@ -6,58 +6,20 @@ return {
   opts = function()
     vim.g.neo_tree_remove_legacy_commands = true
     local utils = require("utils")
-    local get_icon = utils.get_icon
     return {
-      auto_clean_after_session_restore = true,
-      close_if_last_window = true,
-      buffers = {
-        show_unloaded = true,
-      },
       sources = { "filesystem", "buffers", "git_status" },
       open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
-      source_selector = {
-        winbar = true,
-        content_layout = "center",
-        sources = {
-          {
-            source = "filesystem",
-            display_name = get_icon("FolderClosed", 1, true) .. "File",
-          },
-          {
-            source = "buffers",
-            display_name = get_icon("DefaultFile", 1, true) .. "Bufs",
-          },
-          {
-            source = "git_status",
-            display_name = get_icon("Git", 1, true) .. "Git",
-          },
-          {
-            source = "diagnostics",
-            display_name = get_icon("Diagnostic", 1, true) .. "Diagnostic",
-          },
-        },
-      },
       default_component_configs = {
-        indent = { padding = 0 },
-        icon = {
-          folder_closed = get_icon("FolderClosed"),
-          folder_open = get_icon("FolderOpen"),
-          folder_empty = get_icon("FolderEmpty"),
-          folder_empty_open = get_icon("FolderEmpty"),
-          default = get_icon("DefaultFile"),
+        indent = {
+          with_expanders = true, -- if nil and file nesting is enabled, will enable expanders
+          expander_collapsed = "",
+          expander_expanded = "",
+          expander_highlight = "NeoTreeExpander",
         },
-        modified = { symbol = get_icon("FileModified") },
         git_status = {
           symbols = {
-            added = get_icon("GitAdd"),
-            deleted = get_icon("GitDelete"),
-            modified = get_icon("GitChange"),
-            renamed = get_icon("GitRenamed"),
-            untracked = get_icon("GitUntracked"),
-            ignored = get_icon("GitIgnored"),
-            unstaged = get_icon("GitUnstaged"),
-            staged = get_icon("GitStaged"),
-            conflict = get_icon("GitConflict"),
+            unstaged = "󰄱",
+            staged = "󰱒",
           },
         },
       },
@@ -143,7 +105,7 @@ return {
         find_in_dir = function(state)
           local node = state.tree:get_node()
           local path = node:get_id()
-          require("telescope.builtin").find_files({
+          require("fzf-lua").files({
             cwd = node.type == "directory" and path or vim.fn.fnamemodify(path, ":h"),
           })
         end,
@@ -159,15 +121,13 @@ return {
         end,
       },
       window = {
-        width = 40,
         mappings = {
           ["<leader>p"] = "image_wezterm", -- " or another map
-          -- ["<space>"] = false, -- disable space until we figure out which-key disabling
           ["<S-CR>"] = "system_open",
           ["<CR>"] = "toggle_dir_or_open",
           ["[b"] = "prev_source",
           ["]b"] = "next_source",
-          F = utils.has("telescope.nvim") and "find_in_dir" or nil,
+          F = utils.has("fzf-lua") and "find_in_dir" or nil,
           O = "system_open",
           Y = "copy_selector",
           h = "parent_or_close",
@@ -175,23 +135,29 @@ return {
           -- ["<space>"] = "toggle_dir_or_open",
         },
       },
-      filesystem = {
-        bind_to_cwd = false,
-        follow_current_file = {
-          enabled = true,
-        },
-        hijack_netrw_behavior = "open_current",
-        use_libuv_file_watcher = false,
-      },
-      event_handlers = {
-        {
-          event = "neo_tree_buffer_enter",
-          handler = function(_)
-            vim.opt_local.signcolumn = "auto"
-          end,
-        },
-      },
     }
+  end,
+  config = function(_, opts)
+    local function on_move(data)
+      Snacks.rename.on_rename_file(data.source, data.destination)
+    end
+
+    local events = require("neo-tree.events")
+    opts.event_handlers = opts.event_handlers or {}
+    vim.list_extend(opts.event_handlers, {
+      { event = events.FILE_MOVED, handler = on_move },
+      { event = events.FILE_RENAMED, handler = on_move },
+    })
+    vim.api.nvim_set_hl(0, "NeoTreeTitleBar", { fg = "#1e2030", bg = "#589ed7" })
+    require("neo-tree").setup(opts)
+    vim.api.nvim_create_autocmd("TermClose", {
+      pattern = "*lazygit",
+      callback = function()
+        if package.loaded["neo-tree.sources.git_status"] then
+          require("neo-tree.sources.git_status").refresh()
+        end
+      end,
+    })
   end,
   keys = {
     {
