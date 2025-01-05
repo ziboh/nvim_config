@@ -1,11 +1,10 @@
-local LazyUtil = require("lazy.core.util")
-local latest_buf_id = nil
 local M = {}
 
 M.user_terminals = {}
 
 setmetatable(M, {
   __index = function(t, k)
+    local LazyUtil = require("lazy.core.util")
     if LazyUtil[k] then
       return LazyUtil[k]
     end
@@ -22,6 +21,29 @@ end
 M.icons = {}
 M.text_icons = {}
 M.which_key_queue = {}
+
+--- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `dst`)
+---@param dst any[]|nil The list like table that you want to insert into
+---@param src any[] Values to be inserted
+---@return any[] # The modified list like table
+function M.list_insert_unique(dst, src)
+  if not dst then
+    dst = {}
+  end
+  -- TODO: remove check after dropping support for Neovim v0.9
+  assert(vim.islist(dst), "Provided table is not a list like table")
+  local added = {}
+  for _, val in ipairs(dst) do
+    added[val] = true
+  end
+  for _, val in ipairs(src) do
+    if not added[val] then
+      table.insert(dst, val)
+      added[val] = true
+    end
+  end
+  return dst
+end
 
 -- Wrapper around vim.keymap.set that will
 -- not create a keymap if a lazy key handler exists.
@@ -337,6 +359,7 @@ end
 --- Override the default title for notifications.
 for _, level in ipairs({ "info", "warn", "error" }) do
   M[level] = function(msg, opts)
+    local LazyUtil = require("lazy.core.util")
     opts = opts or {}
     opts.title = opts.title or "NeoVim"
     return LazyUtil[level](msg, opts)
@@ -416,6 +439,12 @@ function M.create_undo()
   end
 end
 
-_G.Utils = M
+function M.is_ssh()
+  if vim.env.SSH_TTY == nil then
+    return false
+  else
+    return true
+  end
+end
 
 return M

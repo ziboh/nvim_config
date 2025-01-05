@@ -102,7 +102,18 @@ return {
       vim.api.nvim_create_user_command("FzfProjects", pick, {})
     end,
   },
-
+  -- {
+  --   "folke/snacks.nvim",
+  --   optional = true,
+  --   opts = function(_, opts)
+  --     table.insert(opts.dashboard.preset.keys, 3, {
+  --       action = pick,
+  --       desc = "Projects",
+  --       icon = " ",
+  --       key = "p",
+  --     })
+  --   end,
+  -- },
   {
     "ibhagwan/fzf-lua",
     optional = true,

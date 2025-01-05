@@ -92,6 +92,13 @@ local servers = {
   bashls = {
     filetypes = { "sh", "bash", "zsh" },
   },
+  volar = {
+    init_options = {
+      vue = {
+        hybridMode = true,
+      },
+    },
+  },
   vtsls = {
     complete_function_calls = true,
     filetypes = {
@@ -106,6 +113,7 @@ local servers = {
       enableMoveToFileCodeAction = true,
       autoUseWorkspaceTsdk = true,
       experimental = {
+        maxInlayHintLength = 30,
         completion = {
           enableServerSideFuzzyMatch = true,
         },

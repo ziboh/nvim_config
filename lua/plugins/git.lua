@@ -77,4 +77,11 @@ return {
       { "<leader>gnk", ":Neogit kind=", desc = "Open Neogit Override Kind" },
     },
   },
+  {
+    "sindrets/diffview.nvim",
+    keys = {
+      { "<leader>gdf", "<cmd>DiffviewFileHistory %<CR>", mode = { "n", "v" }, desc = "Show file diff" },
+      { "<leader>gdd", "<cmd>DiffviewFileHistory<CR>", mode = { "n", "v" }, desc = "Show diff" },
+    },
+  },
 }

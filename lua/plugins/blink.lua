@@ -192,6 +192,7 @@ return {
       file = {
         [".keep"] = { glyph = "󰊢", hl = "MiniIconsGrey" },
         ["devcontainer.json"] = { glyph = "", hl = "MiniIconsAzure" },
+        ["compose.yaml"] = { glyph = "󰡨", hl = "MiniIconsAzure" },
       },
       filetype = {
         dotenv = { glyph = "", hl = "MiniIconsYellow" },
@@ -276,7 +277,6 @@ return {
   },
   {
     "supermaven-inc/supermaven-nvim",
-    enabled = false,
     event = "InsertEnter",
     cmd = {
       "SupermavenUseFree",
