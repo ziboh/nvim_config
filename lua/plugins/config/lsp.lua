@@ -198,6 +198,7 @@ return function()
       rust = { "rustfmt" },
       c = { "clang-format" },
       cpp = { "clang-format" },
+      sh = { "shfmt" },
     },
   })
 

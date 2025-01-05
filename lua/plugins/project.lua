@@ -17,6 +17,8 @@ pick = function()
 
   local opts = {
     fzf_opts = {
+      ["--preview"] = vim.fn.executable("lla") == 1 and "lla {}" or "ls -l {}",
+      ["--preview-window"] = "nohidden,down,50%",
       ["--header"] = string.format(
         ":: <%s> to %s | <%s> to %s | <%s> to %s | <%s> to %s | <%s> to %s",
         ansi_from_hl("FzfLuaHeaderBind", "ctrl-t"),
@@ -47,11 +49,13 @@ pick = function()
       },
       ["ctrl-s"] = {
         function(selected)
+          vim.cmd("quit")
           fzf_lua.live_grep({ cwd = selected[1] })
         end,
       },
       ["ctrl-r"] = {
         function(selected)
+          vim.cmd("quit")
           fzf_lua.oldfiles({ cwd = selected[1] })
         end,
       },
