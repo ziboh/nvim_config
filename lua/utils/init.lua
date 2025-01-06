@@ -45,6 +45,80 @@ function M.list_insert_unique(dst, src)
   return dst
 end
 
+--- Get the first worktree that a file belongs to
+---@param file string? the file to check, defaults to the current file
+---@param worktrees table<string, string>[]? an array like table of worktrees with entries `toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
+---@return table<string, string>|nil # a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
+function M.file_worktree(file, worktrees)
+  worktrees = worktrees or vim.g.git_worktrees
+  if not worktrees then
+    return
+  end
+  file = file or vim.fn.expand("%") --[[@as string]]
+  for _, worktree in ipairs(worktrees) do
+    if
+      M.cmd({
+        "git",
+        "--work-tree",
+        worktree.toplevel,
+        "--git-dir",
+        worktree.gitdir,
+        "ls-files",
+        "--error-unmatch",
+        file,
+      }, false)
+    then
+      return worktree
+    end
+  end
+end
+
+--- Merge extended options with a default table of options
+---@param default? table The default table that you want to merge into
+---@param opts? table The new options that should be merged with the default table
+---@return table # The merged table
+function M.extend_tbl(default, opts)
+  opts = opts or {}
+  return default and vim.tbl_deep_extend("force", default, opts) or opts
+end
+
+--- Trigger an AstroNvim user event
+---@param event string|vim.api.keyset_exec_autocmds The event pattern or full autocmd options (pattern always prepended with "Astro")
+---@param instant boolean? Whether or not to execute instantly or schedule
+function M.event(event, instant)
+  if type(event) == "string" then
+    event = { pattern = event }
+  end
+  event = M.extend_tbl({ modeline = false }, event)
+  event.pattern = "Lazy" .. event.pattern
+  if instant then
+    vim.api.nvim_exec_autocmds("User", event)
+  else
+    vim.schedule(function()
+      vim.api.nvim_exec_autocmds("User", event)
+    end)
+  end
+end
+
+--- Run a shell command and capture the output and if the command succeeded or failed
+---@param cmd string|string[] The terminal command to execute
+---@param show_error? boolean Whether or not to show an unsuccessful command as an error to the user
+---@return string|nil # The result of a successfully executed command or nil
+function M.cmd(cmd, show_error)
+  if type(cmd) == "string" then
+    cmd = { cmd }
+  end
+  if vim.fn.has("win32") == 1 then
+    cmd = vim.list_extend({ "cmd.exe", "/C" }, cmd)
+  end
+  local result = vim.fn.system(cmd)
+  local success = vim.api.nvim_get_vvar("shell_error") == 0
+  if not success and (show_error == nil or show_error) then
+    vim.api.nvim_err_writeln(("Error running command %s\nError message:\n%s"):format(table.concat(cmd, " "), result))
+  end
+  return success and assert(result):gsub("[\27\155][][()#;?%d]*[A-PRZcf-ntqry=><~]", "") or nil
+end
+
 -- Wrapper around vim.keymap.set that will
 -- not create a keymap if a lazy key handler exists.
 -- It will also set `silent` to true by default.
@@ -390,46 +464,59 @@ function M.is_win()
   return vim.uv.os_uname().sysname:find("Windows") ~= nil
 end
 
-function M.printTable(t, indent, visited, buffer)
-  -- 初始化参数
-  indent = indent or "  "
+--- 将 Lua table 转换为字符串表示形式
+--- @param t table 要转换的 table
+--- @param indent? string 可选参数，用于控制缩进（默认为空字符串）
+--- @param visited? table 可选参数，用于记录已处理的 table，避免循环引用
+--- @return string 返回 table 的字符串表示形式
+function M.tableToString(t, indent, visited)
+  -- 初始化缩进和已访问表
+  indent = indent or ""
   visited = visited or {}
-  buffer = buffer or {}
 
-  -- 检查是否已访问过该表（防止循环引用）
+  -- 如果已经访问过这个表，直接返回
   if visited[t] then
-    table.insert(buffer, indent .. "<循环引用>")
-    return
+    return indent .. "{...}"
   end
+
+  -- 标记当前表为已访问
   visited[t] = true
 
-  -- 收集每个键值对
+  -- 开始构建字符串
+  local result = indent .. "{\n"
+  local newIndent = indent .. "  "
+
+  -- 遍历表中的每个键值对
   for k, v in pairs(t) do
-    -- 处理key
-    local key = tostring(k)
+    -- 处理键
+    local keyStr
     if type(k) == "string" then
-      key = '"' .. k .. '"'
-    end
-
-    -- 根据值的类型进行不同处理
-    if type(v) == "table" then
-      table.insert(buffer, indent .. key .. " = {")
-      M.printTable(v, indent .. "  ", visited, buffer)
-      table.insert(buffer, indent .. "}")
+      keyStr = '["' .. k .. '"]'
     else
-      -- 处理字符串值
-      if type(v) == "string" then
-        v = '"' .. v .. '"'
-      end
-      table.insert(buffer, indent .. key .. " = " .. tostring(v))
+      keyStr = "[" .. tostring(k) .. "]"
     end
+
+    -- 处理值
+    local valueStr
+    if type(v) == "table" then
+      valueStr = tableToString(v, newIndent, visited)
+    elseif type(v) == "string" then
+      valueStr = '"' .. v .. '"'
+    else
+      valueStr = tostring(v)
+    end
+
+    -- 将键值对添加到结果中
+    result = result .. newIndent .. keyStr .. " = " .. valueStr .. ",\n"
   end
 
-  -- 如果是顶层调用，打印所有结果
-  if not buffer._printed then
-    buffer._printed = true
-    M.info(table.concat(buffer, "\n"), { title = "PrintTable" })
-  end
+  -- 结束构建字符串
+  result = result .. indent .. "}"
+  return result
+end
+
+function M.PrintTable(t, indent, visited)
+  vim.notify(M.tableToString(t, indent, visited))
 end
 
 M.CREATE_UNDO = vim.api.nvim_replace_termcodes("<c-G>u", true, true, true)

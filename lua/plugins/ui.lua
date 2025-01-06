@@ -31,6 +31,7 @@ return {
   },
   {
     "sphamba/smear-cursor.nvim",
+    event = "VeryLazy",
     opts = {},
   },
   {
@@ -51,6 +52,7 @@ return {
   {
     "echasnovski/mini.hipatterns",
     version = false,
+    event = "User LazyFile",
     config = function()
       local hipatterns = require("mini.hipatterns")
       hipatterns.setup({

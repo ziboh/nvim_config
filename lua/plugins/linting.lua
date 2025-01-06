@@ -1,5 +1,8 @@
 return {
-  "rshkarin/mason-nvim-lint",
+  {
+    "rshkarin/mason-nvim-lint",
+    lazy = true,
+  },
   {
     "mfussenegger/nvim-lint",
     event = "User LazyFile",

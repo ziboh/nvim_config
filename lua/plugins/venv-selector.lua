@@ -1,10 +1,10 @@
 return {
   "linux-cultist/venv-selector.nvim",
   dependencies = {
-    "neovim/nvim-lspconfig",
+    -- "neovim/nvim-lspconfig",
     "mfussenegger/nvim-dap",
   },
-  lazy = false,
+  ft = { "python" },
   branch = "regexp", -- This is the regexp branch, use this for the new version
   config = function()
     require("venv-selector").setup({

@@ -1,11 +1,52 @@
 -- 创建一个新的用户事件
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile", "BufWritePre" }, {
-  group = vim.api.nvim_create_augroup("lazy_file", { clear = true }),
-  callback = function()
-    -- 确保只触发一次
-    vim.api.nvim_del_augroup_by_name("lazy_file")
-    -- 触发 User LazyFile 事件
-    vim.api.nvim_exec_autocmds("User", { pattern = "LazyFile" })
+  group = vim.api.nvim_create_augroup("file_user_events", { clear = true }),
+  callback = function(args)
+    if vim.b[args.buf].lazyfile_checked then
+      return
+    end
+    vim.b[args.buf].lazyfile_checked = true
+    vim.schedule(function()
+      if not vim.api.nvim_buf_is_valid(args.buf) then
+        return
+      end
+      local current_file = vim.api.nvim_buf_get_name(args.buf)
+      if vim.g.vscode or not (current_file == "" or vim.bo[args.buf].buftype == "nofile") then
+        local skip_augroups = {}
+        for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = args.event })) do
+          if autocmd.group_name then
+            skip_augroups[autocmd.group_name] = true
+          end
+        end
+        skip_augroups["filetypedetect"] = false
+        Utils.event("File")
+        local folder = vim.fn.fnamemodify(current_file, ":p:h")
+        if vim.fn.has("win32") == 1 then
+          folder = ('"%s"'):format(folder)
+        end
+        if vim.fn.executable("git") == 1 then
+          if Utils.cmd({ "git", "-C", folder, "rev-parse" }, false) or Utils.file_worktree() then
+            Utils.event("GitFile")
+            pcall(vim.api.nvim_del_augroup_by_name, "file_user_events")
+          end
+        else
+          pcall(vim.api.nvim_del_augroup_by_name, "file_user_events")
+        end
+        vim.schedule(function()
+          if Utils.is_valid(args.buf) then
+            for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = args.event })) do
+              if autocmd.group_name and not skip_augroups[autocmd.group_name] then
+                vim.api.nvim_exec_autocmds(
+                  args.event,
+                  { group = autocmd.group_name, buffer = args.buf, data = args.data }
+                )
+                skip_augroups[autocmd.group_name] = true
+              end
+            end
+          end
+        end)
+      end
+    end)
   end,
 })
 

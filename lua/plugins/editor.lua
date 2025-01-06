@@ -2,7 +2,7 @@
 return {
   {
     "echasnovski/mini.pairs",
-    event = "VeryLazy",
+    event = "InsertEnter",
     opts = {
       modes = { insert = true, command = true, terminal = false },
       -- skip autopair when next character is one of these
@@ -44,11 +44,65 @@ return {
     end,
   },
   {
-    "adelarsq/image_preview.nvim",
-    event = "VeryLazy",
-    config = function()
-      require("image_preview").setup()
-    end,
+    "mrjones2014/smart-splits.nvim",
+    keys = {
+      {
+        "<C-h>",
+        function()
+          require("smart-splits").move_cursor_left()
+        end,
+        desc = "Move to left split",
+      },
+      {
+        "<C-j>",
+        function()
+          require("smart-splits").move_cursor_down()
+        end,
+        desc = "Move to below split",
+      },
+      {
+        "<C-k>",
+        function()
+          require("smart-splits").move_cursor_up()
+        end,
+        desc = "Move to above split",
+      },
+      {
+        "<C-l>",
+        function()
+          require("smart-splits").move_cursor_right()
+        end,
+        desc = "Move to right split",
+      },
+      {
+        "<C-Up>",
+        function()
+          require("smart-splits").resize_up()
+        end,
+        desc = "Resize split up",
+      },
+      {
+        "<C-Down>",
+        function()
+          require("smart-splits").resize_down()
+        end,
+        desc = "Resize split down",
+      },
+      {
+        "<C-Left>",
+        function()
+          require("smart-splits").resize_left()
+        end,
+        desc = "Resize split left",
+      },
+      {
+        "<C-Right>",
+        function()
+          require("smart-splits").resize_right()
+        end,
+        desc = "Resize split right",
+      },
+    },
   },
   {
     "echasnovski/mini.splitjoin",
@@ -57,6 +111,7 @@ return {
     opts = {
       mappings = { toggle = "gS", split = "", join = "" },
     },
+    keys = { "gS", desc = "Split join" },
   },
   {
     "stevearc/oil.nvim",
@@ -113,7 +168,7 @@ return {
   },
   {
     "echasnovski/mini.ai",
-    event = "VeryLazy",
+    event = "User LazyFile",
     opts = function()
       local ai = require("mini.ai")
       return {

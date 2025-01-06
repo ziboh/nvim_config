@@ -88,8 +88,11 @@ end
 return {
   {
     "ahmedkhalf/project.nvim",
-    cmd = "Projects",
+    cmd = "FzfProjects",
     event = "VeryLazy",
+    keys = {
+      { "<leader>fp", pick, desc = "Projects" },
+    },
     config = function(_, opts)
       require("project_nvim").setup(opts)
       local history = require("project_nvim.utils.history")
@@ -105,24 +108,5 @@ return {
 
       vim.api.nvim_create_user_command("FzfProjects", pick, {})
     end,
-  },
-  -- {
-  --   "folke/snacks.nvim",
-  --   optional = true,
-  --   opts = function(_, opts)
-  --     table.insert(opts.dashboard.preset.keys, 3, {
-  --       action = pick,
-  --       desc = "Projects",
-  --       icon = " ",
-  --       key = "p",
-  --     })
-  --   end,
-  -- },
-  {
-    "ibhagwan/fzf-lua",
-    optional = true,
-    keys = {
-      { "<leader>fp", pick, desc = "Projects" },
-    },
   },
 }

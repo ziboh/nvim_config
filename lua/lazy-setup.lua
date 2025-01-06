@@ -16,7 +16,6 @@ require("lazy").setup({
   install = { colorscheme = { "tokyonight", "habamax" } },
   spec = {
     { import = "plugins" },
-    { "mrjones2014/smart-splits.nvim" },
   },
   change_detection = {
     -- automatically check for config file changes and reload the ui

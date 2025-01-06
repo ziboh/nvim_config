@@ -1,6 +1,6 @@
 return {
   "folke/snacks.nvim",
-  -- priority = 1000,
+  priority = 1000,
   lazy = false,
   ---@type snacks.Config
   opts = {
@@ -72,7 +72,7 @@ return {
       desc = "Delete Buffer",
     },
     {
-      "<leader>rn",
+      "<leader>rN",
       function()
         Snacks.rename.rename_file()
       end,

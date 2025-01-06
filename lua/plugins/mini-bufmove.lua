@@ -1,1 +1,5 @@
-return { "echasnovski/mini.bufremove", version = false }
+return {
+  "echasnovski/mini.bufremove",
+  version = false,
+  lazy = true,
+}

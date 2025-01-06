@@ -43,12 +43,6 @@ return {
       },
       -- A command is a function that we can assign to a mapping (below)
       commands = {
-        image_wezterm = function(state)
-          local node = state.tree:get_node()
-          if node.type == "file" then
-            require("image_preview").PreviewImage(node.path)
-          end
-        end,
         system_open = function(state)
           local node = state.tree:get_node()
           local path = node:get_id()
@@ -140,7 +134,6 @@ return {
       },
       window = {
         mappings = {
-          ["<leader>p"] = "image_wezterm", -- " or another map
           ["<S-CR>"] = "system_open",
           ["<CR>"] = "toggle_dir_or_open",
           ["[b"] = "prev_source",

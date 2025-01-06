@@ -3,17 +3,14 @@ local utils = require("utils")
 
 return {
   {
-    "nvim-neotest/nvim-nio",
-    lazy = true,
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "mfussenegger/nvim-dap",
+    "jay-babu/mason-nvim-dap.nvim",
+    opts = {
+      ensure_installed = { "python", "codelldb" },
     },
-    config = function()
-      require("nvim-dap-virtual-text").setup({
-        commented = true,
-      })
-    end,
+    event = "VeryLazy",
+    dependencies = {
+      "williamboman/mason.nvim",
+    },
   },
   {
     "mfussenegger/nvim-dap-python",
@@ -38,6 +35,9 @@ return {
       "theHamsta/nvim-dap-virtual-text",
     },
     config = function()
+      require("nvim-dap-virtual-text").setup({
+        commented = true,
+      })
       vim.fn.sign_define("DapBreakpoint", { text = get_icon("DapBreakpoint"), texthl = "DiagnosticInfo" })
       vim.fn.sign_define(
         "DapBreakpointCondition",

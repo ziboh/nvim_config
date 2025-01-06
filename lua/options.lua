@@ -7,7 +7,12 @@ vim.g.maplocalleader = "\\"
 vim.g.ai_cmp = true
 
 vim.g.icons_enabled = true
-
+vim.g.git_worktrees = {
+  {
+    toplevel = vim.env.HOME,
+    gitdir = vim.env.HOME .. "/.local/share/yadm/repo.git",
+  },
+}
 -- For nvim-tree
 -- disable netrw at the very start of your init.lua (strongly advised)
 vim.g.loaded_netrw = 1
