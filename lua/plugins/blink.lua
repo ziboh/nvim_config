@@ -179,7 +179,7 @@ return {
       vim.api.nvim_set_hl(0, "BlinkCmpLabelDetail", { fg = "#9993a7", bg = "None" })
       vim.api.nvim_set_hl(0, "BlinkCmpMenu", { link = "Normal", default = true })
       vim.api.nvim_set_hl(0, "BlinkCmpDoc", { link = "Normal", default = true })
-      vim.api.nvim_set_hl(0, "BlinkCmpGhostText", { link = "Comment", default = true })
+      vim.api.nvim_set_hl(0, "BlinkCmpGhostText", { fg = "#636da6" })
       vim.api.nvim_set_hl(0, "BlinkCmpDocBorder", { bg = "NONE", fg = "#6587CE" })
       vim.api.nvim_set_hl(0, "BlinkCmpMenuBorder", { bg = "NONE", fg = "#6587CE" })
       vim.api.nvim_set_hl(0, "BlinkCmpMenuSelection", { bg = "#26343f", fg = "NONE" })

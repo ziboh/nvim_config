@@ -1,23 +1,41 @@
+-- Terminal Mappings
+local function term_nav(dir)
+  ---@param self snacks.terminal
+  return function(self)
+    return self:is_floating() and "<c-" .. dir .. ">" or vim.schedule(function()
+      vim.cmd.wincmd(dir)
+    end)
+  end
+end
 return {
   "folke/snacks.nvim",
   priority = 1000,
   lazy = false,
-  ---@type snacks.Config
   opts = {
     bigfile = { enabled = true },
+    quickfile = { enabled = true },
     indent = { enabled = true },
     input = { enabled = true },
     notifier = {
       enabled = true,
       timeout = 3000,
     },
-    quickfile = { enabled = true },
     scroll = { enabled = true },
     statuscolumn = { enabled = true },
-    -- words = { enabled = true },
+    words = { enabled = true },
+    terminal = {
+      win = {
+        keys = {
+          nav_h = { "<C-h>", term_nav("h"), desc = "Go to Left Window", expr = true, mode = "t" },
+          nav_j = { "<C-j>", term_nav("j"), desc = "Go to Lower Window", expr = true, mode = "t" },
+          nav_k = { "<C-k>", term_nav("k"), desc = "Go to Upper Window", expr = true, mode = "t" },
+          nav_l = { "<C-l>", term_nav("l"), desc = "Go to Right Window", expr = true, mode = "t" },
+        },
+      },
+    },
     styles = {
       notification = {
-        wo = { wrap = true } -- Wrap notifications
+        wo = { wrap = true }, -- Wrap notifications
       },
     },
   },
@@ -58,13 +76,6 @@ return {
       desc = "Select Scratch Buffer",
     },
     {
-      "<leader>fn",
-      function()
-        Snacks.notifier.show_history()
-      end,
-      desc = "Notification History",
-    },
-    {
       "<leader>bd",
       function()
         Snacks.bufdelete()
@@ -72,7 +83,7 @@ return {
       desc = "Delete Buffer",
     },
     {
-      "<leader>rN",
+      "<leader>rn",
       function()
         Snacks.rename.rename_file()
       end,
@@ -93,34 +104,38 @@ return {
       end,
       desc = "Git Blame Line",
     },
-    -- {
-    --   "<leader>gf",
-    --   function()
-    --     Snacks.lazygit.log_file()
-    --   end,
-    --   desc = "Lazygit Current File History",
-    -- },
+    {
+      "<leader>gf",
+      function()
+        local file = vim.trim(vim.api.nvim_buf_get_name(0))
+        opts = {}
+        opts.args = Utils.list_insert_unique(Utils.lazygit_args(), { "-f", file })
+        Snacks.lazygit.open(opts)
+      end,
+      desc = "Lazygit Current File History",
+    },
     {
       "<leader>gg",
       function()
-        Snacks.lazygit()
+        Snacks.lazygit({ args = Utils.lazygit_args() })
       end,
       desc = "Lazygit",
     },
     {
       "<leader>gl",
       function()
-        Snacks.lazygit.log()
+        Snacks.lazygit.open({ args = Utils.list_insert_unique(Utils.lazygit_args(), { "log" }) })
       end,
       desc = "Lazygit Log (cwd)",
     },
     {
-      "<leader>un",
+      "<c-t>",
       function()
-        Snacks.notifier.hide()
+        Snacks.terminal()
       end,
-      desc = "Dismiss All Notifications",
+      desc = "Toggle Terminal",
     },
+
     {
       "<c-/>",
       function()

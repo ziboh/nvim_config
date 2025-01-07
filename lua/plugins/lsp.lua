@@ -246,6 +246,16 @@ return {
   {
     "stevearc/conform.nvim",
     event = "User LazyFile",
+    keys = {
+      {
+        "<leader>lf",
+        function()
+          require("conform").format()
+        end,
+        desc = "Formatting",
+      },
+      J,
+    },
     dependencies = {
       "williamboman/mason.nvim",
     },
@@ -399,30 +409,8 @@ return {
   {
     "smjonas/inc-rename.nvim",
     cmd = { "IncRename" },
-    keys = {
-      { "<leader>lr", ": IncRename", desc = "Rename" },
-    },
     config = function()
       require("inc_rename").setup({ save_in_cmdline_history = false })
-    end,
-  },
-  {
-    "ziboh/vim-illuminate",
-    event = "User LazyFile",
-    opts = {
-      delay = 200,
-      min_count_to_highlight = 2,
-      large_file_cutoff = 2000,
-      large_file_overrides = { providers = { "lsp" } },
-      should_enable = function(bufnr)
-        return Utils.is_valid(bufnr) and not vim.b[bufnr].large_buf
-      end,
-    },
-    config = function(_, opts)
-      require("illuminate").configure(opts)
-      vim.api.nvim_set_hl(0, "IlluminatedWordText", { bg = "#45475a" })
-      vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bg = "#45475a" })
-      vim.api.nvim_set_hl(0, "IlluminatedWordRead", { bg = "#45475a" })
     end,
   },
   {

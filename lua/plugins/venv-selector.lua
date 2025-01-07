@@ -1,5 +1,6 @@
 return {
-  "linux-cultist/venv-selector.nvim",
+  -- "linux-cultist/venv-selector.nvim",
+  dir = "~/projects/venv-selector.nvim",
   dependencies = {
     -- "neovim/nvim-lspconfig",
     "mfussenegger/nvim-dap",
@@ -8,13 +9,13 @@ return {
   branch = "regexp", -- This is the regexp branch, use this for the new version
   config = function()
     require("venv-selector").setup({
-      -- settings = {
-      --   search = {
-      --     pyenv = {
-      --       command = "fdfind --hidden -p -g '**/bin/python' ~/.pyenv/versions -I", -- read up on the fd flags so it searches what you need
-      --     },
-      --   },
-      -- },
+      settings = {
+        search = {
+          pyenv = {
+            command = "fd -p -g '**/bin/python' ~/.rye/py", -- read up on the fd flags so it searches what you need
+          },
+        },
+      },
     })
   end,
   keys = {

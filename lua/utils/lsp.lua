@@ -1,6 +1,5 @@
 ---@class lazyvim.util.lsp
 local M = {}
-
 ---@alias lsp.Client.filter {id?: number, bufnr?: number, name?: string, method?: string, filter?:fun(client: lsp.Client):boolean}
 
 ---@param opts? lsp.Client.filter
@@ -23,7 +22,7 @@ end
 
 function M.on_attach(client, bufnr)
   vim.keymap.set("n", "<leader>fd", function()
-    require("telescope.builtin").diagnostics()
+    require("fzf-lua").diagnostics_document()
   end, { noremap = true, silent = true, buffer = bufnr, desc = "Lists All Diagnostics " })
   if vim.lsp.inlay_hint and client.supports_method("textDocument/inlayHint") then
     vim.keymap.set("n", "<leader>uH", function()
@@ -185,5 +184,4 @@ function M.get_rust_anlayzer()
   end
   return lsp_server
 end
-
 return M

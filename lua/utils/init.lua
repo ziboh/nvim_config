@@ -55,20 +55,28 @@ function M.file_worktree(file, worktrees)
     return
   end
   file = file or vim.fn.expand("%") --[[@as string]]
-  for _, worktree in ipairs(worktrees) do
-    if
-      M.cmd({
-        "git",
-        "--work-tree",
-        worktree.toplevel,
-        "--git-dir",
-        worktree.gitdir,
-        "ls-files",
-        "--error-unmatch",
-        file,
-      }, false)
-    then
-      return worktree
+  if file ~= "" then
+    for _, worktree in ipairs(worktrees) do
+      if
+        M.cmd({
+          "git",
+          "--work-tree",
+          worktree.toplevel,
+          "--git-dir",
+          worktree.gitdir,
+          "ls-files",
+          "--error-unmatch",
+          file,
+        }, false)
+      then
+        return worktree
+      end
+    end
+  else
+    for _, worktree in ipairs(worktrees) do
+      if vim.uv.cwd() == worktree.toplevel then
+        return worktree
+      end
     end
   end
 end
@@ -290,37 +298,6 @@ function M.on_load(plugins, load_op)
   end
 end
 
---- Toggle a user terminal if it exists, if not then create a new one and save it
----@param opts string|table A terminal command string or a table of options for Terminal:new() (Check toggleterm.nvim documentation for table format)
-function M.toggle_term_cmd(opts)
-  local terms = M.user_terminals
-  -- if a command string is provided, create a basic table for Terminal:new() options
-  if type(opts) == "string" then
-    opts = { cmd = opts }
-  end
-  opts = vim.tbl_deep_extend("force", { hidden = true }, opts)
-  local num = vim.v.count > 0 and vim.v.count or 1
-  -- if terminal doesn't exist yet, create it
-  if not terms[opts.cmd] then
-    terms[opts.cmd] = {}
-  end
-  if not terms[opts.cmd][num] then
-    if not opts.count then
-      opts.count = vim.tbl_count(terms) * 100 + num
-    end
-    local on_exit = opts.on_exit
-    opts.on_exit = function(...)
-      terms[opts.cmd][num] = nil
-      if on_exit then
-        on_exit(...)
-      end
-    end
-    terms[opts.cmd][num] = require("toggleterm.terminal").Terminal:new(opts)
-  end
-  -- toggle the terminal
-  terms[opts.cmd][num]:toggle()
-end
-
 --- 判断字符串是否在表中
 ---@param table any
 ---@param searchString any
@@ -499,7 +476,7 @@ function M.tableToString(t, indent, visited)
     -- 处理值
     local valueStr
     if type(v) == "table" then
-      valueStr = tableToString(v, newIndent, visited)
+      valueStr = M.tableToString(v, newIndent, visited)
     elseif type(v) == "string" then
       valueStr = '"' .. v .. '"'
     else
@@ -532,6 +509,15 @@ function M.is_ssh()
   else
     return true
   end
+end
+
+function M.lazygit_args()
+  local worktree = M.file_worktree()
+  local args = nil
+  if worktree then
+    args = { "-w", worktree.toplevel, "-g", worktree.gitdir }
+  end
+  return args
 end
 
 return M

@@ -1,5 +1,5 @@
 return {
-  "s1n7ax/nvim-window-picker",
+  "ziboh/nvim-window-picker",
   name = "window-picker",
   lazy = true,
   config = function()

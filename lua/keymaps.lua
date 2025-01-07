@@ -11,7 +11,6 @@ vim.keymap.set("n", "<Space>", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "q", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "J", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-b>", "<NOP>", { noremap = true, silent = true })
-vim.keymap.set("n", "<c-s>", "<cmd>w<cr>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Space>q", "<cmd>q<cr>", { noremap = true, silent = true, desc = "quit" })
 vim.keymap.set("n", "<tab>", "w", { noremap = true, silent = true })
 
@@ -21,15 +20,12 @@ vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { noremap = true, silent = true, de
 vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { noremap = true, silent = true, desc = "Decrease window height" })
 vim.keymap.set("n", "M", "J", { noremap = true, silent = true, desc = "Join the current line with the next line" })
 
-vim.keymap.set("t", "<C-_>", [[<C-\><C-n>]], {})
-vim.keymap.set("n", "<C-_>", "gcc", { remap = true, silent = true, desc = "Toggle Comment linewise" })
 vim.keymap.set("n", "<leader>/", "gcc", { remap = true, silent = true, desc = "Toggle Comment linewise" })
-vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "Toggle Comment lineise" })
 vim.keymap.set("v", "<leader>/", "gc", { remap = true, desc = "Toggle Comment lineise" })
 
 -----------------
 -- Visual mode --
------------------
+-----------
 vim.keymap.set("v", "<C-n>", "5j", { noremap = true, silent = true })
 vim.keymap.set("v", "<C-p>", "5k", { noremap = true, silent = true })
 vim.keymap.set("v", "L", "$h", { noremap = true, silent = true, desc = "Move to end of line" })
@@ -45,7 +41,6 @@ vim.keymap.set("v", "K", "k", { noremap = true, silent = true })
 -----------------
 -- Insert mode --
 -----------------
-vim.keymap.set("i", "<c-s>", "<esc><cmd>w<cr>a", { noremap = true, silent = true })
 vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { noremap = true, silent = true, desc = "Move line up" })
 vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { noremap = true, silent = true, desc = "Move line down" })
 
@@ -65,6 +60,58 @@ safe_map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 safe_map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 safe_map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 
+-- better up/down
+safe_map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
+safe_map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
+safe_map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
+safe_map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
+
+-- Terminal Mappings
+safe_map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
+safe_map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
+safe_map("t", "<C-t>", "<cmd>close<cr>", { desc = "Hide Terminal" })
+
+-- quit
+safe_map("n", "<leader>Q", "<cmd>qa<cr>", { desc = "Quit All" })
+
+-- highlights under cursor
+safe_map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
+safe_map("n", "<leader>uI", "<cmd>InspectTree<cr>", { desc = "Inspect Tree" })
+
+-- floating terminal
+safe_map("n", "<leader>tm", function()
+  Snacks.terminal("btm")
+end, { desc = "Open Bottom" })
+
+-- diagnostic
+local diagnostic_goto = function(next, severity)
+  local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+  severity = severity and vim.diagnostic.severity[severity] or nil
+  return function()
+    go({ severity = severity })
+  end
+end
+safe_map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+safe_map("n", "]d", diagnostic_goto(true), { desc = "Next Diagnostic" })
+safe_map("n", "[d", diagnostic_goto(false), { desc = "Prev Diagnostic" })
+safe_map("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
+safe_map("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
+safe_map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
+safe_map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
+safe_map("n", "<leader>lf", function()
+  vim.diagnostic.open_float()
+end, { desc = "Hover diagnostics" })
+
+-- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
+safe_map("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next Search Result" })
+safe_map("x", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" })
+safe_map("o", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" })
+safe_map("n", "N", "'nN'[v:searchforward].'zv'", { expr = true, desc = "Prev Search Result" })
+safe_map("x", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" })
+safe_map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" })
+
+-- save file
+safe_map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
 -- buffers/tabs [buffers ]--------------------------------------------------
 maps.n["<leader>c"] = {
   function()
@@ -246,39 +293,6 @@ maps.n["|"] = { "<cmd>vsplit<cr>", desc = "Vertical Split" }
 maps.n["<leader>pl"] = { "<cmd>Lazy<CR>", desc = "Lazy" }
 maps.n["<leader>pm"] = { "<cmd>Mason<CR>", desc = "Mason" }
 
--- For ToggleTerm
-maps.n["<Leader>tf"] = { "<Cmd>ToggleTerm direction=float<CR>", desc = "ToggleTerm float" }
-maps.n["<Leader>th"] = { "<Cmd>ToggleTerm size=10 direction=horizontal<CR>", desc = "ToggleTerm horizontal split" }
-maps.n["<Leader>tv"] = { "<Cmd>ToggleTerm size=50 direction=vertical<CR>", desc = "ToggleTerm vertical split" }
-maps.n["<Leader>t<tab>"] = { "<Cmd>ToggleTerm  direction=tab<CR>", desc = "ToggleTerm new tab" }
-maps.n["<leader>tt"] = { '<Cmd>execute v:count . "ToggleTerm"<CR>', desc = "Toggle terminal" }
-maps.n["<F7>"] = { '<Cmd>execute v:count . "ToggleTerm"<CR>', desc = "Toggle terminal" }
-maps.t["<F7>"] = { "<Cmd>ToggleTerm<CR>", desc = "Toggle terminal" }
-maps.i["<F7>"] = { "<Esc><Cmd>ToggleTerm<CR>", desc = "Toggle terminl" }
-maps.n["<C-'>"] = { '<Cmd>execute v:count . "ToggleTerm"<CR>', desc = "Toggle terminal" } -- requires terminal that supports binding <C-'>
-maps.t["<C-'>"] = { "<Cmd>ToggleTerm<CR>", desc = "Toggle terminal" } -- requires terminal that supports binding <C-'>
-maps.i["<C-'>"] = { "<Esc><Cmd>ToggleTerm<CR>", desc = "Toggle terminl" } -- requires terminal that supports binding <C-'>
-if vim.fn.executable("btm") == 1 then
-  maps.n["<Leader>bt"] = {
-    function()
-      utils.toggle_term_cmd({ cmd = "btm", direction = "float" })
-    end,
-    desc = "ToggleTerm btm",
-  }
-end
-maps.n["<leader>tc"] = {
-  function()
-    local input_opts = { prompt = "Put Commands", default = "" }
-    vim.ui.input(input_opts, function(cmd)
-      if not cmd or #cmd == 0 then
-        return
-      end
-      utils.toggle_term_cmd(cmd)
-    end)
-  end,
-  desc = "Put commands",
-}
-
 -- Dap
 -- modified function keys found with `showkey -a` in the terminal to get key code
 -- run `nvim -V3log +quit` and search through the "Terminal info" in the `log` file for the correct keyname
@@ -444,31 +458,5 @@ if utils.has("fittencode.nvim") then
     desc = "Toggle Fitten Code",
   }
 end
-
--- For diagnostic
-maps.n["<leader>ld"] = {
-  function()
-    vim.diagnostic.open_float()
-  end,
-  desc = "Hover diagnostics",
-}
-if vim.fn.has("nvim-0.11") == 0 then
-  maps.n["[d"] = {
-    function()
-      vim.diagnostic.goto_prev()
-    end,
-    desc = "Previous diagnostic",
-  }
-  maps.n["]d"] = {
-    function()
-      vim.diagnostic.goto_next()
-    end,
-    desc = "Next diagnostic",
-  }
-end
-
-vim.keymap.set("n", "<leader>lf", function()
-  require("conform").format()
-end, { noremap = true, silent = true, desc = "Formatting" })
 
 require("utils").set_mappings(maps)

@@ -72,9 +72,6 @@ return {
         lib.component.lsp({
           lsp_progress = false,
         }),
-        {
-          provider = '%{&ft == "toggleterm" ? "terminal [".b:toggle_number."]" : ""}',
-        },
         -- require("utils").has("fittencode.nvim")
         --     and {
         --       { provider = "   " },
