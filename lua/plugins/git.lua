@@ -6,6 +6,7 @@ return {
       "nvim-lua/plenary.nvim",
       {
         "purarue/gitsigns-yadm.nvim",
+        enabled = not Utils.is_win(),
         opts = {
           shell_timeout_ms = 1000,
         },
@@ -13,6 +14,9 @@ return {
     },
     opts = {
       _on_attach_pre = function(_, callback)
+        if Utils.is_win() then
+          return
+        end
         require("gitsigns-yadm").yadm_signs(callback)
       end,
       signs = {

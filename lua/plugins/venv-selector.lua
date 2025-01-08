@@ -7,16 +7,23 @@ return {
   },
   ft = { "python" },
   branch = "regexp", -- This is the regexp branch, use this for the new version
-  config = function()
-    require("venv-selector").setup({
-      settings = {
-        search = {
-          pyenv = {
-            command = "fd -p -g '**/bin/python' ~/.rye/py", -- read up on the fd flags so it searches what you need
+  opts = function()
+    local opts = {}
+    if not Utils.is_win() then
+      opts = {
+        settings = {
+          search = {
+            rye = {
+              command = "fd -p -g '**/bin/python' ~/.rye/py", -- read up on the fd flags so it searches what you need
+            },
           },
         },
-      },
-    })
+      }
+    end
+    return opts
+  end,
+  config = function(_, opts)
+    require("venv-selector").setup(opts)
   end,
   keys = {
     { "<leader>pv", "<cmd>VenvSelect<cr>", desc = "Python venv" },
