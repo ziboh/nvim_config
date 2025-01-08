@@ -1,8 +1,6 @@
 return {
   {
     "saghen/blink.cmp",
-    version = not vim.g.lazyvim_blink_main and "*",
-    build = vim.g.lazyvim_blink_main and "cargo build --release",
     opts_extend = {
       "sources.completion.enabled_providers",
       "sources.compat",
@@ -14,7 +12,6 @@ return {
       {
         "saghen/blink.compat",
         opts = {},
-        version = not vim.g.lazyvim_blink_main and "*",
       },
     },
     event = "InsertEnter",
@@ -23,18 +20,7 @@ return {
     ---@type blink.cmp.Config
     opts = {
       snippets = {
-        expand = function(snippet)
-          require("luasnip").lsp_expand(snippet)
-        end,
-        active = function(filter)
-          if filter and filter.direction then
-            return require("luasnip").jumpable(filter.direction)
-          end
-          return require("luasnip").in_snippet()
-        end,
-        jump = function(direction)
-          require("luasnip").jump(direction)
-        end,
+        preset = "luasnip",
       },
       completion = {
         accept = {
@@ -79,7 +65,7 @@ return {
 
       sources = {
         compat = { "supermaven", "codeium" },
-        default = { "lazydev", "lsp", "path", "luasnip", "buffer" },
+        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
         cmdline = {},
         providers = {
           lazydev = {
@@ -127,7 +113,7 @@ return {
           table.insert(enabled, source)
         end
       end
-      require("cmp")
+
       -- add ai_accept to <Tab> key
       if not opts.keymap["<Tab>"] then
         if opts.keymap.preset == "super-tab" then -- super-tab

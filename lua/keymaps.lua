@@ -78,6 +78,13 @@ safe_map("n", "<leader>Q", "<cmd>qa<cr>", { desc = "Quit All" })
 safe_map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
 safe_map("n", "<leader>uI", "<cmd>InspectTree<cr>", { desc = "Inspect Tree" })
 
+safe_map("i", "<C-n>", function()
+  require("blink.cmp").show()
+end, { desc = "Open Cmp menu" })
+safe_map("i", "<C-p>", function()
+  require("blink.cmp").show()
+end, { desc = "Open Cmp menu" })
+
 -- floating terminal
 safe_map("n", "<leader>tm", function()
   Snacks.terminal("btm")

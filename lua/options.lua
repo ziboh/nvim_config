@@ -30,7 +30,8 @@ opt.autowrite = true
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
 opt.laststatus = 3 --Global statusline.
-opt.completeopt = { "menu", "menuone", "noselect" }
+-- opt.completeopt = { "menu", "menuone", "noselect" }
+vim.opt.completeopt = ""
 opt.mouse = "a" -- allow the mouse to be used in Nvim
 opt.scrolloff = 10 -- no less than 10 lines even if you keep scrolling down
 
@@ -102,3 +103,4 @@ end
 if vim.fn.has("win32") == 1 then
   opt.clipboard = "unnamedplus"
 end
+
