@@ -1,4 +1,4 @@
----@class lazyvim.util.cmp
+---@class utils.cmp
 local M = {}
 
 ---@alias lazyvim.util.cmp.Action fun():boolean?

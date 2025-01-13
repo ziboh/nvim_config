@@ -17,6 +17,7 @@ require("lazy").setup({
   install = { colorscheme = { "tokyonight", "habamax" } },
   spec = {
     { import = "plugins" },
+    { import = "plugins.lang" },
   },
   dev = {
     -- Directory where you store your local plugin projects. If a function is used,

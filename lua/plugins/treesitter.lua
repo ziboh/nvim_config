@@ -1,15 +1,14 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-  lazy = true,
+  event = { "User LazyFile", "VeryLazy" },
+  lazy = vim.fn.argc(-1) == 0,
   config = function()
     require("nvim-treesitter.configs").setup({
-      ignore_install = { "xdd" },
       ensure_installed = {
         "bash",
         "c",
         "cpp",
         "css",
-        "cuda",
         "diff",
         "html",
         "http",
@@ -22,9 +21,6 @@ return {
         "luap",
         "markdown",
         "markdown_inline",
-        "objc",
-        "printf",
-        "proto",
         "python",
         "query",
         "regex",
@@ -40,11 +36,6 @@ return {
       },
       sync_install = false,
       auto_install = true,
-      highlight = {
-        enable = true,
-        disable = { "c" },
-        additional_vim_regex_highlighting = false,
-      },
     })
   end,
 }

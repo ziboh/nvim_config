@@ -1,3 +1,13 @@
+--- @class UserUtils: LazyUtilCore
+--- @field config LazyVimConfig
+--- @field ui utils.ui
+--- @field cmp utils.cmp
+--- @field lsp utils.lsp
+--- @field pick utils.pick
+--- @field rime utils.rime
+--- @field toggle utils.toggle
+--- @field mini utils.toggle
+--- @field root utils.root
 local M = {}
 
 M.user_terminals = {}
@@ -407,13 +417,45 @@ function M.get_pkg_path(pkg, path, opts)
   return ret
 end
 
---- Override the default title for notifications.
-for _, level in ipairs({ "info", "warn", "error" }) do
-  M[level] = function(msg, opts)
-    local LazyUtil = require("lazy.core.util")
-    opts = opts or {}
-    opts.title = opts.title or "NeoVim"
-    return LazyUtil[level](msg, opts)
+---@param msg string|string[]
+---@param opts? LazyNotifyOpts
+function M.error(msg, opts)
+  opts = opts or {}
+  opts.level = vim.log.levels.ERROR
+  M.notify(msg, opts)
+end
+
+---@param msg string|string[]
+---@param opts? LazyNotifyOpts
+function M.info(msg, opts)
+  opts = opts or {}
+  opts.level = vim.log.levels.INFO
+  M.notify(msg, opts)
+end
+
+---@param msg string|string[]
+---@param opts? LazyNotifyOpts
+function M.warn(msg, opts)
+  opts = opts or {}
+  opts.level = vim.log.levels.WARN
+  M.notify(msg, opts)
+end
+
+---@param msg string|table
+---@param opts? LazyNotifyOpts
+function M.debug(msg, opts)
+  if not require("lazy.core.config").options.debug then
+    return
+  end
+  opts = opts or {}
+  if opts.title then
+    opts.title = "lazy.nvim: " .. opts.title
+  end
+  if type(msg) == "string" then
+    M.notify(msg, opts)
+  else
+    opts.lang = "lua"
+    M.notify(vim.inspect(msg), opts)
   end
 end
 
@@ -492,6 +534,10 @@ function M.tableToString(t, indent, visited)
   return result
 end
 
+--- 将 Lua table 转换为字符串表示形式
+--- @param t table 要转换的 table
+--- @param indent? string 可选参数，用于控制缩进（默认为空字符串）
+--- @param visited? table 可选参数，用于记录已处理的 table，避免循环引用
 function M.PrintTable(t, indent, visited)
   vim.notify(M.tableToString(t, indent, visited))
 end
@@ -518,6 +564,25 @@ function M.lazygit_args()
     args = { "-w", worktree.toplevel, "-g", worktree.gitdir }
   end
   return args
+end
+
+--- @param keys string
+--- @param mode string
+function M.feedkeys(keys, mode)
+  -- 将按键序列转换为 Neovim 内部格式
+  local termcodes = vim.api.nvim_replace_termcodes(keys, true, true, true)
+  -- 将转换后的按键序列发送到 Neovim 的输入缓冲区
+  vim.api.nvim_feedkeys(termcodes, mode, false)
+end
+
+---@param value any
+---@param list any[]
+function M.value_in_list(value, list)
+  for _, v in ipairs(list) do
+    if v == value then
+      return true
+    end
+  end
 end
 
 return M

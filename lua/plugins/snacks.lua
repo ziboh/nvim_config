@@ -13,14 +13,20 @@ return {
   lazy = false,
   opts = {
     bigfile = { enabled = true },
+    scroll = { enabled = true },
     quickfile = { enabled = true },
-    indent = { enabled = true },
-    input = { enabled = true },
+    indent = {
+      chunk = {
+        enabled = true,
+      },
+    },
+    input = {
+      enabled = true,
+    },
     notifier = {
       enabled = true,
       timeout = 3000,
     },
-    scroll = { enabled = true },
     statuscolumn = { enabled = true },
     words = { enabled = true },
     terminal = {
@@ -38,8 +44,23 @@ return {
         wo = { wrap = true }, -- Wrap notifications
       },
     },
+    toggle = { map = Utils.safe_keymap_set },
   },
   keys = {
+    {
+      "<leader>fn",
+      function()
+        Snacks.notifier.show_history()
+      end,
+      desc = "Notification History",
+    },
+    {
+      "<leader>un",
+      function()
+        Snacks.notifier.hide()
+      end,
+      desc = "Dismiss All Notifications",
+    },
     {
       "<leader>pa",
       function()

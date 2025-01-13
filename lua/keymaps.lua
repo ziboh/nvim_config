@@ -105,7 +105,7 @@ safe_map("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
 safe_map("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
 safe_map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
 safe_map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
-safe_map("n", "<leader>lf", function()
+safe_map("n", "<leader>ld", function()
   vim.diagnostic.open_float()
 end, { desc = "Hover diagnostics" })
 
@@ -139,13 +139,13 @@ maps.n["<leader>ba"] = {
   end,
   desc = "Write all changed buffers",
 }
-maps.n["]]"] = {
+maps.n["<c-]>"] = {
   function()
     require("heirline-components.buffer").nav(vim.v.count > 0 and vim.v.count or 1)
   end,
   desc = "Next buffer",
 }
-maps.n["[["] = {
+maps.n["<c-a-[>"] = {
   function()
     require("heirline-components.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1))
   end,
@@ -455,15 +455,5 @@ maps.n["<Leader>duo"] = {
   end,
   desc = "Open Dap UI",
 }
-
--- For Fittencode
-if utils.has("fittencode.nvim") then
-  maps.n["<leader>aF"] = {
-    function()
-      toggle.fittencode()
-    end,
-    desc = "Toggle Fitten Code",
-  }
-end
 
 require("utils").set_mappings(maps)

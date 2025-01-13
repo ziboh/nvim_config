@@ -1,9 +1,5 @@
 return {
   {
-    "rshkarin/mason-nvim-lint",
-    lazy = true,
-  },
-  {
     "mfussenegger/nvim-lint",
     event = "User LazyFile",
     opts = {
@@ -105,7 +101,6 @@ return {
         group = vim.api.nvim_create_augroup("nvim-lint", { clear = true }),
         callback = M.debounce(100, M.lint),
       })
-      require("mason-nvim-lint").setup()
     end,
   },
 }

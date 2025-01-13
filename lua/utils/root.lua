@@ -1,5 +1,5 @@
 local utils = require("utils")
----@class lazyvim.util.root
+---@class utils.root
 ---@overload fun(): string
 local M = setmetatable({}, {
   __call = function(m)

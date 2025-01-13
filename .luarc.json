@@ -5,7 +5,8 @@
     "undefined-doc-name",
     "cast-local-type",
     "param-type-mismatch",
-    "need-check-nil"
+    "need-check-nil",
+        "unused-local"
   ],
   "diagnostics.globals": ["vim",
         "lcoal"],

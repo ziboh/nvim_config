@@ -1,3 +1,4 @@
+---@type LazyPluginSpec[]
 return {
   {
     "saghen/blink.cmp",
@@ -8,31 +9,47 @@ return {
     },
     dependencies = {
       "rafamadriz/friendly-snippets",
-      "supermaven-inc/supermaven-nvim",
-      {
-        "saghen/blink.compat",
-        opts = {},
-      },
     },
     event = "InsertEnter",
 
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
     opts = {
+      fuzzy = {
+        use_frecency = false,
+      },
       snippets = {
         preset = "luasnip",
       },
       completion = {
         accept = {
           auto_brackets = {
-            enabled = true,
+            enabled = false,
           },
+        },
+        keyword = {
+          -- BUG: set to '' will lead to an error when completion
+          ---@diagnostic disable-next-line: assign-type-mismatch
+          exclude_from_prefix_regex = nil,
+        },
+        list = {
+          selection = { preselect = true, auto_insert = true },
+          max_items = 20,
         },
         menu = {
           border = "single",
           draw = {
-            columns = { { "label", "label_description", gap = 1 }, { "kind_icon" }, { "kind" } },
+            columns = {
+              { "label", "label_description", gap = 1 },
+              { "kind_icon" },
+              { "source_name" },
+            },
             components = {
+              source_name = {
+                text = function(ctx)
+                  return "[" .. ctx.source_name .. "]"
+                end,
+              },
               kind_icon = {
                 ellipsis = false,
                 text = function(ctx)
@@ -62,41 +79,85 @@ return {
           enabled = vim.g.ai_cmp,
         },
       },
-
       sources = {
-        compat = { "supermaven", "codeium" },
+        compat = {},
         default = { "lazydev", "lsp", "path", "snippets", "buffer" },
         cmdline = {},
         providers = {
+          lsp = {
+            transform_items = function(_, items)
+              -- the default transformer will do this
+              for _, item in ipairs(items) do
+                if item.kind == require("blink.cmp.types").CompletionItemKind.Snippet then
+                  item.score_offset = item.score_offset - 3
+                end
+                local client = vim.lsp.get_client_by_id(item.client_id)
+                if client.name == "rime_ls" then
+                  item.score_offset = item.score_offset - 3
+                end
+
+                item.source_name = client.name
+              end
+
+              -- you can define your own filter for rime item
+              return items
+            end,
+          },
           lazydev = {
-            name = "LazyDev",
+            name = "lazy_dev",
             module = "lazydev.integrations.blink",
             score_offset = 100,
           },
-          supermaven = {
-            kind = "Supermaven",
-            score_offset = 100,
-            async = true,
-          },
-          codeium = {
-            kind = "Codeium",
-            score_offset = 100,
-            async = true,
-          },
-          -- fittencode = {
-          --   name = "fittencode",
-          --   module = "fittencode.sources.blink",
-          --   score_offset = 100,
-          --   async = true,
-          --   kind = "Fitten",
-          -- },
         },
       },
 
       keymap = {
         preset = "enter",
+        ["<C-space>"] = {},
         ["<C-b>"] = { "scroll_documentation_down" },
         ["<C-h>"] = { "scroll_documentation_up" },
+      },
+      appearance = {
+        highlight_ns = vim.api.nvim_create_namespace("blink_cmp"),
+        -- Sets the fallback highlight groups to nvim-cmp's highlight groups
+        -- Useful for when your theme doesn't support blink.cmp
+        -- Will be removed in a future release
+        use_nvim_cmp_as_default = false,
+        -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+        -- Adjusts spacing to ensure icons are aligned
+        nerd_font_variant = "mono",
+        kind_icons = {
+          Text = "󰉿",
+          Method = "󰊕",
+          Function = "󰊕",
+          Constructor = "󰒓",
+
+          Field = "󰜢",
+          Variable = "󰆦",
+          Property = "󰖷",
+
+          Class = "󱡠",
+          Interface = "󱡠",
+          Struct = "󱡠",
+          Module = "󰅩",
+
+          Unit = "󰪚",
+          Value = "󰦨",
+          Enum = "󰦨",
+          EnumMember = "󰦨",
+
+          Keyword = "󰻾",
+          Constant = "󰏿",
+
+          Snippet = "󱄽",
+          Color = "󰏘",
+          File = "󰈔",
+          Reference = "󰬲",
+          Folder = "󰉋",
+          Event = "󱐋",
+          Operator = "󰪚",
+          TypeParameter = "󰬛",
+        },
       },
     },
     ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
@@ -132,7 +193,6 @@ return {
 
       -- Unset custom prop to pass blink.cmp validation
       opts.sources.compat = nil
-
       -- check if we need to override symbol kinds
       for _, provider in pairs(opts.sources.providers or {}) do
         ---@cast provider blink.cmp.SourceProviderConfig|{kind?:string}
@@ -162,6 +222,27 @@ return {
 
       require("blink.cmp").setup(opts)
 
+      -- When there is only one rime item after inputting a number, select it directly
+      require("blink.cmp.completion.list").show_emitter:on(function(event)
+        if not vim.g.rime_enabled then
+          return
+        end
+        local col = vim.fn.col(".") - 1
+        if event.context.line:sub(col, col):match("%d") == nil then
+          return
+        end
+
+        local rime_item_index = Utils.rime.get_n_rime_item_index(2, event.items)
+
+        if #rime_item_index ~= 1 then
+          return
+        end
+
+        vim.schedule(function()
+          require("blink.cmp").accept({ index = rime_item_index[1] })
+        end)
+      end)
+
       vim.api.nvim_set_hl(0, "BlinkCmpLabelDetail", { fg = "#9993a7", bg = "None" })
       vim.api.nvim_set_hl(0, "BlinkCmpMenu", { link = "Normal", default = true })
       vim.api.nvim_set_hl(0, "BlinkCmpDoc", { link = "Normal", default = true })
@@ -182,6 +263,7 @@ return {
       },
       filetype = {
         dotenv = { glyph = "", hl = "MiniIconsYellow" },
+        yaml = { glyph = "", hl = "MiniIconsPurple" },
       },
       lsp = {
         supermaven = { glyph = "", hl = "MiniIconsYellow" },
@@ -230,9 +312,28 @@ return {
   {
     "Exafunction/codeium.nvim",
     cmd = "Codeium",
-    event = "InsertEnter",
     enabled = false,
+    event = "InsertEnter",
     build = ":Codeium Auth",
+    spec = {
+      {
+        "saghen/blink.cmp",
+        optional = true,
+        dependencies = { "codeium.nvim", "saghen/blink.compat" },
+        opts = {
+          sources = {
+            compat = { "codeium" },
+            providers = {
+              codeium = {
+                kind = "Codeium",
+                score_offset = 100,
+                async = true,
+              },
+            },
+          },
+        },
+      },
+    },
     opts = {
       enable_cmp_source = vim.g.ai_cmp,
       virtual_text = {
@@ -247,19 +348,62 @@ return {
   },
   {
     "luozhiya/fittencode.nvim",
-    enabled = false,
     event = "InsertEnter",
+    init = function()
+      if vim.g.rime_enabled and vim.g.fittencode_enabled then
+        vim.notify("Please disable Rime first", { title = "Fittencode", timeout = 3000 })
+        vim.g.fittencode_enabled = false
+      end
+    end,
+    keys = {
+      {
+        "<leader>af",
+        function()
+          Utils.toggle.fittencode(false)
+        end,
+        desc = "Fittencode: Toggle",
+      },
+    },
     config = function()
       require("fittencode").setup({
         completion_mode = "source",
         source_completion = {
-          enable = true,
-          engine = "blink", -- "cmp" | "blink"
+          enbaled = true,
+          engine = "cmp",
           trigger_chars = {},
         },
       })
     end,
     lazy = true,
+  },
+  {
+    "saghen/blink.cmp",
+    optional = true,
+    dependencies = { "luozhiya/fittencode.nvim" },
+    opts = {
+      sources = {
+        compat = { "fittencode" },
+        providers = {
+          fittencode = {
+            enabled = function()
+              return vim.g.fittencode_enabled and not vim.g.rime_enabled
+            end,
+            kind = "Fitten",
+            score_offset = 100,
+            async = true,
+          },
+          -- default = { "fittencode" },
+          -- providers = {
+          --   fittencode = {
+          --     name = "fittencode",
+          --     module = "fittencode.sources.blink",
+          --     score_offset = 100,
+          --     async = true,
+          --     kind = "Fitten",
+          --   },
+        },
+      },
+    },
   },
   {
     "supermaven-inc/supermaven-nvim",
@@ -268,12 +412,42 @@ return {
       "SupermavenUseFree",
       "SupermavenUsePro",
     },
+
+    keys = {
+      {
+        "<leader>as",
+        function()
+          Utils.toggle.supermaven(false)
+        end,
+        desc = "Supermaven: Toggle",
+      },
+    },
     opts = {
       keymaps = {
         accept_suggestion = nil, -- handled by nvim-cmp / blink.cmp
       },
       disable_inline_completion = vim.g.ai_cmp,
       ignore_filetypes = { "bigfile", "snacks_input", "snacks_notif" },
+    },
+  },
+  {
+    "saghen/blink.cmp",
+    optional = true,
+    dependencies = { "supermaven-nvim", "saghen/blink.compat" },
+    opts = {
+      sources = {
+        compat = { "supermaven" },
+        providers = {
+          supermaven = {
+            enabled = function()
+              return vim.g.supermaven_enabled and not vim.g.rime_enabled
+            end,
+            kind = "Supermaven",
+            score_offset = 100,
+            async = true,
+          },
+        },
+      },
     },
   },
 }

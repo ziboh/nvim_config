@@ -62,7 +62,7 @@ return {
         }),
       },
     })
-    vim.keymap.set("n", "<C-a>", function()
+    vim.keymap.set("n", "<c-a>", function()
       require("dial.map").manipulate("increment", "normal")
     end)
     vim.keymap.set("n", "<C-x>", function()
@@ -87,5 +87,5 @@ return {
       require("dial.map").manipulate("decrement", "gvisual")
     end)
   end,
-  keys = { "<C-a>", { "<C-x>", mode = "n" } },
+  keys = { "<c-a>", { "<c-x>", mode = "n" } },
 }

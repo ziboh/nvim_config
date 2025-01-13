@@ -41,7 +41,7 @@ return {
         desc = "avante: refresh",
       },
       {
-        "<leader>af",
+        "<leader>aF",
         function()
           require("avante.api").focus()
         end,
@@ -181,6 +181,9 @@ return {
   {
     "Robitx/gp.nvim",
     config = function()
+      local lmstudio_endpoint = Utils.is_wsl()
+          and "http://" .. string.gsub(vim.fn.system("ip route | awk '/default/ { print $3 }' "), "^%s*(.-)%s*$", "%1") .. ":1234/v1/chat/completions"
+        or "http://localhost:1234/v1/chat/completions"
       require("gp").setup({
         providers = {
           openai = {
@@ -188,7 +191,7 @@ return {
             secret = os.getenv("ONEAPI_API_KEY"),
           },
           lmstudio = {
-            endpoint = "http://localhost:1234/v1/chat/completions",
+            endpoint = lmstudio_endpoint,
           },
         },
         agents = {

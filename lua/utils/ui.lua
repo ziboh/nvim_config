@@ -1,4 +1,4 @@
----@class lazyvim.util.ui
+---@class utils.ui
 local M = {}
 
 -- foldtext for Neovim < 0.10.0
@@ -15,6 +15,7 @@ function M.foldexpr()
     if vim.bo[buf].filetype == "" then
       return "0"
     end
+
     if vim.bo[buf].filetype:find("dashboard") then
       vim.b[buf].ts_folds = false
     else

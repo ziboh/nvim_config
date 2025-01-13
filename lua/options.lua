@@ -1,6 +1,20 @@
 -- This file is automatically loaded by plugins.core
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
+vim.g.rime_enabled = false
+vim.g.disable_rime_ls_pattern = {
+  -- disable in ``
+  "`(.*)`",
+  -- disable in ''
+  "'(.*)'",
+  -- disable in ""
+  '"(.*)"',
+  -- disable in []
+  "%[.*%]",
+}
+
+vim.g.fittencode_enabled = true
+vim.g.supermaven_enabled = true
 
 -- if the completion engine supports the AI source,
 -- use that instead of inline suggestions
@@ -61,10 +75,6 @@ opt.smartcase = true -- but make it case sensitive if an uppercase is entered
 opt.showtabline = 2 -- always display tabline.
 opt.signcolumn = "yes" -- always display signcolumn.
 
---For which-key
-opt.timeout = true
-opt.timeoutlen = 300
-
 -- turn off swapfile
 opt.swapfile = false
 
@@ -104,3 +114,5 @@ if vim.fn.has("win32") == 1 then
   opt.clipboard = "unnamedplus"
 end
 
+vim.opt.title = true
+vim.opt.titlestring = "neovim"

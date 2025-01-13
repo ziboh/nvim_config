@@ -1,12 +1,72 @@
 return {
   {
-    "b0o/SchemaStore.nvim",
-    lazy = true,
-    version = false, -- last release is way too old
-  },
-  {
     "folke/neoconf.nvim",
     lazy = true,
+  },
+
+  {
+    "williamboman/mason-lspconfig.nvim",
+    lazy = true,
+    opts = {
+      ensure_installed = {
+        "pyright",
+        "taplo",
+        "clangd",
+        "rust_analyzer",
+        "eslint",
+        "html",
+        "cssls",
+        "svelte",
+        "powershell_es",
+        "lua_ls",
+      },
+    },
+  },
+  {
+    "williamboman/mason.nvim",
+    opts_extend = { "ensure_installed" },
+    keys = { { "<leader>pm", "<cmd>Mason<cr>", desc = "Mason" } },
+    build = ":MasonUpdate",
+    cmd = {
+      "Mason",
+      "MasonInstall",
+      "MasonUninstall",
+      "MasonUninstallAll",
+      "MasonLog",
+    },
+    opts = {
+      ensure_installed = {
+        "stylua",
+        "shfmt",
+        "selene",
+        "ruff",
+        "prettierd",
+        "rustfmt",
+      },
+    },
+    ---@param opts MasonSettings | {ensure_installed: string[]}
+    config = function(_, opts)
+      require("mason").setup(opts)
+      local mr = require("mason-registry")
+      mr:on("package:install:success", function()
+        vim.defer_fn(function()
+          -- trigger FileType event to possibly load this newly installed LSP server
+          require("lazy.core.handler.event").trigger({
+            event = "FileType",
+            buf = vim.api.nvim_get_current_buf(),
+          })
+        end, 100)
+      end)
+
+      mr.refresh(function()
+        for _, tool in ipairs(opts.ensure_installed) do
+          local p = mr.get_package(tool)
+          if not p:is_installed() then
+            p:install()
+          end
+        end
+      end)
+    end,
   },
   {
     "neovim/nvim-lspconfig",
@@ -14,9 +74,14 @@ return {
     dependencies = {
       "mason.nvim",
       "williamboman/mason-lspconfig.nvim",
+      {
+        "folke/neoconf.nvim",
+        cmd = "Neoconf",
+        opts = {},
+      },
     },
     opts = {
-      diagnostics_config = {
+      diagnostics = {
         virtual_text = false,
         signs = {
           text = {
@@ -44,8 +109,26 @@ return {
         -- TODOvm: remove check when dropping support for neovim v0.10
         jump = { float = true },
       },
+      inlay_hints = {
+        enbaled = true,
+      },
+      codelens = {
+        enabled = true,
+      },
+      ---@type lspconfig.options
       servers = {
-        emma_language_server = {
+        rime_ls = {
+          on_attach = Utils.lsp.rime_on_attach,
+          offset_encoding = "utf-8",
+          init_options = {
+            enabled = vim.g.rime_enabled,
+            shared_data_dir = "/usr/share/rime-data",
+            user_data_dir = vim.fn.expand("~/.local/share/rime-ls"),
+            log_dir = vim.fn.expand("~/.local/share/rime-ls/logs"),
+            long_filter_text = true,
+          },
+        },
+        emmet_language_server = {
           ---@type table<string>
           filetypes = {
             "css",
@@ -60,6 +143,7 @@ return {
           },
           -- Read more about this options in the [vscode docs](https://code.visualstudio.com/docs/editor/emmet#_emmet-configuration).
           -- **Note:** only the options listed in the table are supported.
+          mason = true,
           init_options = {
             ---@type table<string, string>
             includeLanguages = {},
@@ -82,71 +166,19 @@ return {
           },
         },
         bashls = {
+          mason = true,
           filetypes = { "sh", "bash", "zsh" },
         },
         volar = {
+          mason = true,
           init_options = {
             vue = {
               hybridMode = true,
             },
           },
         },
-        vtsls = {
-          complete_function_calls = true,
-          filetypes = {
-            "javascript",
-            "javascriptreact",
-            "javascript.jsx",
-            "typescript",
-            "typescriptreact",
-            "typescript.tsx",
-          },
-          vtsls = {
-            enableMoveToFileCodeAction = true,
-            autoUseWorkspaceTsdk = true,
-            experimental = {
-              maxInlayHintLength = 30,
-              completion = {
-                enableServerSideFuzzyMatch = true,
-              },
-            },
-          },
-          typescript = {
-            updateImportsOnFileMove = { enabled = "always" },
-            suggest = {
-              completeFunctionCalls = true,
-            },
-            inlayHints = {
-              enumMemberValues = { enabled = true },
-              functionLikeReturnTypes = { enabled = true },
-              parameterNames = { enabled = "literals" },
-              parameterTypes = { enabled = true },
-              propertyDeclarationTypes = { enabled = true },
-              variableTypes = { enabled = false },
-            },
-          },
-        },
-        yamlls = {
-          on_new_config = function(new_config)
-            new_config.settings.yaml.schemas = vim.tbl_deep_extend(
-              "force",
-              new_config.settings.yaml.schemas or {},
-              require("schemastore").yaml.schemas()
-            )
-          end,
-          settings = {
-            yaml = {
-              schemaStore = {
-                -- You must disable built-in schemaStore support if you want to use
-                -- this plugin and its advanced options like `ignore`.
-                enable = false,
-                -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
-                url = "",
-              },
-            },
-          },
-        },
         jsonls = {
+          mason = true,
           on_new_config = function(new_config)
             new_config.settings.json.schemas = vim.tbl_deep_extend(
               "force",
@@ -164,42 +196,65 @@ return {
             },
           },
         },
+        rust_analyzer = { enabled = false },
+        ruff = { enabled = false },
       },
-      ignore_setup_lspconfig = {
-        "rust_analyzer",
-      },
-      ensure_installed_lspconfig = {
-        "pyright",
-        "lua_ls",
-        "bashls",
-        "taplo",
-        "clangd",
-        "rust_analyzer",
-        "vtsls",
-        "volar",
-        "eslint",
-        "html",
-        "cssls",
-        "emmet_language_server",
-        "svelte",
-        "yamlls",
-        "powershell_es",
-        "jsonls",
+      setup = {
+        rime_ls = function()
+          Utils.rime.setup({
+            filetype = vim.g.rime_ls_support_filetype,
+          })
+        end,
       },
     },
     config = function(_, opts)
-      vim.lsp.inlay_hint.enable(true)
-      vim.diagnostic.config(opts.diagnostics_config)
-      require("mason-lspconfig").setup({
-        ensure_installed = opts.ensure_installed_lspconfig,
-      })
-
-      local symbols = { Error = "󰅙", Info = "󰋼", Hint = "󰌵", Warn = "" }
-      for name, icon in pairs(symbols) do
-        local hl = "DiagnosticSign" .. name
-        vim.fn.sign_define(hl, { text = icon, numhl = hl, texthl = hl })
+      -- diagnostics signs
+      if vim.fn.has("nvim-0.10.0") == 0 then
+        if type(opts.diagnostics.signs) ~= "boolean" then
+          for severity, icon in pairs(opts.diagnostics.signs.text) do
+            local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
+            name = "DiagnosticSign" .. name
+            vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+          end
+        end
       end
-      require("neoconf").setup()
+
+      -- setup keymaps
+      Utils.lsp.on_attach(function(client, buffer)
+        require("plugins.lsp.keymaps").on_attach(client, buffer)
+      end)
+
+      Utils.lsp.setup()
+      Utils.lsp.on_dynamic_capability(require("plugins.lsp.keymaps").on_attach)
+
+      if vim.fn.has("nvim-0.10") == 1 then
+        -- inlay hints
+        if opts.inlay_hints.enabled then
+          Utils.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
+            if
+              vim.api.nvim_buf_is_valid(buffer)
+              and vim.bo[buffer].buftype == ""
+              and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
+            then
+              vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
+            end
+          end)
+        end
+
+        -- code lens
+        if opts.codelens.enabled and vim.lsp.codelens then
+          Utils.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
+            vim.lsp.codelens.refresh()
+            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+              buffer = buffer,
+              callback = vim.lsp.codelens.refresh,
+            })
+          end)
+        end
+      end
+
+      vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
+
       local capabilities = Utils.has("blink.cmp")
           and require("blink.cmp").get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
         or vim.lsp.protocol.make_client_capabilities()
@@ -210,38 +265,71 @@ return {
         }
       end
 
-      local lspconfig = require("lspconfig")
+      local servers = opts.servers
 
-      for _, lspc in pairs(opts.ensure_installed_lspconfig) do
-        local should_continue = false
-        for _, ignore_lsp in pairs(opts.ignore_setup_lspconfig) do
-          if lspc == ignore_lsp then
-            should_continue = true
-            break -- 找到匹配项，跳出内部循环
+      local function setup(server)
+        local server_opts = vim.tbl_deep_extend("force", {
+          capabilities = vim.deepcopy(capabilities),
+        }, servers[server] or {})
+        if server_opts.enabled == false then
+          return
+        end
+
+        if opts.setup[server] then
+          if opts.setup[server](server, server_opts) then
+            return
+          end
+        elseif opts.setup["*"] then
+          if opts.setup["*"](server, server_opts) then
+            return
           end
         end
-        if not should_continue then -- 如果没有找到匹配项
-          -- 如果有对应的 server 查看有没有一个 on_new_config 的函数
-          if opts.servers[lspc] and opts.servers[lspc].on_new_config then
-            opts.servers[lspc].on_new_config(opts.servers[lspc])
-            opts.servers[lspc].on_new_config = nil
+        require("lspconfig")[server].setup(server_opts)
+      end
+
+      -- get all the servers that are available through mason-lspconfig
+      local have_mason, mlsp = pcall(require, "mason-lspconfig")
+      local all_mslp_servers = {}
+      if have_mason then
+        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+      end
+
+      local ensure_installed = {} ---@type string[]
+      for server, server_opts in pairs(servers) do
+        if server_opts then
+          server_opts = server_opts == true and {} or server_opts
+          if server_opts.enabled ~= false then
+            -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
+            if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
+              setup(server)
+            else
+              ensure_installed[#ensure_installed + 1] = server
+            end
           end
-          lspconfig[lspc].setup(vim.tbl_deep_extend("force", {
-            capabilities = capabilities,
-            on_attach = Utils.lsp.on_attach,
-          }, opts.servers[lspc] and opts.servers[lspc] or {}))
         end
       end
-    end,
-  },
-  {
 
-    "zapling/mason-conform.nvim",
-    event = "User LazyFile",
-    opts = {},
-    dependencies = {
-      "stevearc/conform.nvim",
-    },
+      if have_mason then
+        mlsp.setup({
+          ensure_installed = Utils.list_insert_unique(
+            ensure_installed,
+            Utils.opts("mason-lspconfig.nvim").ensure_installed or {}
+          ),
+          handlers = { setup },
+        })
+      end
+
+      if Utils.lsp.is_enabled("denols") and Utils.lsp.is_enabled("vtsls") then
+        local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+        Utils.lsp.disable("vtsls", is_deno)
+        Utils.lsp.disable("denols", function(root_dir, config)
+          if not is_deno(root_dir) then
+            config.settings.deno.enable = false
+          end
+          return false
+        end)
+      end
+    end,
   },
   {
     "stevearc/conform.nvim",
@@ -254,7 +342,6 @@ return {
         end,
         desc = "Formatting",
       },
-      J,
     },
     dependencies = {
       "williamboman/mason.nvim",
@@ -281,19 +368,6 @@ return {
     },
   },
   {
-    "williamboman/mason.nvim",
-    keys = { { "<leader>pm", "<cmd>Mason<cr>", desc = "Mason" } },
-    build = ":MasonUpdate",
-    opts = {},
-    cmd = {
-      "Mason",
-      "MasonInstall",
-      "MasonUninstall",
-      "MasonUninstallAll",
-      "MasonLog",
-    },
-  },
-  {
     "hedyhli/outline.nvim",
     lazy = true,
     cmd = { "Outline", "OutlineOpen" },
@@ -303,56 +377,6 @@ return {
     opts = {},
   },
   { "kevinhwang91/nvim-bqf", ft = "qf" },
-  {
-    "saecki/crates.nvim",
-    event = { "BufRead Cargo.toml" },
-    dependencies = { "nvim-lua/plenary.nvim" },
-    config = function()
-      require("crates").setup({
-        completion = {
-          cmp = {
-            enabled = true,
-          },
-          crates = {
-            enabled = true, -- disabled by default
-            max_results = 8, -- The maximum number of search results to display
-            min_chars = 3, -- The minimum number of charaters to type before completions begin appearing
-          },
-        },
-        null_ls = {
-          enabled = false,
-          name = "crates.nvim",
-        },
-      })
-    end,
-  },
-  {
-    "mrcjkb/rustaceanvim",
-    version = "^5",
-    ft = { "rust" },
-    cofnig = function()
-      local rustacean_logfile = vim.fn.tempname() .. "-rustacean.log"
-      vim.g.rustaceanvim = {
-        tools = {
-          hover_actions = {
-            replace_builtin_hover = false,
-          },
-        },
-        -- LSP configuration
-        server = {
-          on_attach = Utils.lsp.rust_on_attach,
-          cmd = function()
-            return { Utils.lsp.get_rust_anlayzer(), "--log-file", rustacean_logfile }
-          end,
-
-          ---@type string The path to the rust-analyzer log file.
-          logfile = rustacean_logfile,
-        },
-        -- DAP configuration
-        dap = { adapter = Utils.lsp.get_codelldb() },
-      }
-    end,
-  },
   {
     "p00f/clangd_extensions.nvim",
     event = "Lspattach",

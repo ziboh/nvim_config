@@ -1,8 +1,7 @@
 ---copyright 2023
 ---license GNU General Public License v3.0
----@class astrocore.toggles
+---@class utils.toggle
 local M = {}
-local T = {}
 local function bool2str(bool)
   return bool and "on" or "off"
 end
@@ -123,22 +122,34 @@ function M.foldcolumn(silent)
   ui_notify(silent, ("foldcolumn=%s"):format(vim.wo.foldcolumn))
 end
 
+--- @param slient? boolean if true then don't sent a notification
 function M.fittencode(slient)
-  local ok, fittencode = pcall(require, "fittencode")
-  if ok then
-    local statuscode = fittencode.get_current_status()
-    if statuscode == 1 then
-      fittencode.enable_completions({ enable = true })
-      ui_notify(slient, "Enable Fittencode")
-    else
-      fittencode.enable_completions({ enable = false })
-      ui_notify(slient, "Disable Fittencode")
+  if vim.g.fittencode_enabled == false then
+    vim.g.fittencode_enabled = true
+    if slient == nil or slient == false then
+      Utils.info("Enable Fittencode", { title = "Fittencode", timeout = 3000 })
     end
-    vim.api.nvim_exec_autocmds("User", {
-      pattern = "ToggleFitten",
-      modeline = false,
-    })
+  else
+    vim.g.fittencode_enabled = false
+    if slient == nil or slient == false then
+      Utils.info("Disable Fittencode", { title = "Fittencode", timeout = 3000 })
+    end
   end
 end
 
+
+--- @param slient? boolean if true then don't sent a notification
+function M.supermaven(slient)
+  if vim.g.supermaven_enabled == false then
+    vim.g.supermaven_enabled = true
+    if slient == nil or slient == false then
+      Utils.info("Enable SuperMaven", { title = "SuperMaven", timeout = 3000 })
+    end
+  else
+    vim.g.supermaven_enabled = false
+    if slient == nil or slient == false then
+      Utils.info("Disable SuperMaven", { title = "SuperMaven", timeout = 3000 })
+    end
+  end
+end
 return M

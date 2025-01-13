@@ -100,3 +100,19 @@ vim.api.nvim_create_autocmd({ "TextYankPost" }, {
   pattern = { "*" },
   command = [[call setreg("+", getreg("@"))]],
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "AvanteInput" },
+  callback = function(env)
+    local rime_ls_client = vim.lsp.get_clients({ name = "rime_ls" })
+    -- 如果没有启动 `rime-ls` 就手动启动
+    if #rime_ls_client == 0 then
+      vim.cmd("LspStart rime_ls")
+      rime_ls_client = vim.lsp.get_clients({ name = "rime_ls" })
+    end
+    -- `attach` 到 `buffer`
+    if #rime_ls_client > 0 then
+      vim.lsp.buf_attach_client(env.buf, rime_ls_client[1].id)
+    end
+  end,
+})
