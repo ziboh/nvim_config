@@ -116,24 +116,6 @@ return {
       },
       ---@type lspconfig.options
       servers = {
-        rime_ls = {
-          on_attach = Utils.lsp.rime_on_attach,
-          offset_encoding = "utf-8",
-          on_new_config = function(new_config)
-            if Utils.is_win() then
-              new_config.init_options.user_data_dir = "D:\\软件\\rime\\config"
-              new_config.init_options.log_dir = "D:\\软件\\rime\\logs"
-              new_config.init_options.shared_data_dir = "D:\\软件\\rime\\data"
-            end
-          end,
-          init_options = {
-            enabled = vim.g.rime_enabled,
-            shared_data_dir = "/usr/share/rime-data",
-            user_data_dir = vim.fn.expand("~/.local/share/rime-ls"),
-            log_dir = vim.fn.expand("~/.local/share/rime-ls/logs"),
-            long_filter_text = true,
-          },
-        },
         emmet_language_server = {
           ---@type table<string>
           filetypes = {
@@ -205,17 +187,7 @@ return {
         rust_analyzer = { enabled = false },
         ruff = { enabled = false },
       },
-      setup = {
-        rime_ls = function()
-          if not vim.fn.executable("rime_ls") then
-            Utils.warn("Rime LSP is not installed", { itle = "Rime LSP" })
-            return true
-          end
-          Utils.rime.setup({
-            filetype = vim.g.rime_ls_support_filetype,
-          })
-        end,
-      },
+      setup = {},
     },
     config = function(_, opts)
       -- diagnostics signs

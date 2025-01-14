@@ -343,4 +343,77 @@ function M.install_ahk2_lsp(callback)
   })
 end
 
+-- 定义一个函数来检测依赖是否已安装
+function M.check_dependencies()
+  -- 检测 clang 是否已安装
+  local clang_check = vim.fn.system("which clang")
+  if clang_check == "" then
+    Utils.warn("clang 未安装，请先安装 clang")
+    return false
+  end
+
+  -- 检测 librime-dev 是否已安装
+  local librime_check = vim.fn.system("dpkg -l | grep librime-dev")
+  if librime_check == "" then
+    Utils.warn("librime-dev 未安装，请先安装 librime-dev")
+    return false
+  end
+  return true
+end
+
+-- 克隆项目的辅助函数
+local function clone_project(project_dir, callback)
+  local clone_cmd = "git clone https://github.com/wlh320/rime-ls.git " .. project_dir
+  vim.fn.jobstart(clone_cmd, {
+    on_exit = function(_, clone_exit_code)
+      if clone_exit_code == 0 then
+        -- 3. 构建项目
+        local build_cmd = "cargo install --path " .. project_dir
+        vim.fn.jobstart(build_cmd, {
+          on_exit = function(_, build_exit_code)
+            if build_exit_code == 0 then
+              Utils.info("rime_ls 安装成功")
+              callback(true) -- 安装成功，返回 true
+            else
+              Utils.error("rime_ls 安装失败")
+              callback(false) -- 安装失败，返回 false
+            end
+          end,
+        })
+      else
+        Utils.error("项目克隆失败")
+        callback(false) -- 克隆失败，返回 false
+      end
+    end,
+  })
+end
+
+function M.install_rime_ls(callback)
+  -- 1. 检测依赖
+  if not M.check_dependencies() then
+    callback(false) -- 依赖未安装，返回 false
+    return
+  end
+
+  -- 2. 检查并删除已存在的项目目录
+  local project_dir = "/tmp/rime-ls"
+  if vim.fn.isdirectory(project_dir) == 1 then
+    local remove_cmd = "rm -rf " .. project_dir
+    vim.fn.jobstart(remove_cmd, {
+      on_exit = function(_, remove_exit_code)
+        if remove_exit_code == 0 then
+          -- 目录删除成功，继续克隆项目
+          clone_project(project_dir, callback)
+        else
+          Utils.error("无法删除已存在的项目目录")
+          callback(false) -- 删除失败，返回 false
+        end
+      end,
+    })
+  else
+    -- 目录不存在，直接克隆项目
+    clone_project(project_dir, callback)
+  end
+end
+
 return M
