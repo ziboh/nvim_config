@@ -1,6 +1,6 @@
 return {
   "rebelot/heirline.nvim",
-  dependencies = { { "mathjiajia/heirline-components.nvim", branch = "fix_conform" } },
+  dependencies = { { "Zeioth/heirline-components.nvim" } },
   event = "VeryLazy",
   opts = function()
     local lib = require("heirline-components.all")
