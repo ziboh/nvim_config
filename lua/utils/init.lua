@@ -211,9 +211,10 @@ end
 ---@param msg string The notification body.
 ---@param type number|nil The type of the notification (:help vim.log.levels).
 ---@param opts? table The nvim-notify options to use (:help notify-options).
-function M.notify(msg, type, opts)
+function M.notify(msg, opts)
+  local level = opts.levels or vim.log.levels.INFO
   vim.schedule(function()
-    vim.notify(msg, type, vim.tbl_deep_extend("force", { title = "Neovim" }, opts or {}))
+    vim.notify(msg, level, vim.tbl_deep_extend("force", { title = "Neovim" }, opts or {}))
   end)
 end
 
