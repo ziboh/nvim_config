@@ -18,7 +18,7 @@ return {
         -- 将路径中的主目录替换为 ~
         filepath = filepath:gsub(home, " ")
         -- 将路径中的斜杠替换为 >，兼容不同平台
-        filepath = filepath:gsub("[\\/]", "")
+        filepath = filepath:gsub("[\\/]", ""):gsub("^", "")
 
         return filepath
       end,
