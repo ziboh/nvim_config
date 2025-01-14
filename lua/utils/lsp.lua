@@ -284,4 +284,63 @@ function M.execute(opts)
   end
 end
 
+function M.install_ahk2_lsp(callback)
+  -- 获取数据目录路径
+  local install_dir = vim.fn.stdpath("data") .. "/vscode-autohotkey2-lsp"
+
+  -- 创建安装目录
+  vim.fn.mkdir(install_dir, "p")
+
+  -- 保存当前目录
+  local current_dir = vim.fn.getcwd()
+  vim.fn.chdir(install_dir)
+
+  -- 下载安装脚本
+  local install_script = install_dir .. "/install.js"
+  local download_cmd = {
+    "curl.exe",
+    "-L",
+    "-o",
+    install_script,
+    "https://raw.githubusercontent.com/thqby/vscode-autohotkey2-lsp/main/tools/install.js",
+  }
+
+  -- 异步执行下载
+  vim.fn.jobstart(download_cmd, {
+    on_exit = function(_, code)
+      if code ~= 0 then
+        vim.schedule(function()
+          Utils.error("Failed to download install script")
+          vim.fn.chdir(current_dir)
+          if callback then
+            callback(false)
+          end
+        end)
+        return
+      end
+
+      -- 异步执行安装脚本
+      vim.fn.chdir(install_dir)
+      vim.fn.jobstart({ "node", "install.js" }, {
+        on_exit = function(_, install_code)
+          vim.schedule(function()
+            vim.fn.chdir(current_dir)
+            if install_code == 0 then
+              Utils.info("AutoHotkey 2 LSP installed successfully!")
+              if callback then
+                callback(true)
+              end
+            else
+              Utils.error("Failed to run install script")
+              if callback then
+                callback(false)
+              end
+            end
+          end)
+        end,
+      })
+    end,
+  })
+end
+
 return M

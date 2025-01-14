@@ -16,7 +16,7 @@ return {
     ---@type blink.cmp.Config
     opts = {
       fuzzy = {
-        use_frecency = false,
+        use_frecency = true,
       },
       snippets = {
         preset = "luasnip",

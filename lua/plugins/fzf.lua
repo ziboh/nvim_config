@@ -203,6 +203,7 @@ return {
     { "<leader>fF", require("utils.pick")("files", { root = false }), desc = "Find Files (cwd)" },
     { "<leader>fg", "<cmd>FzfLua git_files<cr>", desc = "Find Files (git-files)" },
     { "<leader>fr", "<cmd>FzfLua oldfiles<cr>", desc = "Recent" },
+    ---@diagnostic disable-next-line: assign-type-mismatch
     { "<leader>fR", require("utils.pick")("oldfiles", { cwd = vim.uv.cwd() }), desc = "Recent (cwd)" },
     -- git
     { "<leader>gc", "<cmd>FzfLua git_commits<CR>", desc = "Commits" },

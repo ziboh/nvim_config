@@ -3,7 +3,6 @@ return {
     "folke/neoconf.nvim",
     lazy = true,
   },
-
   {
     "williamboman/mason-lspconfig.nvim",
     lazy = true,
@@ -120,6 +119,13 @@ return {
         rime_ls = {
           on_attach = Utils.lsp.rime_on_attach,
           offset_encoding = "utf-8",
+          on_new_config = function(new_config)
+            if Utils.is_win() then
+              new_config.init_options.user_data_dir = "D:\\软件\\rime\\config"
+              new_config.init_options.log_dir = "D:\\软件\\rime\\logs"
+              new_config.init_options.shared_data_dir = "D:\\软件\\rime\\data"
+            end
+          end,
           init_options = {
             enabled = vim.g.rime_enabled,
             shared_data_dir = "/usr/share/rime-data",
@@ -201,6 +207,10 @@ return {
       },
       setup = {
         rime_ls = function()
+          if not vim.fn.executable("rime_ls") then
+            Utils.warn("Rime LSP is not installed", { itle = "Rime LSP" })
+            return true
+          end
           Utils.rime.setup({
             filetype = vim.g.rime_ls_support_filetype,
           })

@@ -15,6 +15,7 @@ return {
     opts = {
       _on_attach_pre = function(_, callback)
         if Utils.is_win() then
+          callback()
           return
         end
         require("gitsigns-yadm").yadm_signs(callback)
