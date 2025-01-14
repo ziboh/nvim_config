@@ -6,7 +6,6 @@ return {
     "mfussenegger/nvim-dap",
   },
   ft = { "python" },
-  branch = "regexp", -- This is the regexp branch, use this for the new version
   opts = function()
     local opts = {}
     if not Utils.is_win() then
