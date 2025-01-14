@@ -15,7 +15,7 @@ return {
       -- better deal with markdown code blocks
       markdown = true,
     },
-    config = function(_,opts)
+    config = function(_, opts)
       Utils.mini.pairs(opts)
     end,
   },
@@ -206,7 +206,6 @@ return {
   },
   {
     "echasnovski/mini.surround",
-    recommended = true,
     keys = function(_, keys)
       -- Populate the keys based on the user's options
       local opts = Utils.opts("mini.surround")
@@ -226,7 +225,7 @@ return {
     end,
     opts = {
       mappings = {
-        add = "ys", -- Add surrounding in Normal and Visual modes
+        add = "gsa", -- Add surrounding in Normal and Visual modes
         delete = "ds", -- Delete surrounding
         find = "gsf", -- Find surrounding (to the right)
         find_left = "gsF", -- Find surrounding (to the left)

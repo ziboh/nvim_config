@@ -1,6 +1,6 @@
 return {
   -- "linux-cultist/venv-selector.nvim",
-  dir = "~/projects/venv-selector.nvim",
+  "ziboh/venv-selector.nvim",
   dependencies = {
     -- "neovim/nvim-lspconfig",
     "mfussenegger/nvim-dap",
