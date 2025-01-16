@@ -93,6 +93,18 @@ function M.rime_on_attach(client, _)
   local map_set = Utils.safe_keymap_set
   local map_del = vim.keymap.del
 
+  vim.api.nvim_create_user_command("RimeSync", function()
+    client.request("workspace/executeCommand", {
+      command = "rime-ls.sync_user_data",
+    }, function(_, result, ctx, _)
+      if result then
+        Utils.info("Rime LSP: sync user data success", { title = "Rime LSP" })
+      else
+        Utils.error("Rime LSP: sync user data failed", { title = "Rime LSP" })
+      end
+    end)
+  end, { nargs = 0 })
+
   vim.api.nvim_create_user_command("RimeToggle", function()
     client.request("workspace/executeCommand", { command = "rime-ls.toggle-rime" }, function(_, result, ctx, _)
       if vim.g.rime_enabled then
@@ -128,7 +140,7 @@ function M.rime_on_attach(client, _)
 
   -- Toggle rime
   -- This will toggle Chinese punctuations too
-  map_set({ "n", "i" }, "<c-a-]>", function()
+  map_set({ "n", "i" }, "<c-a-F12>", function()
     -- We must check the status before the toggle
     vim.cmd("RimeToggle")
   end)

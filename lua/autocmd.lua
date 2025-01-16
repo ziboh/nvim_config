@@ -116,3 +116,15 @@ vim.api.nvim_create_autocmd("FileType", {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd("TermEnter", {
+  callback = function(ctx)
+    vim.opt.titlestring = "terminal"
+  end,
+})
+
+vim.api.nvim_create_autocmd("TermLeave", {
+  callback = function()
+    vim.opt.titlestring = "neovim"
+  end,
+})
