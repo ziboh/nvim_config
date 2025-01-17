@@ -550,8 +550,8 @@ function M.create_undo()
   end
 end
 
-function M.is_ssh()
-  if vim.env.SSH_TTY == nil then
+function M.is_remote()
+  if vim.env.SSH_TTY == nil and vim.env.WEZTERM_EXECUTABLE == nil then
     return false
   else
     return true

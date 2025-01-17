@@ -32,6 +32,7 @@ return {
   {
     "sphamba/smear-cursor.nvim",
     event = "VeryLazy",
+    enabled = false,
     opts = {},
   },
   {

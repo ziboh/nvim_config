@@ -167,8 +167,7 @@ return {
     build = vim.uv.os_uname().sysname:find("Windows") ~= nil
         and "powershell -executionpolicy bypass -file build.ps1 -buildfromsource false"
       or "make",
-    dependencies = {
-    },
+    dependencies = {},
   },
   {
     "Robitx/gp.nvim",

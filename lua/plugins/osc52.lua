@@ -1,6 +1,6 @@
 return {
   "ojroques/nvim-osc52",
-  enabled = Utils.is_ssh(),
+  enabled = Utils.is_remote(),
   config = function(_, opts)
     require("osc52").setup(opts)
     local function copy(lines, _)
