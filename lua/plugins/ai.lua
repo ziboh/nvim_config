@@ -181,17 +181,17 @@ return {
   {
     "Robitx/gp.nvim",
     config = function()
-      local lmstudio_endpoint = Utils.is_wsl()
-          and "http://" .. string.gsub(vim.fn.system("ip route | awk '/default/ { print $3 }' "), "^%s*(.-)%s*$", "%1") .. ":1234/v1/chat/completions"
-        or "http://localhost:1234/v1/chat/completions"
+      local ollama_endpoint = Utils.is_wsl()
+          and "http://" .. string.gsub(vim.fn.system("ip route | awk '/default/ { print $3 }' "), "^%s*(.-)%s*$", "%1") .. ":11434/v1/chat/completions"
+        or "http://localhost:11434/v1/chat/completions"
       require("gp").setup({
         providers = {
           openai = {
             endpoint = os.getenv("ONEAPI_URL") .. "/v1/chat/completions",
             secret = os.getenv("ONEAPI_API_KEY"),
           },
-          lmstudio = {
-            endpoint = lmstudio_endpoint,
+          ollama = {
+            endpoint = ollama_endpoint,
           },
         },
         agents = {
@@ -329,13 +329,13 @@ return {
             system_prompt = require("gp.defaults").code_system_prompt,
           },
           {
-            provider = "lmstudio",
+            provider = "ollama",
             name = "CodeQwen",
             chat = true,
             command = true,
             -- string with model name or table with model name and parameters
             model = {
-              model = "qwen2.5-coder-7b-instruct",
+              model = "qwen2.5",
               temperature = 0.8,
               top_p = 1,
               num_ctx = 8192,
@@ -343,13 +343,13 @@ return {
             system_prompt = require("gp.defaults").code_system_prompt,
           },
           {
-            provider = "lmstudio",
+            provider = "ollama",
             name = "ChatQwen",
             chat = true,
             command = false,
             -- string with model name or table with model name and parameters
             model = {
-              model = "qwen2.5-coder-7b-instruct",
+              model = "qwen2.5",
               temperature = 0.97,
               top_p = 1,
               num_ctx = 8192,

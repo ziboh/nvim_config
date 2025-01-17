@@ -94,10 +94,8 @@ function M.rime_on_attach(client, _)
   local map_del = vim.keymap.del
 
   vim.api.nvim_create_user_command("RimeSync", function()
-    client.request("workspace/executeCommand", {
-      command = "rime-ls.sync_user_data",
-    }, function(_, result, ctx, _)
-      if result then
+    client.request("workspace/executeCommand", { command = "rime-ls.sync-user-data" }, function(err, result, ctx)
+      if result == nil and not err then
         Utils.info("Rime LSP: sync user data success", { title = "Rime LSP" })
       else
         Utils.error("Rime LSP: sync user data failed", { title = "Rime LSP" })
@@ -106,7 +104,7 @@ function M.rime_on_attach(client, _)
   end, { nargs = 0 })
 
   vim.api.nvim_create_user_command("RimeToggle", function()
-    client.request("workspace/executeCommand", { command = "rime-ls.toggle-rime" }, function(_, result, ctx, _)
+    client.request("workspace/executeCommand", { command = "rime-ls.toggle-rime" }, function(_, result, ctx)
       if vim.g.rime_enabled then
         for k, _ in pairs(mapped_punc) do
           map_del({ "i" }, k .. "<space>")
@@ -358,8 +356,7 @@ end
 -- 定义一个函数来检测依赖是否已安装
 function M.check_dependencies()
   -- 检测 clang 是否已安装
-  local clang_check = vim.fn.system("which clang")
-  if clang_check == "" then
+  if vim.fn.executable("clang") == 0 then
     Utils.warn("clang 未安装，请先安装 clang")
     return false
   end

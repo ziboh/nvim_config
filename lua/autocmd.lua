@@ -128,3 +128,17 @@ vim.api.nvim_create_autocmd("TermLeave", {
     vim.opt.titlestring = "neovim"
   end,
 })
+
+vim.api.nvim_create_autocmd("CmdLineEnter", {
+  pattern = "*",
+  callback = function()
+    vim.opt.titlestring = "command"
+  end,
+})
+
+vim.api.nvim_create_autocmd("CmdLineLeave", {
+  pattern = "*",
+  callback = function()
+    vim.opt.titlestring = "neovim"
+  end,
+})

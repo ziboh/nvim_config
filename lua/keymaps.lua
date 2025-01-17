@@ -145,7 +145,7 @@ maps.n["<c-]>"] = {
   end,
   desc = "Next buffer",
 }
-maps.n["<c-a-[>"] = {
+maps.n["<c-a-F10>"] = {
   function()
     require("heirline-components.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1))
   end,
