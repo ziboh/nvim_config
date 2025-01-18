@@ -93,7 +93,7 @@ function M.rime_on_attach(client, _)
   local map_set = Utils.safe_keymap_set
   local map_del = vim.keymap.del
 
-  vim.api.nvim_create_user_command("RimeSync", function()
+  local sync_user_data = function()
     client.request("workspace/executeCommand", { command = "rime-ls.sync-user-data" }, function(err, result, ctx)
       if result == nil and not err then
         Utils.info("Rime LSP: sync user data success", { title = "Rime LSP" })
@@ -101,6 +101,23 @@ function M.rime_on_attach(client, _)
         Utils.error("Rime LSP: sync user data failed", { title = "Rime LSP" })
       end
     end)
+  end
+
+  vim.api.nvim_create_user_command("RimeSync", function()
+    if not vim.g.rclone_sync_rime then
+      sync_user_data()
+    else
+      vim.schedule(function()
+        M.rclone_sync(vim.g.rclone_rime_remote_path, vim.g.rclone_rime_local_path, function(success)
+          if success then
+            sync_user_data()
+            vim.schedule(function()
+              M.rclone_sync(vim.g.rclone_rime_local_path, vim.g.rclone_rime_remote_path)
+            end)
+          end
+        end)
+      end)
+    end
   end, { nargs = 0 })
 
   vim.api.nvim_create_user_command("RimeToggle", function()
@@ -423,6 +440,28 @@ function M.install_rime_ls(callback)
     -- 目录不存在，直接克隆项目
     clone_project(project_dir, callback)
   end
+end
+
+function M.rclone_sync(src, dst, callback)
+  if vim.fn.executable("rclone") == 0 then
+    Utils.error("rclone 未安装，请先安装 rclone")
+    callback(false)
+  end
+  local rclone_cmd = "rclone sync " .. src .. " " .. dst
+  vim.fn.jobstart(rclone_cmd, {
+    on_exit = function(_, rclone_exit_code)
+      if rclone_exit_code == 0 then
+        if callback then
+          callback(true)
+        end
+      else
+        Utils.error("rclone 同步失败")
+        if callback then
+          callback(false)
+        end
+      end
+    end,
+  })
 end
 
 return M
