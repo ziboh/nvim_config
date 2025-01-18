@@ -18,7 +18,7 @@ return {
         "svelte",
         "powershell_es",
         "lua_ls",
-        "emmet_language_server"
+        "emmet_language_server",
       },
     },
   },
@@ -309,6 +309,9 @@ return {
         c = { "clang-format" },
         cpp = { "clang-format" },
         sh = { "shfmt" },
+      },
+      default_format_opts = {
+        lsp_format = "fallback",
       },
     },
   },
