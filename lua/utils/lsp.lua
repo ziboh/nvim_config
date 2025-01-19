@@ -261,6 +261,7 @@ end
 
 function M.is_enabled(server)
   local c = M.get_config(server)
+---@diagnostic disable-next-line: undefined-field
   return c and c.enabled ~= false
 end
 
@@ -387,8 +388,8 @@ function M.check_dependencies()
   return true
 end
 
--- 克隆项目的辅助函数
-local function clone_project(project_dir, callback)
+--- 克隆项目的辅助函数
+local function clone_project(project_dir, cb)
   local clone_cmd = "git clone https://github.com/wlh320/rime-ls.git " .. project_dir
   vim.fn.jobstart(clone_cmd, {
     on_exit = function(_, clone_exit_code)
@@ -399,25 +400,35 @@ local function clone_project(project_dir, callback)
           on_exit = function(_, build_exit_code)
             if build_exit_code == 0 then
               Utils.info("rime_ls 安装成功")
-              callback(true) -- 安装成功，返回 true
+              if cb then
+                cb(true) -- 安装成功，返回 true
+              end
             else
               Utils.error("rime_ls 安装失败")
-              callback(false) -- 安装失败，返回 false
+              if cb then
+                cb(false)
+              end
             end
           end,
         })
       else
         Utils.error("项目克隆失败")
-        callback(false) -- 克隆失败，返回 false
+        if cb then
+          cb(false)
+        end
       end
     end,
   })
 end
 
-function M.install_rime_ls(callback)
+--- 安装 Rime LS
+---@param cb? fun(success:boolean)
+function M.install_rime_ls(cb)
   -- 1. 检测依赖
   if not M.check_dependencies() then
-    callback(false) -- 依赖未安装，返回 false
+    if cb then
+      cb(false) -- 依赖未安装，返回 false
+    end
     return
   end
 
@@ -429,16 +440,18 @@ function M.install_rime_ls(callback)
       on_exit = function(_, remove_exit_code)
         if remove_exit_code == 0 then
           -- 目录删除成功，继续克隆项目
-          clone_project(project_dir, callback)
+          clone_project(project_dir, cb)
         else
           Utils.error("无法删除已存在的项目目录")
-          callback(false) -- 删除失败，返回 false
+          if cb then
+            cb(false) -- 删除失败，返回 false
+          end
         end
       end,
     })
   else
     -- 目录不存在，直接克隆项目
-    clone_project(project_dir, callback)
+    clone_project(project_dir, cb)
   end
 end
 
