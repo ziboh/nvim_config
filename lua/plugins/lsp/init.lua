@@ -11,7 +11,6 @@ return {
         "pyright",
         "taplo",
         "clangd",
-        "rust_analyzer",
         "eslint",
         "html",
         "cssls",

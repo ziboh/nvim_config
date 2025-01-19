@@ -29,8 +29,8 @@ return {
           end
         end
 
-        vim.keymap.set("n", "<leader>h", show_documentation, { bufnr = bufnr, silent = true,desc = "Hover" })
-        vim.keymap.set("n", "K", show_documentation, { bufnr = bufnr, silent = true,desc = "Hover" })
+        vim.keymap.set("n", "<leader>h", show_documentation, { bufnr = bufnr, silent = true, desc = "Hover" })
+        vim.keymap.set("n", "K", show_documentation, { bufnr = bufnr, silent = true, desc = "Hover" })
       end, "crates.nvim")
     end,
   },
@@ -59,5 +59,23 @@ return {
         dap = { adapter = Utils.lsp.get_codelldb() },
       }
     end,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    optional = true,
+    opts = {
+      ensure_installed = {
+        "rust_analyzer",
+      },
+    },
+  },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    optional = true,
+    opts = {
+      ensure_installed = {
+        "rust",
+      },
+    },
   },
 }

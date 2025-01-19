@@ -1,10 +1,10 @@
-vim.g.lazyvim_blink_main = false
+vim.g.blink_main = true
 ---@type LazyPluginSpec[]
 return {
   {
     "saghen/blink.cmp",
-    version = not vim.g.lazyvim_blink_main and "*",
-    build = vim.g.lazyvim_blink_main and "cargo build --release",
+    version = not vim.g.blink_main and "*",
+    build = vim.g.blink_main and "cargo build --release",
     opts_extend = {
       "sources.completion.enabled_providers",
       "sources.compat",
