@@ -142,7 +142,7 @@ return {
           O = "system_open",
           Y = "copy_selector",
           h = "parent_or_close",
-          l = "child_or_open",
+          -- l = "child_or_open",
           -- ["<space>"] = "toggle_dir_or_open",
         },
       },
