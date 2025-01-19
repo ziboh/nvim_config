@@ -13,9 +13,10 @@ pick = function()
   local function ansi_from_hl(hl, s)
     return utils.ansi_from_hl(hl_validate(hl), s)
   end
+  
   local opts = {
     fzf_opts = {
-      ["--preview"] = vim.fn.executable("lla") == 1 and "lla --icons {}" or "ls -l {}",
+      ["--preview"] = vim.fn.executable("lla") == 1 and "lla --icons {}" or "exa -l {}",
       ["--preview-window"] = "nohidden,down,50%",
       ["--header"] = string.format(
         ":: <%s> to %s | <%s> to %s | <%s> to %s | <%s> to %s | <%s> to %s",

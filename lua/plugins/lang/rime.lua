@@ -23,7 +23,7 @@ return {
         },
       },
       setup = {
-        rime_ls = function(_,opts)
+        rime_ls = function(_, opts)
           if vim.fn.executable("rime_ls") == 0 and Utils.is_win() then
             Utils.warn("Rime LSP is not installed", { itle = "Rime LSP" })
             return true
@@ -44,6 +44,14 @@ return {
             end)
             return true
           end
+
+          vim.g.rclone_sync_rime = false
+          if Utils.is_remote() and vim.fn.executable("rclone") == 1 then
+            vim.g.rclone_sync_rime = true
+            vim.g.rclone_rime_remote_path = "od:webdav/rime"
+            vim.g.rclone_rime_local_path = vim.fn.expand("~/rclone/rime")
+          end
+
           Utils.rime.setup({
             filetype = vim.g.rime_ls_support_filetype,
           })

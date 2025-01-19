@@ -4,7 +4,7 @@ return {
   config = function(_)
     local overseer = require("overseer")
     overseer.setup({
-      templates = { "builtin", "user.run_current_python", "user.run_rye_script" },
+      templates = { "builtin", "user.run_rye_script", "user.run_current_file" },
       task_list = {
         direction = "right",
         bindings = {
@@ -22,7 +22,11 @@ return {
           args = { "--port=5555", path },
         }
       end,
-      condition = {},
+      condition = {
+        callback = function()
+          vim.fn.executable("live-server")
+        end,
+      },
     })
   end,
   keys = {

@@ -88,12 +88,6 @@ function M.setup(opts)
     opts.filetype = { filetypes }
   end
   local configs = require("lspconfig.configs")
-  vim.g.rclone_sync_rime = false
-  if Utils.is_remote() and vim.fn.executable("rclone") == 1 then
-    vim.g.rclone_sync_rime = true
-    vim.g.rclone_rime_remote_path = "od:webdav/rime"
-    vim.g.rclone_rime_local_path = vim.fn.expand("~/rclone/rime")
-  end
   configs.rime_ls = {
     default_config = {
       name = "rime_ls",

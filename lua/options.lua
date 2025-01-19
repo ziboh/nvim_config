@@ -116,3 +116,29 @@ end
 
 vim.opt.title = true
 vim.opt.titlestring = "neovim"
+
+-- Special handling for pwsh
+if vim.fn.has("win32") == 1 then
+  -- Check if 'pwsh' is executable and set the shell accordingly
+  if vim.fn.executable("pwsh") == 1 then
+    vim.o.shell = "pwsh"
+  elseif vim.fn.executable("powershell") == 1 then
+    vim.o.shell = "powershell"
+  else
+    return Utils.error("No powershell executable found")
+  end
+
+  -- Setting shell command flags
+  vim.o.shellcmdflag =
+    "-NoLogo -NonInteractive -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';$PSStyle.OutputRendering='plaintext';Remove-Alias -Force -ErrorAction SilentlyContinue tee;"
+
+  -- Setting shell redirection
+  vim.o.shellredir = '2>&1 | %%{ "$_" } | Out-File %s; exit $LastExitCode'
+
+  -- Setting shell pipe
+  vim.o.shellpipe = '2>&1 | %%{ "$_" } | tee %s; exit $LastExitCode'
+
+  -- Setting shell quote options
+  vim.o.shellquote = ""
+  vim.o.shellxquote = ""
+end

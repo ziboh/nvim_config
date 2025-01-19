@@ -147,7 +147,7 @@ function M.rime_on_attach(client, _)
         if result then
           Utils.info("Rime Enabled", { title = "Rime", timeout = 3000 })
         else
-          Utils.info("Rime Disabled", { title = "Rime", timeout = 3000 })
+          Utils.warn("Rime Disabled", { title = "Rime", timeout = 3000 })
         end
       end
     end)
