@@ -442,6 +442,10 @@ function M.install_rime_ls(callback)
   end
 end
 
+--- 使用 rclone 和远程远程同步
+---@param src string 本地文件路径
+---@param dst string 远程文件路径
+---@param callback? fun(success:boolean)
 function M.rclone_sync(src, dst, callback)
   if vim.fn.executable("rclone") == 0 then
     Utils.error("rclone 未安装，请先安装 rclone")
