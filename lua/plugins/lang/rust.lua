@@ -36,38 +36,80 @@ return {
   },
   {
     "mrcjkb/rustaceanvim",
-    version = "^5",
+    version = vim.fn.has("nvim-0.10.0") == 0 and "^4" or false,
     ft = { "rust" },
-    cofnig = function()
-      local rustacean_logfile = vim.fn.tempname() .. "-rustacean.log"
-      vim.g.rustaceanvim = {
-        tools = {
-          hover_actions = {
-            replace_builtin_hover = false,
+    opts = {
+      server = {
+        on_attach = function(_, bufnr)
+          vim.keymap.set("n", "<leader>la", function()
+            vim.cmd.RustLsp("codeAction")
+          end, { desc = "Code Action", buffer = bufnr })
+          vim.keymap.set("n", "<leader>dr", function()
+            vim.cmd.RustLsp("debuggables")
+          end, { desc = "Rust Debuggables", buffer = bufnr })
+        end,
+        default_settings = {
+          -- rust-analyzer language server configuration
+          ["rust-analyzer"] = {
+            cargo = {
+              allFeatures = true,
+              loadOutDirsFromCheck = true,
+              buildScripts = {
+                enable = true,
+              },
+            },
+            -- Add clippy lints for Rust if using rust-analyzer
+            checkOnSave = true,
+            -- Enable diagnostics if using rust-analyzer
+            diagnostics = {
+              enable = true,
+            },
+            procMacro = {
+              enable = true,
+              ignored = {
+                ["async-trait"] = { "async_trait" },
+                ["napi-derive"] = { "napi" },
+                ["async-recursion"] = { "async_recursion" },
+              },
+            },
+            files = {
+              excludeDirs = {
+                ".direnv",
+                ".git",
+                ".github",
+                ".gitlab",
+                "bin",
+                "node_modules",
+                "target",
+                "venv",
+                ".venv",
+              },
+            },
           },
         },
-        -- LSP configuration
-        server = {
-          cmd = function()
-            return { Utils.lsp.get_rust_anlayzer(), "--log-file", rustacean_logfile }
-          end,
-
-          ---@type string The path to the rust-analyzer log file.
-          logfile = rustacean_logfile,
-        },
-        -- DAP configuration
-        dap = { adapter = Utils.lsp.get_codelldb() },
-      }
-    end,
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    optional = true,
-    opts = {
-      ensure_installed = {
-        "rust_analyzer",
       },
     },
+    config = function(_, opts)
+      if Utils.has("mason.nvim") then
+        local package_path = require("mason-registry").get_package("codelldb"):get_install_path()
+        local codelldb = package_path .. "/extension/adapter/codelldb"
+        local library_path = package_path .. "/extension/lldb/lib/liblldb.dylib"
+        local uname = io.popen("uname"):read("*l")
+        if uname == "Linux" then
+          library_path = package_path .. "/extension/lldb/lib/liblldb.so"
+        end
+        opts.dap = {
+          adapter = require("rustaceanvim.config").get_codelldb_adapter(codelldb, library_path),
+        }
+      end
+      vim.g.rustaceanvim = vim.tbl_deep_extend("keep", vim.g.rustaceanvim or {}, opts or {})
+      if vim.fn.executable("rust-analyzer") == 0 then
+        Utils.error(
+          "**rust-analyzer** not found in PATH, please install it.\nhttps://rust-analyzer.github.io/",
+          { title = "rustaceanvim" }
+        )
+      end
+    end,
   },
   {
     "nvim-treesitter/nvim-treesitter",

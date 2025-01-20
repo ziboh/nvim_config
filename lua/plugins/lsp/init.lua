@@ -41,7 +41,6 @@ return {
         "selene",
         "ruff",
         "prettierd",
-        "rustfmt",
       },
     },
     ---@param opts MasonSettings | {ensure_installed: string[]}
