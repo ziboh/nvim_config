@@ -586,4 +586,31 @@ function M.value_in_list(value, list)
   end
 end
 
+function M.is_port_in_use(port)
+  local command
+  local os_name = vim.loop.os_uname().sysname
+
+  -- 根据操作系统选择不同的命令
+  if os_name == "Linux" then
+    command = string.format("ss -tuln | grep ':%d '", port)
+  elseif os_name == "Windows_NT" then
+    command = string.format("netstat -an | findstr :%d", port)
+  else
+    print("Unsupported operating system")
+    return false
+  end
+
+  -- 执行命令并获取输出
+  local handle = io.popen(command)
+  local result = handle:read("*a")
+  handle:close()
+
+  -- 判断输出是否包含端口信息
+  if result and result ~= "" then
+    return true
+  else
+    return false
+  end
+end
+
 return M

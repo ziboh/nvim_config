@@ -2,6 +2,7 @@ return {
   "nvim-treesitter/nvim-treesitter",
   event = { "User LazyFile", "VeryLazy" },
   lazy = vim.fn.argc(-1) == 0,
+  opts_extend = { "ensure_installed" },
   opts = {
     ensure_installed = {
       "bash",
@@ -35,6 +36,8 @@ return {
     sync_install = false,
     auto_install = true,
     ignore_install = { "javascript" },
+    highlight = { enable = true },
+    indent = { enable = true },
   },
   config = function(_, opts)
     require("nvim-treesitter.configs").setup(opts)

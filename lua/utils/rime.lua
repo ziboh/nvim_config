@@ -88,10 +88,15 @@ function M.setup(opts)
     opts.filetype = { filetypes }
   end
   local configs = require("lspconfig.configs")
+  local port = 9527
+  if not Utils.is_port_in_use(port) then
+    vim.fn.system("rime_ls --listen 127.0.0.1:9528")
+    port = 9528
+  end
   configs.rime_ls = {
     default_config = {
       name = "rime_ls",
-      cmd = { "rime_ls" },
+      cmd = vim.lsp.rpc.connect("127.0.0.1", port),
       filetypes = opts.filetype,
       single_file_support = true,
     },

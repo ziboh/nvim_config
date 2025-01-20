@@ -1,7 +1,8 @@
 return {
   "rebelot/heirline.nvim",
   dependencies = { { "Zeioth/heirline-components.nvim" } },
-  lazy = false,
+  lazy = vim.fn.argc(-1) == 0,
+  event = "VeryLazy",
   opts = function()
     local lib = require("heirline-components.all")
     local conditions = require("heirline.conditions")
