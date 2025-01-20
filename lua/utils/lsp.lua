@@ -84,7 +84,6 @@ function M.rime_on_attach(client, _)
     [":"] = "：",
     ["?"] = "？",
     ["\\"] = "、",
-    -- FIX: can not work now
     [";"] = "；",
   }
 

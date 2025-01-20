@@ -90,8 +90,10 @@ function M.setup(opts)
   local configs = require("lspconfig.configs")
   local port = 9527
   if not Utils.is_port_in_use(port) then
-    vim.fn.system("rime_ls --listen 127.0.0.1:9528")
+    vim.system({ "rime_ls", "--listen", "127.0.0.1:9528" }, { detach = true })
     port = 9528
+  elseif Utils.is_win() and Utils.is_port_in_use(9528) then
+    Utils.win_close_port(9528)
   end
   configs.rime_ls = {
     default_config = {
