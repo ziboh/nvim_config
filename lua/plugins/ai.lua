@@ -326,7 +326,7 @@ return {
             command = true,
             -- string with model name or table with model name and parameters
             model = {
-              model = "qwen2.5",
+              model = "qwen2.5-coder:7b",
               temperature = 0.8,
               top_p = 1,
               num_ctx = 8192,
@@ -340,7 +340,7 @@ return {
             command = false,
             -- string with model name or table with model name and parameters
             model = {
-              model = "qwen2.5",
+              model = "qwen2.5-coder:7b",
               temperature = 0.97,
               top_p = 1,
               num_ctx = 8192,
