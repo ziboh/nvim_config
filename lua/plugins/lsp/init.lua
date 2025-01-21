@@ -1,9 +1,5 @@
 return {
   {
-    "folke/neoconf.nvim",
-    lazy = true,
-  },
-  {
     "williamboman/mason-lspconfig.nvim",
     lazy = true,
     opts_extend = { "ensure_installed" },
@@ -128,24 +124,6 @@ return {
             },
           },
         },
-        jsonls = {
-          mason = true,
-          on_new_config = function(new_config)
-            new_config.settings.json.schemas = vim.tbl_deep_extend(
-              "force",
-              new_config.settings.json.schemas or {},
-              require("schemastore").json.schemas()
-            )
-          end,
-          settings = {
-            json = {
-              format = {
-                enable = true,
-              },
-              validate = { enable = true },
-            },
-          },
-        },
         rust_analyzer = { enabled = false },
         ruff = { enabled = false },
       },
@@ -153,13 +131,11 @@ return {
     },
     config = function(_, opts)
       -- diagnostics signs
-      if vim.fn.has("nvim-0.10.0") == 0 then
-        if type(opts.diagnostics.signs) ~= "boolean" then
-          for severity, icon in pairs(opts.diagnostics.signs.text) do
-            local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
-            name = "DiagnosticSign" .. name
-            vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
-          end
+      if type(opts.diagnostics.signs) ~= "boolean" then
+        for severity, icon in pairs(opts.diagnostics.signs.text) do
+          local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
+          name = "DiagnosticSign" .. name
+          vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
         end
       end
 
@@ -171,19 +147,16 @@ return {
       Utils.lsp.setup()
       Utils.lsp.on_dynamic_capability(require("plugins.lsp.keymaps").on_attach)
 
-      if vim.fn.has("nvim-0.10") == 1 then
-        -- inlay hints
-        if opts.inlay_hints.enabled then
-          Utils.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
-            if
-              vim.api.nvim_buf_is_valid(buffer)
-              and vim.bo[buffer].buftype == ""
-              and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
-            then
-              vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
-            end
-          end)
-        end
+      if opts.inlay_hints.enabled then
+        Utils.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
+          if
+            vim.api.nvim_buf_is_valid(buffer)
+            and vim.bo[buffer].buftype == ""
+            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
+          then
+            vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
+          end
+        end)
 
         -- code lens
         if opts.codelens.enabled and vim.lsp.codelens then
@@ -199,17 +172,17 @@ return {
 
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
-      local capabilities = Utils.has("blink.cmp")
-          and require("blink.cmp").get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
-        or vim.lsp.protocol.make_client_capabilities()
-      if Utils.has("nvim-ufo") then
-        capabilities.textDocument.foldingRange = {
-          dynamicRegistration = false,
-          lineFoldingOnly = true,
-        }
-      end
-
       local servers = opts.servers
+      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+      local has_blink, blink = pcall(require, "blink.cmp")
+      local capabilities = vim.tbl_deep_extend(
+        "force",
+        {},
+        vim.lsp.protocol.make_client_capabilities(),
+        has_cmp and cmp_nvim_lsp.default_capabilities() or {},
+        has_blink and blink.get_lsp_capabilities() or {},
+        opts.capabilities or {}
+      )
 
       local function setup(server)
         local server_opts = vim.tbl_deep_extend("force", {

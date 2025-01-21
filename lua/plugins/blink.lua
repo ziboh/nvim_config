@@ -18,26 +18,14 @@ return {
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
     opts = {
-      fuzzy = {
-        use_frecency = true,
-      },
       snippets = {
         preset = "luasnip",
       },
       completion = {
         accept = {
           auto_brackets = {
-            enabled = false,
+            enabled = true,
           },
-        },
-        keyword = {
-          -- BUG: set to '' will lead to an error when completion
-          ---@diagnostic disable-next-line: assign-type-mismatch
-          exclude_from_prefix_regex = nil,
-        },
-        list = {
-          selection = { preselect = true, auto_insert = true },
-          max_items = 20,
         },
         menu = {
           border = "single",
@@ -102,7 +90,6 @@ return {
                 item.source_name = client.name
               end
 
-              -- you can define your own filter for rime item
               return items
             end,
           },
@@ -121,13 +108,7 @@ return {
         ["<C-h>"] = { "scroll_documentation_up" },
       },
       appearance = {
-        highlight_ns = vim.api.nvim_create_namespace("blink_cmp"),
-        -- Sets the fallback highlight groups to nvim-cmp's highlight groups
-        -- Useful for when your theme doesn't support blink.cmp
-        -- Will be removed in a future release
         use_nvim_cmp_as_default = false,
-        -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-        -- Adjusts spacing to ensure icons are aligned
         nerd_font_variant = "mono",
         kind_icons = {
           Text = "󰉿",

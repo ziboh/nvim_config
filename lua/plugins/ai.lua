@@ -172,10 +172,10 @@ return {
   {
     "Robitx/gp.nvim",
     config = function()
-      local ollama_endpoint = Utils.is_wsl()
-          and "http://" .. string.gsub(vim.fn.system("ip route | awk '/default/ { print $3 }' "), "^%s*(.-)%s*$", "%1") .. ":11434/v1/chat/completions"
+      local ollama_endpoint = Utils.is_wsl() and "http://" .. Utils.get_wsl_router_ip() .. ":11434/v1/chat/completions"
         or "http://localhost:11434/v1/chat/completions"
       require("gp").setup({
+        chat_free_cursor = true,
         providers = {
           openai = {
             endpoint = os.getenv("ONEAPI_URL") .. "/v1/chat/completions",

@@ -614,33 +614,37 @@ function M.is_port_in_use(port)
 end
 
 -- 创建一个函数来关闭指定端口的进程
- function M.win_close_port(port)
-	-- 获取占用端口的进程信息
-	local handle = io.popen(string.format("netstat -ano | findstr :%d", port))
-	local result = handle:read("*a")
-	handle:close()
+function M.win_close_port(port)
+  -- 获取占用端口的进程信息
+  local handle = io.popen(string.format("netstat -ano | findstr :%d", port))
+  local result = handle:read("*a")
+  handle:close()
 
-	-- 如果没有找到进程
-	if result == "" then
-		print("No process found using port " .. port)
-		return
-	end
+  -- 如果没有找到进程
+  if result == "" then
+    print("No process found using port " .. port)
+    return
+  end
 
-	-- 从结果中提取 PID
-	-- netstat 输出格式类似：TCP    0.0.0.0:9928    0.0.0.0:0    LISTENING    1234
-	local pid = result:match("%d+%s*$"):gsub("%s+","")
+  -- 从结果中提取 PID
+  -- netstat 输出格式类似：TCP    0.0.0.0:9928    0.0.0.0:0    LISTENING    1234
+  local pid = result:match("%d+%s*$"):gsub("%s+", "")
 
-	if pid then
-		-- 使用 taskkill 命令关闭进程
-		local cmd = string.format("taskkill /PID %s /F", pid)
-		local kill_handle = io.popen(cmd)
-		local kill_result = kill_handle:read("*a"):gsub("%s+$","")
-		kill_handle:close()
+  if pid then
+    -- 使用 taskkill 命令关闭进程
+    local cmd = string.format("taskkill /PID %s /F", pid)
+    local kill_handle = io.popen(cmd)
+    local kill_result = kill_handle:read("*a"):gsub("%s+$", "")
+    kill_handle:close()
 
-		Utils.info(kill_result)
-	else
-		print("Could not find PID for port " .. port)
-	end
+    Utils.info(kill_result)
+  else
+    print("Could not find PID for port " .. port)
+  end
+end
+
+function M.get_wsl_router_ip()
+  return string.gsub(vim.fn.system("ip route | awk '/default/ { print $3 }' "), "^%s*(.-)%s*$", "%1")
 end
 
 return M
