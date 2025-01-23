@@ -112,6 +112,37 @@ return {
       },
       ---@type lspconfig.options
       servers = {
+        lua_ls = {
+          -- mason = false, -- set to false if you don't want this server to be installed with mason
+          -- Use this to add any additional keymaps
+          -- for specific lsp servers
+          -- ---@type LazyKeysSpec[]
+          -- keys = {},
+          settings = {
+            Lua = {
+              workspace = {
+                checkThirdParty = false,
+              },
+              codeLens = {
+                enable = true,
+              },
+              completion = {
+                callSnippet = "Replace",
+              },
+              doc = {
+                privateName = { "^_" },
+              },
+              hint = {
+                enable = true,
+                setType = false,
+                paramType = true,
+                paramName = "Disable",
+                semicolon = "Disable",
+                arrayIndex = "Disable",
+              },
+            },
+          },
+        },
         bashls = {
           mason = true,
           filetypes = { "sh", "bash", "zsh" },
@@ -138,7 +169,6 @@ return {
           vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
         end
       end
-
       -- setup keymaps
       Utils.lsp.on_attach(function(client, buffer)
         require("plugins.lsp.keymaps").on_attach(client, buffer)

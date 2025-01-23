@@ -87,18 +87,24 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.api.nvim_create_autocmd({ "FocusGained" }, {
   pattern = { "*" },
-  command = [[call setreg("@", getreg("+"))]],
+  callback = function()
+    vim.fn.setreg('"', vim.fn.getreg("+"))
+  end,
 })
 
 -- sync with system clipboard on focus
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
   pattern = { "*" },
-  command = [[call setreg("+", getreg("@"))]],
+  callback = function()
+    vim.fn.setreg("+", vim.fn.getreg('"'))
+  end,
 })
 
-vim.api.nvim_create_autocmd({ "TextYankPost" }, {
-  pattern = { "*" },
-  command = [[call setreg("+", getreg("@"))]],
+vim.api.nvim_create_autocmd("TextYankPost", {
+  pattern = "*",
+  callback = function()
+    vim.fn.setreg("+", vim.fn.getreg('"'))
+  end,
 })
 
 vim.api.nvim_create_autocmd("FileType", {

@@ -371,20 +371,15 @@ return {
           .. "\n\n```{{filetype}}\n{{selection}}\n```\n\n{{command}}"
           .. "\n\nRespond exclusively with the snippet that should be prepended before the selection above.",
         template_command = "{{command}}",
-        chat_template = [[
-# topic: ?
-
-- file: {{filename}}
-{{optional_headers}}
-在 {{user_prefix}} 后输入您的问题。使用 `{{respond_shortcut}}` 或 :{{cmd_prefix}}ChatRespond 生成请求。
-可以通过使用 `{{stop_shortcut}}` 或 :{{cmd_prefix}}ChatStop 命令来终止响应。
-聊天内容会自动保存。要删除此聊天，请使用 `{{delete_shortcut}}` 或 :{{cmd_prefix}}ChatDelete。
-请注意非常长的聊天。使用 `{{new_shortcut}}` 或 :{{cmd_prefix}}ChatNew 开始一个新的聊天。
-
----
-
-{{user_prefix}}
-]],
+        chat_template = "# topic: ?\n\n"
+          .. "- file: {{filename}}\n"
+          .. "{{optional_headers}}\n"
+          .. "在 {{user_prefix}} 后输入您的问题。使用 `{{respond_shortcut}}` 或 :{{cmd_prefix}}ChatRespond 生成请求。\n"
+          .. "可以通过使用 `{{stop_shortcut}}` 或 :{{cmd_prefix}}ChatStop 命令来终止响应。\n"
+          .. "聊天内容会自动保存。要删除此聊天，请使用 `{{delete_shortcut}}` 或 :{{cmd_prefix}}ChatDelete。\n"
+          .. "请注意非常长的聊天。使用 `{{new_shortcut}}` 或 :{{cmd_prefix}}ChatNew 开始一个新的聊天。\n\n"
+          .. "---\n\n"
+          .. "{{user_prefix}}\n",
         hooks = {
           -- example of adding command which opens new chat dedicated for translation
           Translator = function(gp, params)

@@ -138,3 +138,12 @@ if vim.fn.has("win32") == 1 then
 
   vim.o.shellxquote = ""
 end
+
+local setreg = vim.fn.setreg
+---@diagnostic disable-next-line: duplicate-set-field
+vim.fn.setreg = function(rename, value, opts)
+  setreg(rename, value, opts)
+  if rename == "+" then
+    setreg('"', value, opts)
+  end
+end

@@ -202,7 +202,8 @@ return {
     { "<leader>fa", require("utils.pick").config_files(), desc = "Find Config File" },
     { "<leader>fF", require("utils.pick")("files", { root = false }), desc = "Find Files (cwd)" },
     { "<leader>fg", "<cmd>FzfLua git_files<cr>", desc = "Find Files (git-files)" },
-    { "<leader>fr", "<cmd>FzfLua oldfiles<cr>", desc = "Recent" },
+    { "<leader>fo", "<cmd>FzfLua oldfiles<cr>", desc = "Old Files" },
+    { "<leader>fr", "<cmd>FzfLua registers<cr>", desc = "Registers" },
     ---@diagnostic disable-next-line: assign-type-mismatch
     { "<leader>fR", require("utils.pick")("oldfiles", { cwd = vim.uv.cwd() }), desc = "Recent (cwd)" },
     -- git
