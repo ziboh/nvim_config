@@ -69,9 +69,9 @@ return {
   WordFile = "󰈭",
   Test = "󰙨",
   Docs = "",
-  Python = "",
-  Replace = "󰛔",
-  Rust = "󱘗",
-  Ai = "",
+  Python = " ",
+  Replace = "󰛔 ",
+  Rust = "󱘗 ",
+  Ai = " ",
   Overseer = " ",
 }

@@ -17,9 +17,9 @@ return {
         local filepath = vim.fn.expand("%:p") -- 获取当前文件的完整路径
         local home = vim.env.HOME -- 获取用户的主目录
         -- 将路径中的主目录替换为 ~
-        filepath = filepath:gsub(home, " ")
+        filepath = filepath:gsub(home, "")
         -- 将路径中的斜杠替换为 >，兼容不同平台
-        filepath = filepath:gsub("[\\/]", ""):gsub("^", "")
+        filepath = filepath:gsub("[\\/]", "  "):gsub("^", "")
 
         return filepath
       end,

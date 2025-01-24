@@ -592,9 +592,11 @@ function M.is_port_in_use(port)
 
   -- 根据操作系统选择不同的命令
   if os_name == "Linux" then
-    command = string.format("ss -tuln | grep ':%d '", port)
+    -- 只查找 LISTEN 状态的端口，使用更精确的匹配
+    command = string.format("ss -tuln state listening | grep ':\\b%d\\b'", port)
   elseif os_name == "Windows_NT" then
-    command = string.format("netstat -an | findstr :%d", port)
+    -- 在 Windows 下专门查找 LISTENING 状态的端口
+    command = string.format("netstat -an | findstr /R /C:\":%d.*LISTENING\"", port)
   else
     print("Unsupported operating system")
     return false
@@ -602,15 +604,21 @@ function M.is_port_in_use(port)
 
   -- 执行命令并获取输出
   local handle = io.popen(command)
-  local result = handle:read("*a")
-  handle:close()
-
-  -- 判断输出是否包含端口信息
-  if result and result ~= "" then
-    return true
-  else
+  if not handle then
+    print("Failed to execute command")
     return false
   end
+  
+  local result = handle:read("*a")
+  local success, _ = handle:close()
+  
+  if not success then
+    print("Failed to close handle")
+    return false
+  end
+
+  -- 判断输出是否包含端口信息
+  return result and result:match("%S") ~= nil
 end
 
 -- 创建一个函数来关闭指定端口的进程
