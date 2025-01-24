@@ -85,27 +85,29 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.api.nvim_create_autocmd({ "FocusGained" }, {
-  pattern = { "*" },
-  callback = function()
-    vim.fn.setreg('"', vim.fn.getreg("+"))
-  end,
-})
+if Utils.is_wsl() then
+  vim.api.nvim_create_autocmd({ "FocusGained" }, {
+    pattern = { "*" },
+    callback = function()
+      vim.fn.setreg('"', vim.fn.getreg("+"))
+    end,
+  })
 
--- sync with system clipboard on focus
-vim.api.nvim_create_autocmd({ "FocusLost" }, {
-  pattern = { "*" },
-  callback = function()
-    vim.fn.setreg("+", vim.fn.getreg('"'))
-  end,
-})
+  -- sync with system clipboard on focus
+  vim.api.nvim_create_autocmd({ "FocusLost" }, {
+    pattern = { "*" },
+    callback = function()
+      vim.fn.setreg("+", vim.fn.getreg('"'))
+    end,
+  })
 
-vim.api.nvim_create_autocmd("TextYankPost", {
-  pattern = "*",
-  callback = function()
-    vim.fn.setreg("+", vim.fn.getreg('"'))
-  end,
-})
+  vim.api.nvim_create_autocmd("TextYankPost", {
+    pattern = "*",
+    callback = function()
+      vim.fn.setreg("+", vim.fn.getreg('"'))
+    end,
+  })
+end
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "AvanteInput" },
