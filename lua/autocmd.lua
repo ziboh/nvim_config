@@ -1,4 +1,4 @@
--- 创建一个新的用户事件
+-- LazyFile and LazyGit autocmd
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile", "BufWritePre" }, {
   group = vim.api.nvim_create_augroup("file_user_events", { clear = true }),
   callback = function(args)
@@ -85,30 +85,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-if Utils.is_wsl() then
-  vim.api.nvim_create_autocmd({ "FocusGained" }, {
-    pattern = { "*" },
-    callback = function()
-      vim.fn.setreg('"', vim.fn.getreg("+"))
-    end,
-  })
-
-  -- sync with system clipboard on focus
-  vim.api.nvim_create_autocmd({ "FocusLost" }, {
-    pattern = { "*" },
-    callback = function()
-      vim.fn.setreg("+", vim.fn.getreg('"'))
-    end,
-  })
-
-  vim.api.nvim_create_autocmd("TextYankPost", {
-    pattern = "*",
-    callback = function()
-      vim.fn.setreg("+", vim.fn.getreg('"'))
-    end,
-  })
-end
-
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "AvanteInput" },
   callback = function(env)
@@ -126,7 +102,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("TermEnter", {
-  callback = function(ctx)
+  callback = function()
     vim.opt.titlestring = "terminal"
   end,
 })

@@ -94,25 +94,7 @@ opt.smoothscroll = true
 opt.foldexpr = "v:lua.require'utils'.ui.foldexpr()"
 opt.foldmethod = "expr"
 opt.foldtext = ""
-
-if vim.fn.has("wsl") == 1 then
-  vim.g.clipboard = {
-    name = "win32yank-wsl",
-    copy = {
-      ["+"] = "clip.exe",
-      ["*"] = "clip.exe",
-    },
-    paste = {
-      ["+"] = "win32yank.exe -o --lf",
-      ["*"] = "win32yank.exe -o --lf",
-    },
-    cache_enabled = true,
-  }
-end
-
-if vim.fn.has("win32") == 1 then
-  opt.clipboard = "unnamedplus"
-end
+opt.clipboard = "unnamedplus"
 
 vim.opt.title = true
 vim.opt.titlestring = "neovim"

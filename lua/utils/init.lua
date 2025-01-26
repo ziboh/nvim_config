@@ -563,6 +563,8 @@ function M.lazygit_args()
   local args = nil
   if worktree then
     args = { "-w", worktree.toplevel, "-g", worktree.gitdir }
+  else
+    args = { "-w", Utils.root() }
   end
   return args
 end
@@ -572,7 +574,7 @@ end
 function M.feedkeys(keys, mode)
   -- 将按键序列转换为 Neovim 内部格式
   local termcodes = vim.api.nvim_replace_termcodes(keys, true, true, true)
-  -- 将转换后的按键序列发送到 Neovim 的输入缓冲区
+  -- Send the converted key sequence to Neovim's input buffer.
   vim.api.nvim_feedkeys(termcodes, mode, false)
 end
 
@@ -596,7 +598,7 @@ function M.is_port_in_use(port)
     command = string.format("ss -tuln state listening | grep ':\\b%d\\b'", port)
   elseif os_name == "Windows_NT" then
     -- 在 Windows 下专门查找 LISTENING 状态的端口
-    command = string.format("netstat -an | findstr /R /C:\":%d.*LISTENING\"", port)
+    command = string.format('netstat -an | findstr /R /C:":%d.*LISTENING"', port)
   else
     print("Unsupported operating system")
     return false
@@ -608,10 +610,10 @@ function M.is_port_in_use(port)
     print("Failed to execute command")
     return false
   end
-  
+
   local result = handle:read("*a")
   local success, _ = handle:close()
-  
+
   if not success then
     print("Failed to close handle")
     return false
@@ -653,6 +655,110 @@ end
 
 function M.get_wsl_router_ip()
   return string.gsub(vim.fn.system("ip route | awk '/default/ { print $3 }' "), "^%s*(.-)%s*$", "%1")
+end
+
+function M.get_visual_selection()
+  -- 检查是否在可视模式
+  local mode = vim.fn.mode()
+  if mode ~= "v" and mode ~= "V" and mode ~= "\22" then
+    return nil
+  end
+
+  -- 获取开始和结束位置
+  local start_pos = vim.fn.getpos("v")
+  local end_pos = vim.fn.getpos(".")
+
+  -- 行和列是从1开始计数的
+  local start_line, start_col = start_pos[2], start_pos[3]
+  local end_line, end_col = end_pos[2], end_pos[3]
+
+  -- 确保开始位置在结束位置之前
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+    start_col, end_col = end_col, start_col
+  end
+
+  return {
+    start_line = start_line,
+    start_col = start_col,
+    end_line = end_line,
+    end_col = end_col,
+    mode = mode, -- 添加模式信息
+  }
+end
+
+function M.GetVisualSelection()
+  vim.api.nvim_input("<Esc>")
+  local pos = M.get_visual_selection()
+
+  if pos == nil then
+    return
+  end
+
+  -- 获取选中的行
+  local start_line = pos.start_line
+  local end_line = pos.end_line
+  local lines = {}
+
+  if pos.mode == "V" then
+    -- 行可视模式：直接获取整行
+    for line_num = start_line, end_line do
+      local line = vim.fn.getline(line_num)
+      table.insert(lines, line)
+    end
+  else
+    -- 字符可视模式和块可视模式
+    for line_num = start_line, end_line do
+      local line = vim.fn.getline(line_num)
+
+      -- 计算开始和结束的列位置
+      local start_col = line_num == start_line and pos.start_col or 1
+      local end_col = line_num == end_line and pos.end_col or #line
+
+      -- 将列位置转换为字节索引
+      local start_byte = vim.fn.byteidx(line, start_col - 1) + 1
+      local end_byte = vim.fn.byteidx(line, end_col)
+
+      -- 如果end_byte为nil（发生在行尾），使用字符串长度
+      end_byte = end_byte or #line
+
+      -- 提取这一行选中的部分
+      local selected_text = string.sub(line, start_byte, end_byte)
+      table.insert(lines, selected_text)
+    end
+  end
+
+  -- 将所有行组合成一个字符串
+  return table.concat(lines, "\n")
+end
+
+-- Determine if the character is a Chinese character
+function M.detect_language(str)
+  local chinese_count = 0
+  local english_count = 0
+
+  local i = 1
+  while i <= #str do
+    local byte = string.byte(str, i)
+    if byte == nil then
+      break
+    end
+
+    if byte >= 0xE0 and byte <= 0xEF then
+      -- 中文字符（UTF-8 编码占3字节）
+      chinese_count = chinese_count + 1
+      i = i + 3
+    elseif byte >= 0x20 and byte <= 0x7E then
+      -- ASCII 可显示字符（英文、数字、符号等）
+      english_count = english_count + 1
+      i = i + 1
+    else
+      -- 其他字符
+      i = i + 1
+    end
+  end
+
+  return chinese_count > english_count and "Chinese" or "English"
 end
 
 return M

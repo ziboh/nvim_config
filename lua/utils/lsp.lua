@@ -454,9 +454,9 @@ function M.install_rime_ls(cb)
   end
 end
 
---- 使用 rclone 和远程远程同步
----@param src string 本地文件路径
----@param dst string 远程文件路径
+--- Use Rclone to sync with remote storage
+---@param src string Local file path
+---@param dst string Remote file path
 ---@param callback? fun(success:boolean)
 function M.rclone_sync(src, dst, callback)
   if vim.fn.executable("rclone") == 0 then

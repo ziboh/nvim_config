@@ -172,6 +172,7 @@ return {
   {
     "Robitx/gp.nvim",
     config = function()
+      local gp = require("gp")
       local ollama_endpoint = Utils.is_wsl() and "http://" .. Utils.get_wsl_router_ip() .. ":11434/v1/chat/completions"
         or "http://localhost:11434/v1/chat/completions"
       require("gp").setup({
@@ -382,9 +383,12 @@ return {
           .. "{{user_prefix}}\n",
         hooks = {
           -- example of adding command which opens new chat dedicated for translation
-          Translator = function(gp, params)
-            local chat_system_prompt = "You are a Translator, please translate between English and Chinese."
-            gp.cmd.ChatNew(params, chat_system_prompt)
+          Explain = function(gp, params)
+            local template = "I have the following code from {{filename}}:\n\n"
+              .. "```{{filetype}}\n{{selection}}\n```\n\n"
+              .. "Please respond by explaining the code above."
+            local agent = gp.get_chat_agent()
+            gp.Prompt(params, gp.Target.popup, agent, template)
           end,
         },
       })
@@ -408,8 +412,79 @@ return {
           end
         end)
       end, { desc = "GPT prompt Choose Agent" })
+
+      local Translate = function()
+        local buf = vim.api.nvim_create_buf(false, true)
+
+        local trans_winid = vim.api.nvim_open_win(buf, false, {
+          relative = "cursor",
+          width = 100,
+          height = 4,
+          col = 1,
+          row = 1,
+          style = "minimal",
+          border = "single",
+        })
+
+        local agent = gp.get_chat_agent("ChatQwen")
+        vim.schedule(function()
+          local handler = gp.dispatcher.create_handler(buf, nil, 0, false, "", false)
+          local on_exit = function()
+            local lines = vim.api.nvim_buf_get_lines(buf, 0, 1, false)
+
+            while #lines > 0 and lines[#lines]:gsub("^%s*$", "") == "" do
+              table.remove(lines)
+            end
+
+            -- Write the modified content back to the buffer.
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+
+            vim.api.nvim_create_autocmd("CursorMoved", {
+              group = vim.api.nvim_create_augroup("MyGroup", { clear = true }),
+              callback = function()
+                if vim.api.nvim_win_is_valid(trans_winid) and vim.api.nvim_get_current_win() ~= trans_winid then
+                  vim.api.nvim_win_close(trans_winid, false)
+                  vim.api.nvim_del_augroup_by_name("MyGroup")
+                elseif not vim.api.nvim_win_is_valid(trans_winid) then
+                  vim.api.nvim_del_augroup_by_name("MyGroup")
+                end
+              end,
+            })
+          end
+          local messages = {}
+          local sys_prompt =
+            "You are a professional translation engine, please translate the text into a colloquial, professional, elegant and fluent content, without the style of machine translation.You must only translate the text content, never interpret it. Don't have any extra symbols."
+
+          local text = Utils.GetVisualSelection()
+          local lang = Utils.detect_language(text) == "Chinese" and "English" or "Chinese"
+          table.insert(messages, { role = "system", content = sys_prompt })
+          local user_prompt = "Translate into " .. lang .. ":\n" .. '"""\n' .. text .. '\n"""'
+          table.insert(messages, { role = "user", content = user_prompt })
+
+          gp.dispatcher.query(
+            buf,
+            agent.provider,
+            gp.dispatcher.prepare_payload(messages, agent.model, agent.provider),
+            handler,
+            vim.schedule_wrap(function(qid)
+              on_exit()
+              vim.cmd("doautocmd User GpDone")
+            end),
+            nil
+          )
+        end)
+
+        vim.keymap.set("n", "<leader>ts", function()
+          if vim.api.nvim_win_is_valid(trans_winid) then
+            vim.fn.win_gotoid(trans_winid)
+          end
+        end, { desc = "Translate" })
+      end
+
+      vim.keymap.set("v", "<leader>ts", Translate, { desc = "Translate" })
     end,
     keys = {
+      { "<leader>ts", desc = "Translate", mode = { "n", "v" } },
       { "<C-g>z", desc = "GPT prompt Choose Agent" },
       { "<C-g>c", "<cmd>GpChatNew vsplit<cr>", mode = { "n", "i" }, desc = "New Chat" },
       { "<C-g>t", "<cmd>GpChatToggle<cr>", mode = { "n", "i" }, desc = "Toggle Chat" },

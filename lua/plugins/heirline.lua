@@ -206,10 +206,10 @@ return {
       end,
       static = {
         symbols = {
-          ["FAILURE"] = "󰅙",
-          ["CANCELED"] = "",
-          ["SUCCESS"] = "󰄴",
-          ["RUNNING"] = "󰑮",
+          ["FAILURE"] = "󰅙 ",
+          ["CANCELED"] = " ",
+          ["SUCCESS"] = "󰄴 ",
+          ["RUNNING"] = "󰑮 ",
         },
         colors = {
           ["FAILURE"] = "red",

@@ -6,7 +6,7 @@ return {
       library = {
         { path = "${3rd}/luv/library", words = { "vim%.uv" } },
         { path = "snacks.nvim", words = { "Snacks" } },
-        { path = "utils", words = { "Utils" } },
+        { path = vim.fn.stdpath("config") .. "/lua/utils", words = { "Utils" } },
         { path = "lazy.nvim", words = { "Utils" } },
       },
     },
