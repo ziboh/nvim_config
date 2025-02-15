@@ -12,4 +12,20 @@ return {
     },
   },
   { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
+  {
+    "saghen/blink.cmp",
+    opts = {
+      sources = {
+        -- add lazydev to your completion providers
+        default = { "lazydev" },
+        providers = {
+          lazydev = {
+            name = "LazyDev",
+            module = "lazydev.integrations.blink",
+            score_offset = 100, -- show at a higher priority than lsp
+          },
+        },
+      },
+    },
+  },
 }

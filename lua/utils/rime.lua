@@ -88,7 +88,7 @@ function M.setup(opts)
     opts.filetype = { filetypes }
   end
   local configs = require("lspconfig.configs")
-  local port = Utils.is_win and 9528 or 9527
+  local port = Utils.is_win() and 9528 or 9527
   if not Utils.is_port_in_use(port) then
     vim.system({ "rime_ls", "--listen", "127.0.0.1:" .. port }, { detach = true })
   end

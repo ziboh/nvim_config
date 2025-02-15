@@ -23,9 +23,15 @@ return {
     -- Make sure to set this up properly if you have lazy=true
     "MeanderingProgrammer/render-markdown.nvim",
     opts = {
-      file_types = { "markdown", "avante" },
+      file_types = { "markdown", "Avante" },
+      quote = { repeat_linebreak = true },
+      win_options = {
+        showbreak = { default = "", rendered = "  " },
+        breakindent = { default = false, rendered = true },
+        breakindentopt = { default = "", rendered = "" },
+      },
     },
-    ft = { "markdown", "norg", "rmd", "org", "avante" },
+    ft = { "markdown", "Avante" },
     config = function(_, opts)
       require("render-markdown").setup(opts)
       Snacks.toggle({

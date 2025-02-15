@@ -106,7 +106,7 @@ return {
             __inherited_from = "openai",
             api_key_name = "ONEAPI_API_KEY",
             endpoint = os.getenv("ONEAPI_URL") .. "/v1",
-            model = "deepseek-coder",
+            model = "volc-deepseek-r1",
           },
           qwen_7b = {
             __inherited_from = "openai",
@@ -170,7 +170,8 @@ return {
     dependencies = {},
   },
   {
-    "Robitx/gp.nvim",
+    "ziboh/gp.nvim",
+    branch = "reasoning_content",
     config = function()
       local gp = require("gp")
       local ollama_endpoint = Utils.is_wsl() and "http://" .. Utils.get_wsl_router_ip() .. ":11434/v1/chat/completions"
@@ -218,11 +219,21 @@ return {
           },
           {
             provider = "openai",
+            name = "ChatDeepseekR1",
+            chat = true,
+            command = false,
+            -- string with model name or table with model name and parameters
+            model = { model = "volc-deepseek-r1", temperature = 1, top_p = 1 },
+            -- system prompt (use this to specify the persona/role of the AI)
+            system_prompt = require("gp.defaults").chat_system_prompt,
+          },
+          {
+            provider = "openai",
             name = "CodeDeepseek",
             chat = true,
             command = true,
             -- string with model name or table with model name and parameters
-            model = { model = "deepseek-coder", temperature = 0.8, top_p = 1 },
+            model = { model = "deepseek-chat", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
           },
           {
@@ -277,7 +288,7 @@ return {
             chat = true,
             command = false,
             -- string with model name or table with model name and parameters
-            model = { model = "gemini-1.5-flash", temperature = 1, top_p = 1 },
+            model = { model = "gemini-2.0-flash", temperature = 1, top_p = 1 },
             -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
@@ -287,7 +298,7 @@ return {
             chat = true,
             command = true,
             -- string with model name or table with model name and parameters
-            model = { model = "gemini-1.5-flash", temperature = 0.8, top_p = 1 },
+            model = { model = "gemini-2.0-flash", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
           },
           {
@@ -428,17 +439,8 @@ return {
 
         local agent = gp.get_chat_agent("ChatQwen")
         vim.schedule(function()
-          local handler = gp.dispatcher.create_handler(buf, nil, 0, false, "", false)
+          local handler = gp.dispatcher.create_handler(buf, nil, 0, true, "", false)
           local on_exit = function()
-            local lines = vim.api.nvim_buf_get_lines(buf, 0, 1, false)
-
-            while #lines > 0 and lines[#lines]:gsub("^%s*$", "") == "" do
-              table.remove(lines)
-            end
-
-            -- Write the modified content back to the buffer.
-            vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-
             vim.api.nvim_create_autocmd("CursorMoved", {
               group = vim.api.nvim_create_augroup("MyGroup", { clear = true }),
               callback = function()

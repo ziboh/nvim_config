@@ -19,6 +19,7 @@ return {
             user_data_dir = vim.fn.expand("~/.local/share/rime-ls"),
             log_dir = vim.fn.expand("~/.local/share/rime-ls/logs"),
             long_filter_text = true,
+            schema_trigger_character = "&",
           },
         },
       },

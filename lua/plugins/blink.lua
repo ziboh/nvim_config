@@ -1,4 +1,4 @@
-vim.g.blink_main = true
+vim.g.blink_main = false
 ---@type LazyPluginSpec[]
 return {
   {
@@ -72,7 +72,7 @@ return {
       },
       sources = {
         compat = {},
-        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+        default = { "lsp", "path", "snippets", "buffer" },
         cmdline = {},
         providers = {
           lsp = {
@@ -93,23 +93,17 @@ return {
               return items
             end,
           },
-          lazydev = {
-            name = "lazy_dev",
-            module = "lazydev.integrations.blink",
-            score_offset = 100,
-          },
         },
       },
 
       keymap = {
         preset = "enter",
         ["<C-space>"] = {},
-        ["<C-b>"] = { "scroll_documentation_down" },
-        ["<C-h>"] = { "scroll_documentation_up" },
+        ["<C-y>"] = { "select_and_accept" },
       },
       appearance = {
         use_nvim_cmp_as_default = false,
-        nerd_font_variant = "mono",
+        -- nerd_font_variant = "mono",
         kind_icons = {
           Text = "󰉿",
           Method = "󰊕",
@@ -137,7 +131,7 @@ return {
           Color = "󰏘",
           File = "󰈔",
           Reference = "󰬲",
-          Folder = "󰉋",
+          Foler = "󰉋",
           Event = "󱐋",
           Operator = "󰪚",
           TypeParameter = "󰬛",
@@ -147,7 +141,7 @@ return {
     ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
     config = function(_, opts)
       -- setup compat sources
-      local enabled = opts.sources.default
+      local enable = opts.sources.default
       for _, source in ipairs(opts.sources.compat or {}) do
         opts.sources.providers[source] = vim.tbl_deep_extend(
           "force",
@@ -158,7 +152,6 @@ return {
           table.insert(enabled, source)
         end
       end
-
       -- add ai_accept to <Tab> key
       if not opts.keymap["<Tab>"] then
         if opts.keymap.preset == "super-tab" then -- super-tab

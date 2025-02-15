@@ -47,12 +47,15 @@ return {
           vim.keymap.set("n", "<leader>dr", function()
             vim.cmd.RustLsp("debuggables")
           end, { desc = "Rust Debuggables", buffer = bufnr })
+          vim.keymap.set("n", "K", function()
+            vim.cmd.RustLsp({ "hover", "actions" })
+          end, { desc = "Rust Hover", buffer = bufnr })
         end,
         default_settings = {
           -- rust-analyzer language server configuration
           ["rust-analyzer"] = {
             cargo = {
-              allFeatures = true,
+              features = { "all" },
               loadOutDirsFromCheck = true,
               buildScripts = {
                 enable = true,
@@ -88,6 +91,7 @@ return {
           },
         },
       },
+      status_notify_level = false,
     },
     config = function(_, opts)
       if Utils.has("mason.nvim") then

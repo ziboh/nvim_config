@@ -6,7 +6,7 @@
 --- @field pick utils.pick
 --- @field rime utils.rime
 --- @field toggle utils.toggle
---- @field mini utils.toggle
+--- @field mini utils.mini
 --- @field root utils.root
 local M = {}
 
