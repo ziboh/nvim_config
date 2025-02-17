@@ -55,7 +55,7 @@ return {
           -- rust-analyzer language server configuration
           ["rust-analyzer"] = {
             cargo = {
-              features = { "all" },
+              allFeatures = true,
               loadOutDirsFromCheck = true,
               buildScripts = {
                 enable = true,

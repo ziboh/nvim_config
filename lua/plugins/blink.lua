@@ -70,10 +70,12 @@ return {
           enabled = vim.g.ai_cmp,
         },
       },
+      cmdline = {
+        enabled = false,
+      },
       sources = {
         compat = {},
         default = { "lsp", "path", "snippets", "buffer" },
-        cmdline = {},
         providers = {
           lsp = {
             transform_items = function(_, items)
