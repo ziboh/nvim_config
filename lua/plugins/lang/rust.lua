@@ -51,6 +51,7 @@ return {
             vim.cmd.RustLsp({ "hover", "actions" })
           end, { desc = "Rust Hover", buffer = bufnr })
         end,
+        offset_encoding = "utf-8",
         default_settings = {
           -- rust-analyzer language server configuration
           ["rust-analyzer"] = {
@@ -94,6 +95,9 @@ return {
       status_notify_level = false,
     },
     config = function(_, opts)
+      local capabilities = require("rustaceanvim.config.server").create_client_capabilities()
+      capabilities.general.positionEncodings = { "utf-8", "utf-16" }
+      opts.server.capabilities = capabilities
       if Utils.has("mason.nvim") then
         local package_path = require("mason-registry").get_package("codelldb"):get_install_path()
         local codelldb = package_path .. "/extension/adapter/codelldb"

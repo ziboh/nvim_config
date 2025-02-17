@@ -213,10 +213,12 @@ return {
         has_blink and blink.get_lsp_capabilities() or {},
         opts.capabilities or {}
       )
+      capabilities.general.positionEncodings = { "utf-8", "utf-16" }
 
       local function setup(server)
         local server_opts = vim.tbl_deep_extend("force", {
           capabilities = vim.deepcopy(capabilities),
+          offset_encoding = "utf-8",
         }, servers[server] or {})
         if server_opts.enabled == false then
           return
