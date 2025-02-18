@@ -29,39 +29,48 @@ return {
       condition = function()
         return require("utils").has("venv-selector.nvim")
       end,
-      provider = function(_)
-        local python_path = require("venv-selector").python()
-        if python_path == nil then
-          return ""
-        end
-
-        if Utils.is_win() then
-          local venv_name = python_path:match(".*\\([^\\]+)\\.venv\\Scripts\\python.exe$")
-          if venv_name == nil then
-            venv_name = python_path:match(".*\\([^\\]+)\\python%.exe$")
+      {
+        provider = function(_)
+          local python_path = require("venv-selector").python()
+          if python_path == nil or vim.bo.filetype ~= "python" then
+            return ""
           end
-          if venv_name ~= nil then
-            return "   " .. venv_name
-          end
-        else
-          local venv_name = python_path:match(".*/([^/]+)/.venv/bin/python")
-          if venv_name == nil then
-            venv_name = python_path:match(".*/([^/]+)/bin/python")
-          end
-          if venv_name ~= nil then
-            return "   " .. venv_name
-          end
-        end
-        return "   " .. python_path
-      end,
-      hl = { fg = "#c099ff" }, -- 设置高亮颜色
-      on_click = {
-        name = "heirline_virtual_env",
-        callback = function()
-          if is_available("venv-selector.nvim") then
-            vim.schedule(vim.cmd.VenvSelect)
-          end
+          return "  "
         end,
+      },
+      {
+        provider = function(_)
+          local python_path = require("venv-selector").python()
+          if python_path == nil or vim.bo.filetype ~= "python" then
+            return ""
+          end
+
+          if Utils.is_win() then
+            local venv_name = python_path:match(".*\\([^\\]+)\\.venv\\Scripts\\python.exe$")
+            if venv_name == nil then
+              venv_name = python_path:match(".*\\([^\\]+)\\python%.exe$")
+            end
+            if venv_name ~= nil then
+              return " " .. venv_name
+            end
+          else
+            local venv_name = python_path:match(".*/([^/]+)/.venv/bin/python")
+            if venv_name == nil then
+              venv_name = python_path:match(".*/([^/]+)/bin/python")
+            end
+            if venv_name ~= nil then
+              return " " .. venv_name
+            end
+          end
+          return " " .. python_path
+        end,
+        hl = { fg = "#c099ff" }, -- 设置高亮颜色
+        on_click = {
+          name = "heirline_virtual_env",
+          callback = function()
+            vim.schedule(vim.cmd.VenvSelect)
+          end,
+        },
       },
     }
     local FittenCode = {
@@ -265,7 +274,7 @@ return {
 
             if next(tasks_by_status) == nil then
               self.color = "#c3e88d"
-              return "󰑮"
+              return self.symbols["RUNNING"]
             end
             for _, status in ipairs(self.STATUS.values) do
               local status_tasks = tasks_by_status[status]
@@ -310,7 +319,19 @@ return {
         end,
         fallthrough = false,
         {
-          lib.component.neotree(),
+          lib.component.neotree({
+            neotree = {
+              condition = function()
+                return require("utils").has("snacks.nvim")
+              end,
+            },
+            on_click = {
+              name = "neotree",
+              callback = function()
+                Snacks.explorer()
+              end,
+            },
+          }),
           lib.component.compiler_play(),
           {
             condition = conditions.is_active, -- 只在活动窗口中显示
