@@ -25,6 +25,45 @@ return {
       end,
       hl = { fg = "#c099ff" }, -- 设置高亮颜色
     }
+    local virtual_env = {
+      condition = function()
+        return require("utils").has("venv-selector.nvim")
+      end,
+      provider = function(_)
+        local python_path = require("venv-selector").python()
+        if python_path == nil then
+          return ""
+        end
+
+        if Utils.is_win() then
+          local venv_name = python_path:match(".*\\([^\\]+)\\.venv\\Scripts\\python.exe$")
+          if venv_name == nil then
+            venv_name = python_path:match(".*\\([^\\]+)\\python%.exe$")
+          end
+          if venv_name ~= nil then
+            return "   " .. venv_name
+          end
+        else
+          local venv_name = python_path:match(".*/([^/]+)/.venv/bin/python")
+          if venv_name == nil then
+            venv_name = python_path:match(".*/([^/]+)/bin/python")
+          end
+          if venv_name ~= nil then
+            return "   " .. venv_name
+          end
+        end
+        return "   " .. python_path
+      end,
+      hl = { fg = "#c099ff" }, -- 设置高亮颜色
+      on_click = {
+        name = "heirline_virtual_env",
+        callback = function()
+          if is_available("venv-selector.nvim") then
+            vim.schedule(vim.cmd.VenvSelect)
+          end
+        end,
+      },
+    }
     local FittenCode = {
       condition = function()
         return require("utils").has("fittencode.nvim")
@@ -296,8 +335,8 @@ return {
         SuperMaven,
         Rime,
         FileCode,
+        virtual_env,
         Overseer,
-        lib.component.virtual_env(),
         lib.component.nav(),
       },
     }

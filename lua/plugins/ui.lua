@@ -20,7 +20,7 @@ return {
               icon = " ",
               key = "p",
               desc = "Projects",
-              action = "<cmd>FzfProjects<cr>",
+              action = ":lua Snacks.picker.projects()",
             },
             { icon = " ", key = "l", desc = "Leet", action = "<cmd>Leet<cr>" },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },

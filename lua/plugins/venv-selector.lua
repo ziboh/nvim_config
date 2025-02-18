@@ -18,6 +18,16 @@ return {
           },
         },
       }
+    else
+      opts = {
+        settings = {
+          search = {
+            rye = {
+              command = "fd python.exe D:/scoop/persist/rye/py --max-depth 2", -- read up on the fd flags so it searches what you need
+            },
+          },
+        },
+      }
     end
     return opts
   end,
