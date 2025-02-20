@@ -47,7 +47,11 @@ return {
     {
       "<leader>e",
       function()
-        Snacks.explorer()
+        local opts = {}
+        if vim.uv.cwd() == [[C:\Users\ziboh\.config\wezterm]] then
+          opts.watch = false
+        end
+        Snacks.explorer(opts)
       end,
       desc = "File Explorer",
     },
@@ -67,7 +71,7 @@ return {
       desc = "Find Config File",
     },
     {
-      "<leader>ff",
+      "<leader>fF",
       function()
         Snacks.picker.files()
       end,
@@ -137,6 +141,13 @@ return {
         Snacks.picker.grep_buffers()
       end,
       desc = "Grep Open Buffers",
+    },
+    {
+      "<leader>ff",
+      function()
+        Snacks.picker.grep()
+      end,
+      desc = "Grep",
     },
     {
       "<leader>sg",
