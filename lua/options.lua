@@ -39,6 +39,8 @@ vim.g.rust_analyzer_mason = true
 
 local opt = vim.opt
 
+vim.opt.cmdheight = 0
+
 opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
 opt.autowrite = true
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
