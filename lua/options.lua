@@ -99,29 +99,7 @@ opt.clipboard = "unnamedplus"
 
 vim.opt.title = true
 vim.opt.titlestring = "neovim"
-
--- Special handling for pwsh
-if vim.fn.has("win32") == 1 then
-  -- Check if 'pwsh' is executable and set the shell accordingly
-  if vim.fn.executable("pwsh") == 1 then
-    vim.o.shell = "pwsh"
-  elseif vim.fn.executable("powershell") == 1 then
-    vim.o.shell = "powershell"
-  else
-    return Utils.error("No powershell executable found")
-  end
-  vim.o.shellcmdflag =
-    "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
-
-  vim.o.shellredir = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
-
-  vim.o.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
-
-  vim.o.shellquote = ""
-
-  vim.o.shellxquote = ""
-end
-
+vim.opt.shell = "nu"
 local setreg = vim.fn.setreg
 ---@diagnostic disable-next-line: duplicate-set-field
 vim.fn.setreg = function(rename, value, opts)

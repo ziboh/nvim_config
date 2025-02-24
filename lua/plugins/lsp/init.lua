@@ -145,7 +145,7 @@ return {
         },
         bashls = {
           mason = true,
-          filetypes = { "sh", "bash", "zsh" },
+          filetypes = { "sh", "bash" },
         },
         volar = {
           mason = true,
@@ -157,6 +157,7 @@ return {
         },
         rust_analyzer = { enabled = false },
         ruff = { enabled = false },
+        nushell = {},
       },
       setup = {},
     },
@@ -297,6 +298,7 @@ return {
     },
     opts = {
       formatters_by_ft = {
+        nu = { "topiary_nu" },
         lua = { "stylua" },
         python = { "ruff_format" },
         javascript = { "prettierd" },
@@ -316,6 +318,12 @@ return {
       },
       default_format_opts = {
         lsp_format = "fallback",
+      },
+      formatters = {
+        topiary_nu = {
+          command = "topiary",
+          args = { "format", "--language", "nu" },
+        },
       },
     },
   },
@@ -380,13 +388,6 @@ return {
           border = "none",
         },
       })
-    end,
-  },
-  {
-    "smjonas/inc-rename.nvim",
-    cmd = { "IncRename" },
-    config = function()
-      require("inc_rename").setup({ save_in_cmdline_history = false })
     end,
   },
   {
