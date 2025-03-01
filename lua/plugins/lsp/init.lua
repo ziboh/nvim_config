@@ -1,3 +1,21 @@
+local biome_support = {
+  -- https://biomejs.dev/internals/language-support/
+  "astro",
+  "css",
+  "graphql",
+  -- "html",
+  "javascript",
+  "javascriptreact",
+  "json",
+  "jsonc",
+  -- "markdown",
+  "svelte",
+  "typescript",
+  "typescriptreact",
+  "vue",
+  -- "yaml",
+}
+
 return {
   {
     "williamboman/mason-lspconfig.nvim",
@@ -34,9 +52,11 @@ return {
       ensure_installed = {
         "stylua",
         "shfmt",
+        "clang-format",
         "selene",
         "ruff",
         "prettierd",
+        "biome",
       },
     },
     ---@param opts MasonSettings | {ensure_installed: string[]}
@@ -158,6 +178,12 @@ return {
         rust_analyzer = { enabled = false },
         ruff = { enabled = false },
         nushell = {},
+        eslint = {
+          settings = {
+            -- helps eslint find the eslintrc when it's placed in a subfolder instead of the cwd root
+            workingDirectories = { mode = "auto" },
+          },
+        },
       },
       setup = {},
     },
@@ -301,15 +327,8 @@ return {
         nu = { "topiary_nu" },
         lua = { "stylua" },
         python = { "ruff_format" },
-        javascript = { "prettierd" },
-        css = { "prettierd" },
         html = { "prettierd" },
-        typescript = { "prettierd" },
-        typescriptreact = { "prettierd" },
-        javescroptreact = { "prettierd" },
-        jsonc = { "prettierd" },
         vue = { "prettierd" },
-        json = { "prettierd" },
         yaml = { "prettierd" },
         rust = { "rustfmt" },
         c = { "clang-format" },
@@ -326,6 +345,22 @@ return {
         },
       },
     },
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = function(_, opts)
+      opts.formatters_by_ft = opts.formatters_by_ft or {}
+      for _, ft in ipairs(biome_support) do
+        opts.formatters_by_ft[ft] = opts.formatters_by_ft[ft] or {}
+        table.insert(opts.formatters_by_ft[ft], "biome")
+      end
+
+      opts.formatters = opts.formatters or {}
+      opts.formatters.biome = {
+        require_cwd = true,
+      }
+    end,
   },
   {
     "hedyhli/outline.nvim",
