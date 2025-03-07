@@ -110,14 +110,11 @@ return {
         local opts = {}
         local cwd = vim.uv.cwd()
         local root = Utils.root()
+        opts.cwd = root
         if cwd == root then
           opts.watch = false
         end
-        vim.cmd.tcd(root)
         Snacks.explorer(opts)
-        vim.schedule(function()
-          vim.cmd.tcd(cwd)
-        end)
       end,
       desc = "File Explorer",
     },
