@@ -433,7 +433,12 @@ return {
             local buf = vim.api.nvim_get_current_buf()
             local agent = gp.get_chat_agent("ChatDoubao")
             vim.schedule(function()
-              local handler = gp.dispatcher.create_handler(buf, nil, 0, true, "", false, false)
+              local response = ""
+              local handler = vim.schedule_wrap(function(_, chunk)
+                response = response .. chunk
+                local lines = vim.split(response, "\n")
+                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+              end)
               local on_exit = function() end
               local messages = {}
               local user_prompt = gp.render.template(gp.config.commit_prompt_template, {
