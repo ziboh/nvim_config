@@ -1,132 +1,5 @@
 return {
   {
-    "Kurama622/llm.nvim",
-    dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" },
-    cmd = { "LLMSessionToggle", "LLMSelectedTextHandler", "LLMAppHandler" },
-    config = function()
-      local tools = require("llm.common.tools")
-      require("llm").setup({
-        url = vim.fn.getenv("ONEAPI_URL") .. "/v1/chat/completions",
-        model = "gemini-2.0-flash-exp",
-        api_type = "openai",
-        max_tokens = 4096,
-        temperature = 0.3,
-        top_p = 0.7,
-        prompt = "You are a helpful chinese assistant.",
-        prefix = {
-          user = { text = "😃 ", hl = "Title" },
-          assistant = { text = "  ", hl = "Added" },
-        },
-
-        fetch_key = function()
-          return vim.fn.getenv("ONEAPI_API_KEY")
-        end,
-        -- history_path = "/tmp/llm-history",
-        save_session = true,
-        max_history = 15,
-        max_history_name_length = 20,
-
-        -- stylua: ignore
-        keys = {
-          -- The keyboard mapping for the input window.
-          ["Input:Submit"]      = { mode = "n", key = "<cr>" },
-          ["Input:Cancel"]      = { mode = {"n", "i"}, key = "<C-c>" },
-          ["Input:Resend"]      = { mode = {"n", "i"}, key = "<C-r>" },
-
-          -- only works when "save_session = true"
-          ["Input:HistoryNext"] = { mode = {"n", "i"}, key = "<C-j>" },
-          ["Input:HistoryPrev"] = { mode = {"n", "i"}, key = "<C-k>" },
-
-          -- The keyboard mapping for the output window in "split" style.
-          ["Output:Ask"]        = { mode = "n", key = "i" },
-          ["Output:Cancel"]     = { mode = "n", key = "<C-c>" },
-          ["Output:Resend"]     = { mode = "n", key = "<C-r>" },
-
-          -- The keyboard mapping for the output and input windows in "float" style.
-          ["Session:Toggle"]    = { mode = "n", key = "<leader>ac" },
-          ["Session:Close"]     = { mode = "n", key = {"<esc>", "Q"} },
-        },
-        app_handler = {
-          CommitMsg = {
-            handler = tools.flexi_handler,
-            prompt = function()
-              -- Source: https://andrewian.dev/blog/ai-git-commits
-              return string.format(
-                [[You are an expert at following the Conventional Commit specification. Given the git diff listed below, please generate a commit message for me:
-      1. First line: conventional commit format (type: concise description) (remember to use semantic types like feat, fix, docs, style, refactor, perf, test, chore, etc.)
-      2. Optional bullet points if more context helps:
-        - Keep the second line blank
-        - Keep them short and direct
-        - Focus on what changed
-        - Always be terse
-        - Don't overly explain
-        - Drop any fluffy or formal language
-
-      Return ONLY the commit message - no introduction, no explanation, no quotes around it.
-
-      Examples:
-      feat: add user auth system
-
-      - Add JWT tokens for API auth
-      - Handle token refresh for long sessions
-
-      fix: resolve memory leak in worker pool
-
-      - Clean up idle connections
-      - Add timeout for stale workers
-
-      Simple change example:
-      fix: typo in README.md
-
-      Very important: Do not respond with any of the examples. Your message must be based off the diff that is about to be provided, with a little bit of styling informed by the recent commits you're about to see.
-
-      Based on this format, generate appropriate commit messages. Respond with message only. DO NOT format the message in Markdown code blocks, DO NOT use backticks:
-
-      ```diff
-      %s
-      ```
-      ]],
-                vim.fn.system("git diff --no-ext-diff --staged")
-              )
-            end,
-            opts = {
-              fetch_key = function()
-                return vim.env.ONEAPI_API_KEY
-              end,
-              url = vim.fn.getenv("ONEAPI_URL") .. "/v1/chat/completions",
-              model = "gemini-2.0-flash-exp",
-              api_type = "openai",
-              enter_flexible_window = true,
-              apply_visual_selection = false,
-              win_opts = {
-                relative = "editor",
-                position = "50%",
-              },
-              accept = {
-                mapping = {
-                  mode = "n",
-                  keys = "<cr>",
-                },
-                action = function()
-                  local contents = vim.api.nvim_buf_get_lines(0, 0, -1, true)
-                  vim.api.nvim_command(string.format('!git commit -m "%s"', table.concat(contents, '" -m "')))
-
-                  -- just for lazygit
-                  vim.schedule(function()
-                    vim.api.nvim_command("LazyGit")
-                  end)
-                end,
-              },
-            },
-          },
-        },
-      })
-    end,
-    keys = {
-      { "<leader>ac", mode = "n", "<cmd>LLMSessionToggle<cr>" },
-    },
-  },
-  {
     "yetone/avante.nvim",
     version = false, -- set this if you want to always pull the latest change
     cmd = {
@@ -300,7 +173,10 @@ return {
     "ziboh/gp.nvim",
     branch = "reasoning_content",
     config = function()
+      local trans_win
       local gp = require("gp")
+      local chat_system_prompt_cn = require("gp.defaults").chat_system_prompt
+        .. "You need to answer the question in Chinese.\n"
       local ollama_endpoint = Utils.is_wsl() and "http://" .. Utils.get_wsl_router_ip() .. ":11434/v1/chat/completions"
         or "http://localhost:11434/v1/chat/completions"
       require("gp").setup({
@@ -320,9 +196,7 @@ return {
             name = "ChatDoubao",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
             model = { model = "doubao-pro-256k", temperature = 1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
           {
@@ -330,7 +204,6 @@ return {
             name = "CodeDoubao",
             chat = true,
             command = true,
-            -- string with model name or table with model name and parameters
             model = { model = "doubao-pro-256k", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
           },
@@ -339,9 +212,7 @@ return {
             name = "ChatDeepseek",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
             model = { model = "deepseek-chat", temperature = 1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
           {
@@ -349,9 +220,7 @@ return {
             name = "ChatDeepseekR1",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
-            model = { model = "volc-deepseek-r1", temperature = 1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
+            model = { model = "deepseek-r1", temperature = 1, top_p = 1 },
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
           {
@@ -359,7 +228,6 @@ return {
             name = "CodeDeepseek",
             chat = true,
             command = true,
-            -- string with model name or table with model name and parameters
             model = { model = "deepseek-chat", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
           },
@@ -368,18 +236,31 @@ return {
             name = "ChatGrok",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
-            model = { model = "grok-2-1212", temperature = 1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = require("gp.defaults").chat_system_prompt,
+            model = { model = "grok-2" },
+            system_prompt = chat_system_prompt_cn,
           },
           {
             provider = "openai",
-            name = "codegrok",
+            name = "ChatGrok3",
+            chat = true,
+            command = false,
+            model = { model = "grok-3" },
+            system_prompt = chat_system_prompt_cn,
+          },
+          {
+            provider = "openai",
+            name = "CodeGrok",
             chat = true,
             command = true,
-            -- string with model name or table with model name and parameters
-            model = { model = "grok-2-1212", temperature = 0.8, top_p = 1 },
+            model = { model = "grok-2" },
+            system_prompt = require("gp.defaults").code_system_prompt,
+          },
+          {
+            provider = "openai",
+            name = "CodeGrok",
+            chat = true,
+            command = true,
+            model = { model = "grok-3" },
             system_prompt = require("gp.defaults").code_system_prompt,
           },
           {
@@ -387,44 +268,30 @@ return {
             name = "ChatClaude-3-5-Sonnet",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
             model = { model = "claude-3-5-sonnet-20241022", temperature = 1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
-          },
-          {
-            name = "ChatClaude-3-Haiku",
-            disable = true,
           },
           {
             provider = "openai",
             name = "CodeClaude-3-5-Sonnet",
             chat = true,
             command = true,
-            -- string with model name or table with model name and parameters
             model = { model = "claude-3-5-sonnet-20241022", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
-          },
-          {
-            name = "CodeClaude-3-Haiku",
-            disable = true,
           },
           {
             provider = "openai",
             name = "ChatGemini",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
             model = { model = "gemini-2.0-flash", temperature = 1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = require("gp.defaults").chat_system_prompt,
+            system_prompt = chat_system_prompt_cn,
           },
           {
             provider = "openai",
             name = "CodeGemini",
             chat = true,
             command = true,
-            -- string with model name or table with model name and parameters
             model = { model = "gemini-2.0-flash", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
           },
@@ -433,19 +300,15 @@ return {
             name = "ChatGPT4o",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
             model = { model = "gpt-4o", temperature = 1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = require("gp.defaults").chat_system_prompt,
+            system_prompt = chat_system_prompt_cn,
           },
           {
             provider = "openai",
             name = "CodeGPT4o",
             chat = true,
             command = true,
-            -- string with model name or table with model name and parameters
             model = { model = "gpt-4o", temperature = 0.8, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").code_system_prompt,
           },
           {
@@ -453,9 +316,7 @@ return {
             name = "CodeGPT4o-mini",
             chat = true,
             command = true,
-            -- string with model name or table with model name and parameters
             model = { model = "gpt-4o-mini", temperature = 0.8, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").code_system_prompt,
           },
           {
@@ -463,7 +324,6 @@ return {
             name = "CodeQwen",
             chat = true,
             command = true,
-            -- string with model name or table with model name and parameters
             model = {
               model = "qwen2.5-coder:7b",
               temperature = 0.8,
@@ -477,14 +337,12 @@ return {
             name = "ChatQwen",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
             model = {
               model = "qwen2.5-coder:7b",
               temperature = 0.97,
               top_p = 1,
               num_ctx = 8192,
             },
-            -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
           {
@@ -492,24 +350,24 @@ return {
             name = "ChatGPT4o-mini",
             chat = true,
             command = false,
-            -- string with model name or table with model name and parameters
             model = { model = "gpt-4o-mini", temperature = 1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
+          },
+          {
+            name = "ChatClaude-3-Haiku",
+            disable = true,
+          },
+          {
+            name = "CodeClaude-3-Haiku",
+            disable = true,
+          },
+          {
+            name = "ChatOllamaLlama3.1-8B",
+            disable = true,
           },
         },
         template_selection = "我有来自 {{filename}} 文件中的内容如下:"
           .. "\n\n```{{filetype}}\n{{selection}}\n```\n\n{{command}}",
-        template_rewrite = "I have the following from {{filename}}:"
-          .. "\n\n```{{filetype}}\n{{selection}}\n```\n\n{{command}}"
-          .. "\n\nRespond exclusively with the snippet that should replace the selection above.",
-        template_append = "I have the following from {{filename}}:"
-          .. "\n\n```{{filetype}}\n{{selection}}\n```\n\n{{command}}"
-          .. "\n\nRespond exclusively with the snippet that should be appended after the selection above.",
-        template_prepend = "I have the following from {{filename}}:"
-          .. "\n\n```{{filetype}}\n{{selection}}\n```\n\n{{command}}"
-          .. "\n\nRespond exclusively with the snippet that should be prepended before the selection above.",
-        template_command = "{{command}}",
         chat_template = "# topic: ?\n\n"
           .. "- file: {{filename}}\n"
           .. "{{optional_headers}}\n"
@@ -528,93 +386,256 @@ return {
             local agent = gp.get_chat_agent()
             gp.Prompt(params, gp.Target.popup, agent, template)
           end,
-        },
-      })
-      local get_agent = function()
-        local buf = vim.api.nvim_get_current_buf()
-        local file_name = vim.api.nvim_buf_get_name(buf)
-        local is_chat = require("gp").not_chat(buf, file_name) == nil
-        return is_chat and require("gp")._chat_agents or require("gp")._command_agents
-      end
-
-      vim.keymap.set("n", "<c-g>z", function()
-        local agents = get_agent()
-        vim.ui.select(agents, {
-          prompt = "Models> ",
-          format_item = function(item)
-            return item
-          end,
-        }, function(selected)
-          if selected then
-            vim.cmd("GpAgent " .. selected)
-          end
-        end)
-      end, { desc = "GPT prompt Choose Agent" })
-
-      local Translate = function()
-        local buf = vim.api.nvim_create_buf(false, true)
-
-        local trans_winid = vim.api.nvim_open_win(buf, false, {
-          relative = "cursor",
-          width = 100,
-          height = 4,
-          col = 1,
-          row = 1,
-          style = "minimal",
-          border = "single",
-        })
-
-        local agent = gp.get_chat_agent("ChatQwen")
-        vim.schedule(function()
-          local handler = gp.dispatcher.create_handler(buf, nil, 0, true, "", false)
-          local on_exit = function()
-            vim.api.nvim_create_autocmd("CursorMoved", {
-              group = vim.api.nvim_create_augroup("MyGroup", { clear = true }),
-              callback = function()
-                if vim.api.nvim_win_is_valid(trans_winid) and vim.api.nvim_get_current_win() ~= trans_winid then
-                  vim.api.nvim_win_close(trans_winid, false)
-                  vim.api.nvim_del_augroup_by_name("MyGroup")
-                elseif not vim.api.nvim_win_is_valid(trans_winid) then
-                  vim.api.nvim_del_augroup_by_name("MyGroup")
-                end
+          SelectAgent = function(gp, params)
+            local get_agent = function()
+              local buf = vim.api.nvim_get_current_buf()
+              local file_name = vim.api.nvim_buf_get_name(buf)
+              local is_chat = gp.not_chat(buf, file_name) == nil
+              return is_chat and gp._chat_agents or gp._command_agents
+            end
+            local agents = get_agent()
+            local all_agents = gp.agents
+            local items = vim.tbl_map(function(value)
+              return {
+                text = value,
+                preview = {
+                  text = vim.inspect(all_agents[value]),
+                  ft = "lua",
+                  title = value,
+                },
+              }
+            end, agents)
+            Snacks.picker({
+              items = items,
+              format = "text",
+              title = "Select Agent",
+              preview = function(ctx)
+                ctx.preview:reset()
+                local lines = vim.split(ctx.item.preview.text, "\n")
+                ctx.preview:set_lines(lines)
+                ctx.preview:highlight({ ft = ctx.item.preview.ft })
+                ctx.preview:wo({
+                  signcolumn = "no",
+                  number = false,
+                })
+                ctx.preview:set_title(ctx.item.preview.title)
+              end,
+              confirm = function(picker, item)
+                picker:close()
+                vim.cmd("GpAgent " .. item.text)
               end,
             })
-          end
-          local messages = {}
-          local sys_prompt =
-            "You are a professional translation engine, please translate the text into a colloquial, professional, elegant and fluent content, without the style of machine translation.You must only translate the text content, never interpret it. Don't have any extra symbols."
+          end,
+          GitCommit = function(gp, params)
+            if vim.bo.filetype ~= "gitcommit" then
+              return
+            end
+            local buf = vim.api.nvim_get_current_buf()
+            local agent = gp.get_chat_agent("ChatDoubao")
+            vim.schedule(function()
+              local handler = gp.dispatcher.create_handler(buf, nil, 0, true, "", false, false)
+              local on_exit = function() end
+              local messages = {}
+              local user_prompt = gp.render.template(gp.config.commit_prompt_template, {
+                ["{{git_diff}}"] = vim.fn.system("git diff --no-ext-diff --staged"),
+              })
 
-          local text = Utils.GetVisualSelection()
-          local lang = Utils.detect_language(text) == "Chinese" and "English" or "Chinese"
-          table.insert(messages, { role = "system", content = sys_prompt })
-          local user_prompt = "Translate into " .. lang .. ":\n" .. '"""\n' .. text .. '\n"""'
-          table.insert(messages, { role = "user", content = user_prompt })
+              table.insert(messages, { role = "user", content = user_prompt })
 
-          gp.dispatcher.query(
-            buf,
-            agent.provider,
-            gp.dispatcher.prepare_payload(messages, agent.model, agent.provider),
-            handler,
-            vim.schedule_wrap(function(qid)
-              on_exit()
-              vim.cmd("doautocmd User GpDone")
-            end),
-            nil
-          )
-        end)
+              vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+              gp.dispatcher.query(
+                buf,
+                agent.provider,
+                gp.dispatcher.prepare_payload(messages, agent.model, agent.provider),
+                handler,
+                vim.schedule_wrap(function(qid)
+                  on_exit()
+                  vim.cmd("doautocmd User GpDone")
+                end),
+                nil
+              )
+            end)
+          end,
+          ChatFinder = function(gp, params)
+            local picker = Snacks.picker("grep", {
+              cwd = gp.config.chat_dir,
+              args = { "--sort", "path", "--sortr", "path" },
+              layout = { preset = "max" },
+              title = "Find Gp Chat",
+              actions = {
+                open_popup = function(picker, item)
+                  picker:close()
+                  local win = Snacks.win({
+                    file = item._path,
+                    width = 100,
+                    height = 30,
+                    bo = {
+                      buftype = "",
+                      buflisted = false,
+                      bufhidden = "hide",
+                      swapfile = false,
+                      modifiable = true,
+                    },
+                    minimal = false,
+                    noautocmd = false,
+                    zindex = 20,
+                    wo = {
+                      winhighlight = "NormalFloat:Normal",
+                    },
+                    border = "rounded",
+                    title_pos = "center",
+                    footer_pos = "center",
+                  })
 
-        vim.keymap.set("n", "<leader>ts", function()
-          if vim.api.nvim_win_is_valid(trans_winid) then
-            vim.fn.win_gotoid(trans_winid)
-          end
-        end, { desc = "Translate" })
-      end
+                  -- HACK: this should fix folds
+                  if vim.wo.foldmethod == "expr" then
+                    vim.schedule(function()
+                      vim.opt.foldmethod = "expr"
+                    end)
+                  end
+                end,
 
-      vim.keymap.set("v", "<leader>ts", Translate, { desc = "Translate" })
+                open_vsplit = function(picker, item)
+                  picker:close()
+                  local win = Snacks.win({
+                    file = item._path,
+                    position = "right",
+                    width = 0.5,
+                    minimal = false,
+                    wo = {
+                      winhighlight = "NormalFloat:Normal",
+                    },
+                    bo = {
+                      modifiable = true,
+                    },
+                  })
+
+                  -- HACK: this should fix folds
+                  if vim.wo.foldmethod == "expr" then
+                    vim.schedule(function()
+                      vim.opt.foldmethod = "expr"
+                    end)
+                  end
+                end,
+                nolisted = function()
+                  vim.bo.buflisted = false
+                end,
+              },
+              layouts = {
+                max = {
+                  fullscreen = true,
+                  preset = "default",
+                },
+              },
+              win = {
+                input = {
+                  keys = {
+                    ["<c-d>"] = { "delect_file", mode = { "n", "i" } },
+                    ["<c-f>"] = { "open_popup", mode = { "n", "i" } },
+                    ["<c-v>"] = { "vsplit", mode = { "n", "i" } },
+                    ["<c-s>"] = { "split", mode = { "n", "i" } },
+                    ["<c-t>"] = { "tab", mode = { "n", "i" } },
+                  },
+                },
+                list = {
+                  keys = {
+                    ["<c-d>"] = "delect_file",
+                    ["<c-f>"] = "open_popup",
+                    ["<c-v>"] = "vsplit",
+                    ["<c-s>"] = "split",
+                    ["<c-t>"] = "tab",
+                  },
+                },
+              },
+              search = function()
+                return "^# topic: "
+              end,
+            })
+          end,
+          Translator = function()
+            if trans_win ~= nil and trans_win:win_valid() then
+              trans_win:focus()
+              return
+            end
+            local buf = vim.api.nvim_create_buf(false, true)
+            local messages = {}
+            local sys_prompt =
+              "You are a professional translation engine, please translate the text into a colloquial, professional, elegant and fluent content, without the style of machine translation.You must only translate the text content, never interpret it. Don't have any extra symbols.There's no need to use ``` to enclose the result."
+
+            local text = Utils.GetVisualSelection()
+            local lang = Utils.detect_language(text) == "Chinese" and "English" or "Chinese"
+            table.insert(messages, { role = "system", content = sys_prompt })
+            local user_prompt = "Translate into " .. lang .. ":\n" .. '"""\n' .. text .. '\n"""'
+            table.insert(messages, { role = "user", content = user_prompt })
+
+            trans_win = Snacks.win({
+              relative = "cursor",
+              buf = buf,
+              width = 80,
+              height = 2,
+              min_height = 2,
+              max_height = 8,
+              col = 1,
+              row = 1,
+              enter = false,
+              backdrop = false,
+              border = "rounded",
+              wo = {
+                wrap = true,
+              },
+              bo = {
+                filetype = "markdown",
+              },
+            })
+
+            local agent = gp.get_chat_agent("CodeQwen")
+            vim.schedule(function()
+              local response = ""
+              local last_line = 2
+              local handler = vim.schedule_wrap(function(_, chunk)
+                response = response .. chunk
+                local lines = vim.split(response, "\n")
+                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+                if last_line < #lines then
+                  trans_win.opts.height = #lines
+                  trans_win:update()
+                  last_line = #lines
+                end
+              end)
+              local on_exit = function()
+                vim.api.nvim_create_autocmd("CursorMoved", {
+                  group = vim.api.nvim_create_augroup("MyGroup", { clear = true }),
+                  callback = function()
+                    if trans_win:win_valid() and vim.api.nvim_get_current_win() ~= trans_win.win then
+                      trans_win:close()
+                      vim.api.nvim_del_augroup_by_name("MyGroup")
+                    elseif not trans_win:win_valid() then
+                      vim.api.nvim_del_augroup_by_name("MyGroup")
+                    end
+                  end,
+                })
+              end
+
+              gp.dispatcher.query(
+                buf,
+                agent.provider,
+                gp.dispatcher.prepare_payload(messages, agent.model, agent.provider),
+                handler,
+                vim.schedule_wrap(function(qid)
+                  on_exit()
+                  vim.cmd("doautocmd User GpDone")
+                end),
+                nil
+              )
+            end)
+          end,
+        },
+      })
     end,
     keys = {
-      { "<leader>ts", desc = "Translate", mode = { "n", "v" } },
-      { "<C-g>z", desc = "GPT prompt Choose Agent" },
+      { "<leader>ts", "<cmd>GpTranslator<cr>", desc = "Translate", mode = { "n", "v" } },
+      { "<leader>tc", "<cmd>GpGitCommit<cr>", desc = "Git commits", mode = { "n", "v" } },
+      { "<C-g>z", "<cmd>GpSelectAgent<cr>", desc = "GPT prompt Choose Agent" },
       { "<C-g>c", "<cmd>GpChatNew vsplit<cr>", mode = { "n", "i" }, desc = "New Chat" },
       { "<C-g>t", "<cmd>GpChatToggle<cr>", mode = { "n", "i" }, desc = "Toggle Chat" },
       { "<C-g>f", "<cmd>GpChatFinder<cr>", mode = { "n", "i" }, desc = "Chat Finder" },

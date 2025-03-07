@@ -187,6 +187,10 @@ return {
         ["tsconfig.build.json"] = { glyph = "", hl = "MiniIconsAzure" },
         ["yarn.lock"] = { glyph = "", hl = "MiniIconsBlue" },
       },
+      filetype = {
+        snacks_picker_list = { glyph = "󰱺", hl = "MiniIconsYellow" },
+        outline = { glyph = "󰱺", hl = "MiniIconsYellow" },
+      },
     },
   },
 }

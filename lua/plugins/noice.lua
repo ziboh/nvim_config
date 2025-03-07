@@ -1,6 +1,9 @@
 return {
   "folke/noice.nvim",
   event = "VeryLazy",
+  opts_extend = {
+    "routes",
+  },
   opts = {
     lsp = {
       override = {
@@ -17,8 +20,6 @@ return {
         filter = {
           event = "msg_show",
           any = {
-            -- { find = "Starting Supermaven" },
-            -- { find = "Supermaven Free Tier" },
             { find = "%d+L, %d+B" },
             { find = "; after #%d+" },
             { find = "; before #%d+" },
@@ -42,7 +43,6 @@ return {
 
   dependencies = {
     "MunifTanjim/nui.nvim",
-    -- "rcarriga/nvim-notify",
   },
   keys = {
     {

@@ -91,6 +91,11 @@ function M.file_worktree(file, worktrees)
   end
 end
 
+function M.is_loaded(name)
+  local Config = require("lazy.core.config")
+  return Config.plugins[name] and Config.plugins[name]._.loaded
+end
+
 --- Merge extended options with a default table of options
 ---@param default? table The default table that you want to merge into
 ---@param opts? table The new options that should be merged with the default table

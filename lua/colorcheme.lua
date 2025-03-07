@@ -7,6 +7,8 @@ if not is_ok then
   return
 end
 vim.api.nvim_set_hl(0, "VertSplit", { fg = "#504945" })
+vim.api.nvim_set_hl(0, "SignColumn", { link = "NormalSB" })
+vim.api.nvim_set_hl(0, "SignColumnSB", { link = "NormalSB" })
 vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#504945" })
 vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#45475a", fg = "none" })
 vim.api.nvim_set_hl(0, "DiagnosticUnnecessary", { bg = "none", fg = "#636da6" })

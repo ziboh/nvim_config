@@ -14,7 +14,7 @@ return {
               icon = " ",
               key = "c",
               desc = "Config",
-              action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+              action = ":lua Snacks.picker.files({ cwd = vim.fn.stdpath('config'), confirm = { 'tcd_cwd', 'jump' } })",
             },
             {
               icon = " ",

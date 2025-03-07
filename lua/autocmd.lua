@@ -126,11 +126,3 @@ vim.api.nvim_create_autocmd("CmdLineLeave", {
     vim.opt.titlestring = "neovim"
   end,
 })
-
-vim.api.nvim_create_autocmd("BufEnter", {
-  callback = function()
-    if vim.uv.cwd() ~= Utils.root() then
-      vim.api.nvim_set_current_dir(Utils.root())
-    end
-  end,
-})

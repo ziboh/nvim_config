@@ -14,6 +14,23 @@ return {
   opts = {
     bigfile = { enabled = true },
     scroll = { enabled = true },
+    scratch = {
+      win_by_ft = {
+        lua = {
+          keys = {
+            ["source"] = {
+              "<c-j>",
+              function(self)
+                local name = "scratch." .. vim.fn.fnamemodify(vim.api.nvim_buf_get_name(self.buf), ":e")
+                Snacks.debug.run({ buf = self.buf, name = name })
+              end,
+              desc = "Source buffer",
+              mode = { "n", "x" },
+            },
+          },
+        },
+      },
+    },
     quickfile = { enabled = true },
     indent = {
       chunk = {
@@ -32,6 +49,38 @@ return {
       folds = {
         open = true, -- show open fold icons
         git_hl = true, -- use Git Signs hl for fold icons
+      },
+    },
+    lazytgit = {
+      -- automatically configure lazygit to use the current colorscheme
+      -- and integrate edit with the current neovim instance
+      configure = true,
+      -- extra configuration for lazygit that will be merged with the default
+      -- snacks does NOT have a full yaml parser, so if you need `"test"` to appear with the quotes
+      -- you need to double quote it: `"\"test\""`
+      config = {
+        os = { editPreset = "nvim-remote" },
+        gui = {
+          -- set to an empty string "" to disable icons
+          nerdFontsVersion = "3",
+        },
+      },
+      theme_path = vim.fs.normalize(vim.fn.stdpath("cache") .. "/lazygit-theme.yml"),
+      -- Theme for lazygit
+      theme = {
+        [241] = { fg = "Special" },
+        activeBorderColor = { fg = "MatchParen", bold = true },
+        cherryPickedCommitBgColor = { fg = "Identifier" },
+        cherryPickedCommitFgColor = { fg = "Function" },
+        defaultFgColor = { fg = "Normal" },
+        inactiveBorderColor = { fg = "FloatBorder" },
+        optionsTextColor = { fg = "Function" },
+        searchingActiveBorderColor = { fg = "MatchParen", bold = true },
+        selectedLineBgColor = { bg = "Visual" }, -- set to `default` to have no background colour
+        unstagedChangesColor = { fg = "DiagnosticError" },
+      },
+      win = {
+        style = "lazygit",
       },
     },
     words = { enabled = true },

@@ -13,7 +13,6 @@ function M.ai_buffer(ai_type)
     end
     start_line, end_line = first_nonblank, last_nonblank
   end
-
   local to_col = math.max(vim.fn.getline(end_line):len(), 1)
   return { from = { line = start_line, col = 1 }, to = { line = end_line, col = to_col } }
 end

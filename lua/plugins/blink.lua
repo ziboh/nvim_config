@@ -99,8 +99,9 @@ return {
       },
 
       keymap = {
-        preset = "enter",
-        ["<C-space>"] = {},
+        ["<Tab>"] = { "snippet_forward", "fallback" },
+        ["<S-Tab>"] = { "snippet_backward", "fallback" },
+        ["<CR>"] = { "accept", "fallback" },
         ["<C-y>"] = { "select_and_accept" },
       },
       appearance = {
@@ -143,7 +144,7 @@ return {
     ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
     config = function(_, opts)
       -- setup compat sources
-      local enable = opts.sources.default
+      local enabled = opts.sources.default
       for _, source in ipairs(opts.sources.compat or {}) do
         opts.sources.providers[source] = vim.tbl_deep_extend(
           "force",
@@ -154,22 +155,6 @@ return {
           table.insert(enabled, source)
         end
       end
-      -- add ai_accept to <Tab> key
-      if not opts.keymap["<Tab>"] then
-        if opts.keymap.preset == "super-tab" then -- super-tab
-          opts.keymap["<Tab>"] = {
-            require("blink.cmp.keymap.presets")["super-tab"]["<Tab>"][1],
-            Utils.cmp.map({ "snippet_forward", "ai_accept" }),
-            "fallback",
-          }
-        else -- other presets
-          opts.keymap["<Tab>"] = {
-            Utils.cmp.map({ "snippet_forward", "ai_accept" }),
-            "fallback",
-          }
-        end
-      end
-
       -- Unset custom prop to pass blink.cmp validation
       opts.sources.compat = nil
       -- check if we need to override symbol kinds
@@ -287,146 +272,5 @@ return {
       luasnip.filetype_extend("sh", { "shelldoc" })
       require("snip")
     end,
-  },
-  {
-    "Exafunction/codeium.nvim",
-    cmd = "Codeium",
-    enabled = false,
-    event = "InsertEnter",
-    build = ":Codeium Auth",
-    spec = {
-      {
-        "saghen/blink.cmp",
-        optional = true,
-        dependencies = { "codeium.nvim", "saghen/blink.compat" },
-        opts = {
-          sources = {
-            compat = { "codeium" },
-            providers = {
-              codeium = {
-                kind = "Codeium",
-                score_offset = 100,
-                async = true,
-              },
-            },
-          },
-        },
-      },
-    },
-    opts = {
-      enable_cmp_source = vim.g.ai_cmp,
-      virtual_text = {
-        enabled = not vim.g.ai_cmp,
-        key_bindings = {
-          accept = false, -- handled by nvim-cmp / blink.cmp
-          next = "<M-]>",
-          prev = "<M-[>",
-        },
-      },
-    },
-  },
-  {
-    "luozhiya/fittencode.nvim",
-    event = "InsertEnter",
-    init = function()
-      if vim.g.rime_enabled and vim.g.fittencode_enabled then
-        vim.notify("Please disable Rime first", { title = "Fittencode", timeout = 3000 })
-        vim.g.fittencode_enabled = false
-      end
-    end,
-    keys = {
-      {
-        "<leader>af",
-        function()
-          Utils.toggle.fittencode(false)
-        end,
-        desc = "Fittencode: Toggle",
-      },
-    },
-    config = function()
-      require("fittencode").setup({
-        completion_mode = "source",
-        source_completion = {
-          enbaled = true,
-          engine = "cmp",
-          trigger_chars = {},
-        },
-      })
-    end,
-    lazy = true,
-  },
-  {
-    "saghen/blink.cmp",
-    optional = true,
-    dependencies = { "luozhiya/fittencode.nvim" },
-    opts = {
-      sources = {
-        compat = { "fittencode" },
-        providers = {
-          fittencode = {
-            enabled = function()
-              return vim.g.fittencode_enabled and not vim.g.rime_enabled
-            end,
-            kind = "Fitten",
-            score_offset = 100,
-            async = true,
-          },
-          -- default = { "fittencode" },
-          -- providers = {
-          --   fittencode = {
-          --     name = "fittencode",
-          --     module = "fittencode.sources.blink",
-          --     score_offset = 100,
-          --     async = true,
-          --     kind = "Fitten",
-          --   },
-        },
-      },
-    },
-  },
-  {
-    "supermaven-inc/supermaven-nvim",
-    event = "InsertEnter",
-    cmd = {
-      "SupermavenUseFree",
-      "SupermavenUsePro",
-    },
-
-    keys = {
-      {
-        "<leader>as",
-        function()
-          Utils.toggle.supermaven(false)
-        end,
-        desc = "Supermaven: Toggle",
-      },
-    },
-    opts = {
-      keymaps = {
-        accept_suggestion = nil, -- handled by nvim-cmp / blink.cmp
-      },
-      disable_inline_completion = vim.g.ai_cmp,
-      ignore_filetypes = { "bigfile", "snacks_input", "snacks_notif" },
-    },
-  },
-  {
-    "saghen/blink.cmp",
-    optional = true,
-    dependencies = { "supermaven-nvim", "saghen/blink.compat" },
-    opts = {
-      sources = {
-        compat = { "supermaven" },
-        providers = {
-          supermaven = {
-            enabled = function()
-              return vim.g.supermaven_enabled and not vim.g.rime_enabled
-            end,
-            kind = "Supermaven",
-            score_offset = 100,
-            async = true,
-          },
-        },
-      },
-    },
   },
 }

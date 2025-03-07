@@ -6,9 +6,7 @@
     "cast-local-type",
     "param-type-mismatch",
     "need-check-nil",
-        "unused-local"
+    "unused-local"
   ],
-  "diagnostics.globals": ["vim",
-        "lcoal"],
   "completion.autoRequire": false
 }

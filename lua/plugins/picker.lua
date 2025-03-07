@@ -3,23 +3,72 @@ return {
   ---@type snacks.Config
   opts = {
     picker = {
+      actions = {
+        delect_file = function(picker, item, action)
+          local options = { "Yes", "No" }
+          vim.ui.select(options, {}, function(choice)
+            if choice == "Yes" then
+              local path = item._path
+              local ok, err = pcall(vim.fn.delete, path, "rf")
+              if ok then
+                Snacks.bufdelete({ file = path, force = true })
+              else
+                Snacks.notify.error("Failed to delete `" .. path .. "`:\n- " .. err)
+              end
+              picker:close()
+              Snacks.picker.resume()
+            end
+          end)
+        end,
+        open_file = function(picker, item)
+          picker:close()
+          local file_name = item._path
+          for _, b in ipairs(vim.api.nvim_list_bufs()) do
+            if vim.api.nvim_buf_get_name(b) == file_name then
+              for _, w in ipairs(vim.api.nvim_list_wins()) do
+                if vim.api.nvim_win_get_buf(w) == b then
+                  vim.api.nvim_set_current_win(w)
+                  return
+                end
+              end
+            end
+          end
+          vim.api.nvim_command("edit " .. file_name)
+
+          -- HACK: this should fix folds
+          if vim.wo.foldmethod == "expr" then
+            vim.schedule(function()
+              vim.opt.foldmethod = "expr"
+            end)
+          end
+        end,
+        tcd_cwd = function(_, item)
+          vim.cmd.tcd(item.cwd)
+        end,
+        tcd_root = function(_, item)
+          vim.cmd.tcd(Utils.root(item._path))
+        end,
+      },
       win = {
-        -- input window
         input = {
           keys = {
             ["<S-Tab>"] = { "list_up", mode = { "i", "n" } },
             ["<Tab>"] = { "list_down", mode = { "i", "n" } },
           },
         },
+        preview = {
+          wo = {
+            statuscolumn = "",
+          },
+        },
       },
     },
   },
   keys = {
-    -- Top Pickers & Explorer
     {
       "<leader><space>",
       function()
-        Snacks.picker.smart()
+        Snacks.picker.smart({ confirm = { "jump", "tcd_root" } })
       end,
       desc = "Smart Find Files",
     },
@@ -55,6 +104,23 @@ return {
       end,
       desc = "File Explorer",
     },
+    {
+      "<leader>E",
+      function()
+        local opts = {}
+        local cwd = vim.uv.cwd()
+        local root = Utils.root()
+        if cwd == root then
+          opts.watch = false
+        end
+        vim.cmd.tcd(root)
+        Snacks.explorer(opts)
+        vim.schedule(function()
+          vim.cmd.tcd(cwd)
+        end)
+      end,
+      desc = "File Explorer",
+    },
     -- find
     {
       "<leader>fb",
@@ -66,7 +132,7 @@ return {
     {
       "<leader>fc",
       function()
-        Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
+        Snacks.picker.files({ cwd = vim.fn.stdpath("config"), confirm = { "tcd_cwd", "jump" } })
       end,
       desc = "Find Config File",
     },
@@ -223,6 +289,13 @@ return {
     },
     {
       "<leader>sh",
+      function()
+        Snacks.picker.help()
+      end,
+      desc = "Help Pages",
+    },
+    {
+      "<leader>fh",
       function()
         Snacks.picker.help()
       end,

@@ -13,11 +13,8 @@ vim.g.disable_rime_ls_pattern = {
   "%[.*%]",
 }
 
-vim.g.fittencode_enabled = true
-vim.g.supermaven_enabled = true
-
--- if the completion engine supports the AI source,
--- use that instead of inline suggestions
+vim.g.fittencode_enabled = false
+vim.g.supermaven_enabled = false
 vim.g.ai_cmp = true
 
 vim.g.icons_enabled = true
