@@ -553,8 +553,12 @@ return {
             })
           end,
           Translator = function()
+            local mode = vim.fn.mode()
             if trans_win ~= nil and trans_win:win_valid() then
               trans_win:focus()
+              return
+            end
+            if not (mode == "v" or mode == "V") then
               return
             end
             local buf = vim.api.nvim_create_buf(false, true)
