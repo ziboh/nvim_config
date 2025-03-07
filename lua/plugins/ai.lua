@@ -572,11 +572,11 @@ return {
               relative = "cursor",
               buf = buf,
               width = 80,
-              height = 2,
-              min_height = 2,
-              max_height = 8,
+              height = 8,
               col = 1,
               row = 1,
+              title = "Translator",
+              title_pos = "center",
               enter = false,
               backdrop = false,
               border = "rounded",
@@ -596,11 +596,6 @@ return {
                 response = response .. chunk
                 local lines = vim.split(response, "\n")
                 vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-                if last_line < #lines then
-                  trans_win.opts.height = #lines
-                  trans_win:update()
-                  last_line = #lines
-                end
               end)
               local on_exit = function()
                 vim.api.nvim_create_autocmd("CursorMoved", {
