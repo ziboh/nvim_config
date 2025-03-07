@@ -228,6 +228,7 @@ return {
       filetype = {
         dotenv = { glyph = "", hl = "MiniIconsYellow" },
         yaml = { glyph = "", hl = "MiniIconsPurple" },
+        outline = { glyph = "󰱺", hl = "MiniIconsYellow" },
       },
       lsp = {
         supermaven = { glyph = "", hl = "MiniIconsYellow" },

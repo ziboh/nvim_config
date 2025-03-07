@@ -491,7 +491,6 @@ return {
                     title_pos = "center",
                     footer_pos = "center",
                   })
-
                   -- HACK: this should fix folds
                   if vim.wo.foldmethod == "expr" then
                     vim.schedule(function()
@@ -499,7 +498,6 @@ return {
                     end)
                   end
                 end,
-
                 open_vsplit = function(picker, item)
                   picker:close()
                   local win = Snacks.win({
@@ -521,9 +519,6 @@ return {
                       vim.opt.foldmethod = "expr"
                     end)
                   end
-                end,
-                nolisted = function()
-                  vim.bo.buflisted = false
                 end,
               },
               layouts = {

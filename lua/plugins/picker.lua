@@ -4,6 +4,9 @@ return {
   opts = {
     picker = {
       actions = {
+        clear_input = function(picker)
+          vim.api.nvim_buf_set_lines(picker.input.win.buf, 0, -1, false, {})
+        end,
         delect_file = function(picker, item, action)
           local options = { "Yes", "No" }
           vim.ui.select(options, {}, function(choice)
@@ -54,11 +57,13 @@ return {
           keys = {
             ["<S-Tab>"] = { "list_up", mode = { "i", "n" } },
             ["<Tab>"] = { "list_down", mode = { "i", "n" } },
+            ["<c-l>"] = { "clear_input", mode = { "n", "i" } },
           },
         },
         preview = {
           wo = {
             statuscolumn = "",
+            winbar = "",
           },
         },
       },

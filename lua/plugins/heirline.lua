@@ -14,16 +14,14 @@ return {
     })
     local FilePath = {
       provider = function(_)
-        local filepath = vim.fn.expand("%:p") -- 获取当前文件的完整路径
-        local home = vim.env.HOME:gsub("\\", "/") -- 获取用户的主目录
-        -- 将路径中的主目录替换为 ~
+        local filepath = vim.fn.expand("%:p")
+        local home = vim.env.HOME:gsub("\\", "/")
         filepath = filepath:gsub(home, "")
-        -- 将路径中的斜杠替换为 >，兼容不同平台
         filepath = filepath:gsub("[\\/]", "  "):gsub("^", "")
 
         return filepath
       end,
-      hl = { fg = "#c099ff" }, -- 设置高亮颜色
+      hl = { fg = "#c099ff" },
     }
     local virtual_env = {
       condition = function()
@@ -64,7 +62,7 @@ return {
           end
           return " " .. python_path
         end,
-        hl = { fg = "#c099ff" }, -- 设置高亮颜色
+        hl = { fg = "#c099ff" },
         on_click = {
           name = "heirline_virtual_env",
           callback = function()
@@ -296,6 +294,60 @@ return {
         },
       },
     }
+    local FileType = {
+      condition = function()
+        return vim.bo.filetype ~= ""
+      end,
+      init = function(self)
+        self.filetype = vim.bo.filetype
+        if self.filetype:match("(snacks_picker).*") == "snacks_picker" then
+          local explore_picker = Snacks.picker.get({ source = "explorer" })
+          local explore_exist = false
+          if #explore_picker ~= 0 then
+            explore_picker = explore_picker[1]
+            explore_exist = true
+          end
+          if explore_exist and explore_picker:is_focused() then
+            local dir = explore_picker:dir()
+            self.icon, self.icon_hl = Snacks.util.icon(dir, "directory")
+            self.filetype = dir
+          elseif self.filetype == "snacks_picker_input" then
+            self.icon = ""
+            self.icon_hl = "MiniIconsCyan"
+            self.filetype = "Input"
+          elseif self.filetype == "snacks_picker_list" then
+            self.icon = ""
+            self.icon_hl = "MiniIconsCyan"
+            self.filetype = "List"
+          elseif self.filetype == "snacks_picker_preview" then
+            self.icon = ""
+            self.icon_hl = "MiniIconsCyan"
+            self.filetype = "Preview"
+          end
+        elseif self.filetype == "snacks_terminal" then
+          self.icon = ""
+          self.icon_hl = "MiniIconsCyan"
+          self.filetype = "Terminal"
+        else
+          self.icon, self.icon_hl = Snacks.util.icon(self.filetype, "filetype")
+        end
+      end,
+      Space(1),
+      {
+        provider = function(self)
+          return self.icon .. " "
+        end,
+        hl = function(self)
+          return self.icon_hl
+        end,
+      },
+      {
+        provider = function(self)
+          return self.filetype
+        end,
+      },
+      Space(2),
+    }
     return {
       opts = {
         disable_winbar_cb = function(args) -- We do this to avoid showing it on the greeter.
@@ -346,7 +398,7 @@ return {
         hl = { fg = "fg", bg = "bg", bold = true },
         Mode,
         lib.component.git_branch(),
-        FileInfo,
+        FileType,
         lib.component.git_diff({}),
         lib.component.diagnostics(),
         lib.component.fill(),
