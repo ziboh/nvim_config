@@ -74,27 +74,6 @@ return {
     },
   },
   {
-    "NeogitOrg/neogit",
-    dependencies = {
-      "nvim-lua/plenary.nvim", -- required
-      "sindrets/diffview.nvim", -- optional - Diff integrations
-      -- Only one of these is needed, not both.
-    },
-    config = true,
-    keys = {
-      {
-        "<leader>gno",
-        function()
-          require("neogit").open({ cwd = Utils.root() })
-        end,
-        desc = "Open Neogit Tab Page",
-      },
-      { "<leader>gnc", "<Cmd>Neogit commit<CR>", desc = "Open Neogit Commit Page" },
-      { "<leader>gnd", ":Neogit cwd=", desc = "Open Neogit Override CWD" },
-      { "<leader>gnk", ":Neogit kind=", desc = "Open Neogit Override Kind" },
-    },
-  },
-  {
     "sindrets/diffview.nvim",
     keys = {
       { "<leader>gdf", "<cmd>DiffviewFileHistory %<CR>", mode = { "n", "v" }, desc = "Show file diff" },
