@@ -299,6 +299,13 @@ return {
       desc = "Help Pages",
     },
     {
+      "<leader>fh",
+      function()
+        Snacks.picker.help()
+      end,
+      desc = "Help Pages",
+    },
+    {
       "<leader>sH",
       function()
         Snacks.picker.highlights()
