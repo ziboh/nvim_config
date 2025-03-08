@@ -27,28 +27,6 @@ return {
             end
           end)
         end,
-        open_file = function(picker, item)
-          picker:close()
-          local file_name = item._path
-          for _, b in ipairs(vim.api.nvim_list_bufs()) do
-            if vim.api.nvim_buf_get_name(b) == file_name then
-              for _, w in ipairs(vim.api.nvim_list_wins()) do
-                if vim.api.nvim_win_get_buf(w) == b then
-                  vim.api.nvim_set_current_win(w)
-                  return
-                end
-              end
-            end
-          end
-          vim.api.nvim_command("edit " .. file_name)
-
-          -- HACK: this should fix folds
-          if vim.wo.foldmethod == "expr" then
-            vim.schedule(function()
-              vim.opt.foldmethod = "expr"
-            end)
-          end
-        end,
         tcd_cwd = function(_, item)
           vim.cmd.tcd(item.cwd)
         end,
