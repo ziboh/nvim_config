@@ -93,7 +93,7 @@ function M.rime_on_attach(client, _)
   local map_del = vim.keymap.del
 
   local sync_user_data = function()
-    client.request("workspace/executeCommand", { command = "rime-ls.sync-user-data" }, function(err, result, ctx)
+    client.request("workspace/executeCommand", { command = "rime-ls.sync-user-data" }, function(err, result)
       if result == nil and not err then
         Utils.info("Rime LSP: sync user data success", { title = "Rime LSP" })
       else

@@ -498,7 +498,6 @@ function M.tableToString(t, indent, visited)
   -- 初始化缩进和已访问表
   indent = indent or ""
   visited = visited or {}
-
   -- 如果已经访问过这个表，直接返回
   if visited[t] then
     return indent .. "{...}"

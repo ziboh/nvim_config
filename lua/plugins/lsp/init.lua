@@ -97,7 +97,7 @@ return {
     },
     opts = {
       diagnostics = {
-        virtual_text = false,
+        virtual_text = true,
         signs = {
           text = {
             [vim.diagnostic.severity.ERROR] = Utils.get_icon("DiagnosticError"),
@@ -125,10 +125,11 @@ return {
         jump = { float = true },
       },
       inlay_hints = {
-        enbaled = true,
+        enabled = true,
+        exclude = {},
       },
       codelens = {
-        enabled = true,
+        enabled = false,
       },
       ---@type lspconfig.options
       servers = {
@@ -199,12 +200,10 @@ return {
 
       Utils.lsp.setup()
       Utils.lsp.on_dynamic_capability(require("plugins.lsp.keymaps").on_attach)
-
       if opts.inlay_hints.enabled then
-        Utils.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
+        Utils.lsp.on_supports_method("textDocument/inlayHint", function(_, buffer)
           if
             vim.api.nvim_buf_is_valid(buffer)
-            and vim.bo[buffer].buftype == ""
             and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
           then
             vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
@@ -427,6 +426,7 @@ return {
   },
   {
     "rachartier/tiny-inline-diagnostic.nvim",
+    enabled = false,
     event = "User LazyFile",
     config = function()
       require("tiny-inline-diagnostic").setup({
@@ -440,6 +440,7 @@ return {
   },
   {
     "chrisgrieser/nvim-lsp-endhints",
+    enabled = false,
     event = "LspAttach",
     opts = {
       label = {

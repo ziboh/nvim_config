@@ -4,21 +4,25 @@ return {
   opts = {
     picker = {
       actions = {
+        ---@param picker snacks.Picker
         clear_input = function(picker)
           vim.api.nvim_buf_set_lines(picker.input.win.buf, 0, -1, false, {})
         end,
-        delect_file = function(picker, item, action)
+        delect_file = function(picker)
           local options = { "Yes", "No" }
           vim.ui.select(options, {}, function(choice)
             if choice == "Yes" then
-              local path = item._path
-              local ok, err = pcall(vim.fn.delete, path, "rf")
-              if ok then
-                Snacks.bufdelete({ file = path, force = true })
-              else
-                Snacks.notify.error("Failed to delete `" .. path .. "`:\n- " .. err)
+              local items = picker:selected({ fallback = true })
+              for _, item in ipairs(items) do
+                local path = item._path
+                local ok, err = pcall(vim.fn.delete, path, "rf")
+                if ok then
+                  Snacks.bufdelete({ file = path, force = true })
+                else
+                  Snacks.notify.error("Failed to delete `" .. path .. "`:\n- " .. err)
+                end
+                picker:close()
               end
-              picker:close()
               Snacks.picker.resume()
             end
           end)
@@ -55,9 +59,8 @@ return {
       win = {
         input = {
           keys = {
-            ["<S-Tab>"] = { "list_up", mode = { "i", "n" } },
-            ["<Tab>"] = { "list_down", mode = { "i", "n" } },
             ["<c-l>"] = { "clear_input", mode = { "n", "i" } },
+            ["<c-a>"] = { "test_selected", mode = { "n", "i" } },
           },
         },
         preview = {

@@ -6,7 +6,6 @@
     "cast-local-type",
     "param-type-mismatch",
     "need-check-nil",
-    "unused-local"
   ],
   "completion.autoRequire": false
 }

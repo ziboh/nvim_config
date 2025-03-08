@@ -101,6 +101,28 @@ function M.setup(opts)
     },
     settings = {},
   }
+
+  Utils.on_load("blink.cmp", function()
+    require("blink.cmp.completion.list").show_emitter:on(function(event)
+      if not vim.g.rime_enabled then
+        return
+      end
+      local col = vim.fn.col(".") - 1
+      if event.context.line:sub(col, col):match("%d") == nil then
+        return
+      end
+
+      local rime_item_index = Utils.rime.get_n_rime_item_index(2, event.items)
+
+      if #rime_item_index ~= 1 then
+        return
+      end
+
+      vim.schedule(function()
+        require("blink.cmp").accept({ index = rime_item_index[1] })
+      end)
+    end)
+  end)
 end
 
 return M

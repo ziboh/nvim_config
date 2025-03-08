@@ -177,9 +177,16 @@ return {
       local gp = require("gp")
       local chat_system_prompt_cn = require("gp.defaults").chat_system_prompt
         .. "You need to answer the question in Chinese.\n"
-      local ollama_endpoint = Utils.is_wsl() and "http://" .. Utils.get_wsl_router_ip() .. ":11434/v1/chat/completions"
+      local ollama_endpoint = os.getenv("WSL_DISTRO_NAME")
+          and "http://" .. vim.env.WSL_ROUTER_IP .. ":11434/v1/chat/completions"
         or "http://localhost:11434/v1/chat/completions"
       require("gp").setup({
+        chat_dir = vim.env.GP_DIR == nil and vim.fn.stdpath("data"):gsub("/$", "") .. "/gp/chats"
+          or vim.env.GP_DIR .. "/chats",
+        log_dir = vim.env.GP_DIR == nil and vim.fn.stdpath("data"):gsub("/$", "") .. "/gp/gp.nvim.log"
+          or vim.env.GP_DIR .. "/gp.nvim.log",
+        static_dir = vim.env.GP_DIR == nil and vim.fn.stdpath("data"):gsub("/$", "") .. "/gp/persisted"
+          or vim.env.GP_DIR .. "/persisted",
         chat_free_cursor = true,
         providers = {
           openai = {
@@ -386,7 +393,7 @@ return {
             local agent = gp.get_chat_agent()
             gp.Prompt(params, gp.Target.popup, agent, template)
           end,
-          SelectAgent = function(gp, params)
+          SelectAgent = function(gp, _)
             local get_agent = function()
               local buf = vim.api.nvim_get_current_buf()
               local file_name = vim.api.nvim_buf_get_name(buf)
@@ -426,7 +433,7 @@ return {
               end,
             })
           end,
-          GitCommit = function(gp, params)
+          GitCommit = function(gp)
             if vim.bo.filetype ~= "gitcommit" then
               return
             end
@@ -453,7 +460,7 @@ return {
                 agent.provider,
                 gp.dispatcher.prepare_payload(messages, agent.model, agent.provider),
                 handler,
-                vim.schedule_wrap(function(qid)
+                vim.schedule_wrap(function()
                   on_exit()
                   vim.cmd("doautocmd User GpDone")
                 end),
@@ -461,8 +468,8 @@ return {
               )
             end)
           end,
-          ChatFinder = function(gp, params)
-            local picker = Snacks.picker("grep", {
+          ChatFinder = function(gp)
+            Snacks.picker("grep", {
               cwd = gp.config.chat_dir,
               args = { "--sort", "path", "--sortr", "path" },
               layout = { preset = "max" },
@@ -470,7 +477,7 @@ return {
               actions = {
                 open_popup = function(picker, item)
                   picker:close()
-                  local win = Snacks.win({
+                  Snacks.win({
                     file = item._path,
                     width = 100,
                     height = 30,
@@ -500,7 +507,7 @@ return {
                 end,
                 open_vsplit = function(picker, item)
                   picker:close()
-                  local win = Snacks.win({
+                  Snacks.win({
                     file = item._path,
                     position = "right",
                     width = 0.5,
@@ -595,7 +602,6 @@ return {
             local agent = gp.get_chat_agent("CodeQwen")
             vim.schedule(function()
               local response = ""
-              local last_line = 2
               local handler = vim.schedule_wrap(function(_, chunk)
                 response = response .. chunk
                 local lines = vim.split(response, "\n")
@@ -620,7 +626,7 @@ return {
                 agent.provider,
                 gp.dispatcher.prepare_payload(messages, agent.model, agent.provider),
                 handler,
-                vim.schedule_wrap(function(qid)
+                vim.schedule_wrap(function()
                   on_exit()
                   vim.cmd("doautocmd User GpDone")
                 end),

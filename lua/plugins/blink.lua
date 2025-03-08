@@ -186,27 +186,6 @@ return {
 
       require("blink.cmp").setup(opts)
 
-      -- When there is only one rime item after inputting a number, select it directly
-      require("blink.cmp.completion.list").show_emitter:on(function(event)
-        if not vim.g.rime_enabled then
-          return
-        end
-        local col = vim.fn.col(".") - 1
-        if event.context.line:sub(col, col):match("%d") == nil then
-          return
-        end
-
-        local rime_item_index = Utils.rime.get_n_rime_item_index(2, event.items)
-
-        if #rime_item_index ~= 1 then
-          return
-        end
-
-        vim.schedule(function()
-          require("blink.cmp").accept({ index = rime_item_index[1] })
-        end)
-      end)
-
       vim.api.nvim_set_hl(0, "BlinkCmpLabelDetail", { fg = "#9993a7", bg = "None" })
       vim.api.nvim_set_hl(0, "BlinkCmpMenu", { link = "Normal", default = true })
       vim.api.nvim_set_hl(0, "BlinkCmpDoc", { link = "Normal", default = true })
