@@ -59,8 +59,11 @@ return {
       win = {
         input = {
           keys = {
+            ["<c-p>"] = { "select_and_prev", mode = { "i", "n" } },
+            ["<c-n>"] = { "select_and_next", mode = { "i", "n" } },
+            ["<S-Tab>"] = { "list_up", mode = { "i", "n" } },
+            ["<Tab>"] = { "list_down", mode = { "i", "n" } },
             ["<c-l>"] = { "clear_input", mode = { "n", "i" } },
-            ["<c-a>"] = { "test_selected", mode = { "n", "i" } },
           },
         },
         preview = {
