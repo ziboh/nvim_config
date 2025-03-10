@@ -4,8 +4,7 @@
     "missing-fields",
     "undefined-doc-name",
     "cast-local-type",
-    "param-type-mismatch",
-    "need-check-nil",
+    "param-type-mismatch"
   ],
   "completion.autoRequire": false
 }

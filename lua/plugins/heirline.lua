@@ -6,7 +6,6 @@ return {
   opts = function()
     local lib = require("heirline-components.all")
     local conditions = require("heirline.conditions")
-    local FileInfo = lib.component.file_info()
     local Space = setmetatable({ provider = " " }, {
       __call = function(_, n)
         return { provider = string.rep(" ", n) }
@@ -27,40 +26,40 @@ return {
       condition = function()
         return require("utils").has("venv-selector.nvim")
       end,
-      {
-        provider = function(_)
-          local python_path = require("venv-selector").python()
-          if python_path == nil or vim.bo.filetype ~= "python" then
-            return ""
+      static = {
+        icon = " ",
+      },
+      init = function(self)
+        local python_path = require("venv-selector").python()
+        if python_path == nil then
+          return
+        end
+        self.enabled = true
+        if python_path == nil or vim.bo.filetype ~= "python" then
+          self.enabled = false
+        end
+        if Utils.is_win() then
+          self.venv_name = python_path:match(".*\\([^\\]+)\\.venv\\Scripts\\python.exe$")
+          if self.venv_name == nil then
+            self.venv_name = python_path:match(".*\\([^\\]+)\\python%.exe$")
           end
-          return "  "
+        else
+          self.venv_name = python_path:match(".*/([^/]+)/.venv/bin/python")
+          if self.venv_name == nil then
+            self.venv_name = python_path:match(".*/([^/]+)/bin/python")
+          end
+        end
+      end,
+      {
+        provider = function(self)
+          return self.enabled and "  " or ""
         end,
       },
       {
-        provider = function(_)
-          local python_path = require("venv-selector").python()
-          if python_path == nil or vim.bo.filetype ~= "python" then
-            return ""
+        provider = function(self)
+          if self.enabled and self.venv_name then
+            return self.icon .. self.venv_name
           end
-
-          if Utils.is_win() then
-            local venv_name = python_path:match(".*\\([^\\]+)\\.venv\\Scripts\\python.exe$")
-            if venv_name == nil then
-              venv_name = python_path:match(".*\\([^\\]+)\\python%.exe$")
-            end
-            if venv_name ~= nil then
-              return " " .. venv_name
-            end
-          else
-            local venv_name = python_path:match(".*/([^/]+)/.venv/bin/python")
-            if venv_name == nil then
-              venv_name = python_path:match(".*/([^/]+)/bin/python")
-            end
-            if venv_name ~= nil then
-              return " " .. venv_name
-            end
-          end
-          return " " .. python_path
         end,
         hl = { fg = "#c099ff" },
         on_click = {
@@ -77,13 +76,32 @@ return {
       end,
       Space(2),
       {
-        provider = " Fitten",
-        hl = function()
+        flexible = 3,
+        static = {
+          icon = "",
+          text = "Fitten",
+          enabled_hl = { fg = "#98bb6c", bold = true },
+          disabled_hl = { fg = "#ed8796", bold = true },
+        },
+        init = function(self)
           if vim.g.fittencode_enabled then
-            return { fg = "#98bb6c", bold = true }
+            self.hl = { fg = "#98bb6c", bold = true }
           else
-            return { fg = "#ed8796", bold = true }
+            self.hl = { fg = "#ed8796", bold = true }
           end
+        end,
+        {
+          provider = function(self)
+            return self.icon .. " " .. self.text
+          end,
+        },
+        {
+          provider = function(self)
+            return self.icon .. " "
+          end,
+        },
+        hl = function(self)
+          return self.hl
         end,
         on_click = {
           name = "heirline_fittencode",
@@ -99,13 +117,32 @@ return {
       end,
       Space(2),
       {
-        provider = " SuperMaven",
-        hl = function()
+        static = {
+          icon = "",
+          text = "SuperMaven",
+          enabled_hl = { fg = "#98bb6c", bold = true },
+          disabled_hl = { fg = "#ed8796", bold = true },
+        },
+        init = function(self)
           if vim.g.supermaven_enabled then
-            return { fg = "#98bb6c", bold = true }
+            self.hl = self.enabled_hl
           else
-            return { fg = "#ed8796", bold = true }
+            self.hl = self.disabled_hl
           end
+        end,
+        flexible = 3,
+        {
+          provider = function(self)
+            return self.icon .. " " .. self.text
+          end,
+        },
+        {
+          provider = function(self)
+            return self.icon .. " "
+          end,
+        },
+        hl = function(self)
+          return self.hl
         end,
         on_click = {
           name = "heirline_supermaven",
@@ -125,24 +162,38 @@ return {
         end
         return false
       end,
+      Space(2),
       {
-        provider = "  ",
-      },
-      {
-        hl = function()
+        flexible = 3,
+        static = {
+          icon = "",
+          text = "Rime",
+          enabled_hl = { fg = "#98bb6c", bold = true },
+          disabled_hl = { fg = "#ed8796", bold = true },
+        },
+        init = function(self)
           if vim.g.rime_enabled then
-            return { fg = "#98bb6c", bold = true }
+            self.hl = self.enabled_hl
           else
-            return { fg = "#ed8796", bold = true }
+            self.hl = self.disabled_hl
           end
         end,
+        {
+          provider = function(self)
+            return self.icon .. " " .. self.text
+          end,
+        },
+        {
+          provider = function(self)
+            return self.icon .. " "
+          end,
+        },
         on_click = {
           name = "heirline_rime",
           callback = function()
             vim.cmd("RimeToggle")
           end,
         },
-        provider = "ㄓRime",
       },
     }
     local FileCode = {
@@ -170,28 +221,31 @@ return {
       mode_text = { pad_text = "center" }, -- if set, displays text.
     })
     local LspServer = {
-      {
-        condition = function(self)
-          return #self.lsp_filtered_table > 0
+      flexible = 1,
+      on_click = {
+        name = "heirline_lsp_info",
+        callback = function()
+          vim.cmd("LspInfo")
         end,
-        Space(2),
       },
       {
-        on_click = {
-          name = "heirline_lsp_info",
-          callback = function()
-            vim.cmd("LspInfo")
-          end,
-        },
         provider = function(self)
           local names = self.lsp_filtered_table
           if #names == 0 then
-            names = ""
+            return ""
           else
-            names = " [" .. table.concat(names, ", ") .. "]"
-            -- names = table.concat(names, ", ")
+            return " [" .. table.concat(names, ", ") .. "]"
           end
-          return names
+        end,
+      },
+      {
+        provider = function(self)
+          local names = self.lsp_filtered_table
+          if #names == 0 then
+            return ""
+          else
+            return " [LSP]"
+          end
         end,
       },
     }
@@ -236,6 +290,12 @@ return {
         end),
       },
       hl = { fg = "#98bb6c", bold = true },
+      {
+        condition = function(self)
+          return #self.lsp_filtered_table > 0
+        end,
+        Space(2),
+      },
       LspServer,
     }
     local Overseer = {

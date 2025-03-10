@@ -137,7 +137,7 @@ function M.cmd(cmd, show_error)
   local result = vim.fn.system(cmd)
   local success = vim.api.nvim_get_vvar("shell_error") == 0
   if not success and (show_error == nil or show_error) then
-    vim.api.nvim_err_writeln(("Error running command %s\nError message:\n%s"):format(table.concat(cmd, " "), result))
+    Snacks.notify.error(("Error running command %s\nError message:\n%s"):format(table.concat(cmd, " "), result))
   end
   return success and assert(result):gsub("[\27\155][][()#;?%d]*[A-PRZcf-ntqry=><~]", "") or nil
 end
@@ -214,9 +214,9 @@ end
 --- Sends a notification with 'Neovim' as default title.
 --- Same as using vim.notify, but it saves us typing the title every time.
 ---@param msg string The notification body.
----@param type number|nil The type of the notification (:help vim.log.levels).
 ---@param opts? table The nvim-notify options to use (:help notify-options).
 function M.notify(msg, opts)
+  opts = opts or {}
   local level = opts.levels or vim.log.levels.INFO
   vim.schedule(function()
     vim.notify(msg, level, vim.tbl_deep_extend("force", { title = "Neovim" }, opts or {}))
@@ -631,8 +631,11 @@ end
 function M.win_close_port(port)
   -- 获取占用端口的进程信息
   local handle = io.popen(string.format("netstat -ano | findstr :%d", port))
-  local result = handle:read("*a")
-  handle:close()
+  local result = ""
+  if handle ~= nil then
+    result = handle:read("*a")
+    handle:close()
+  end
 
   -- 如果没有找到进程
   if result == "" then
@@ -648,10 +651,11 @@ function M.win_close_port(port)
     -- 使用 taskkill 命令关闭进程
     local cmd = string.format("taskkill /PID %s /F", pid)
     local kill_handle = io.popen(cmd)
-    local kill_result = kill_handle:read("*a"):gsub("%s+$", "")
-    kill_handle:close()
-
-    Utils.info(kill_result)
+    if kill_handle ~= nil then
+      local kill_result = kill_handle:read("*a"):gsub("%s+$", "")
+      kill_handle:close()
+      Utils.info(kill_result)
+    end
   else
     print("Could not find PID for port " .. port)
   end

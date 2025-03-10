@@ -85,11 +85,13 @@ return {
                   item.score_offset = item.score_offset - 3
                 end
                 local client = vim.lsp.get_client_by_id(item.client_id)
-                if client.name == "rime_ls" then
-                  item.score_offset = item.score_offset - 3
-                end
+                if client ~= nil then
+                  if client.name == "rime_ls" then
+                    item.score_offset = item.score_offset - 3
+                  end
 
-                item.source_name = client.name
+                  item.source_name = client.name
+                end
               end
 
               return items
