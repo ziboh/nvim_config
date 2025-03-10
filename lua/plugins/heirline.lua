@@ -1,3 +1,4 @@
+---@diagnostic disable: trailing-space
 return {
   "rebelot/heirline.nvim",
   dependencies = { { "Zeioth/heirline-components.nvim" } },
@@ -76,37 +77,39 @@ return {
       end,
       Space(2),
       {
-        flexible = 3,
-        static = {
-          icon = "",
-          text = "Fitten",
-          enabled_hl = { fg = "#98bb6c", bold = true },
-          disabled_hl = { fg = "#ed8796", bold = true },
-        },
-        init = function(self)
-          if vim.g.fittencode_enabled then
-            self.hl = { fg = "#98bb6c", bold = true }
-          else
-            self.hl = { fg = "#ed8796", bold = true }
-          end
-        end,
-        {
-          provider = function(self)
-            return self.icon .. " " .. self.text
-          end,
-        },
-        {
-          provider = function(self)
-            return self.icon .. " "
-          end,
-        },
-        hl = function(self)
-          return self.hl
-        end,
         on_click = {
           name = "heirline_fittencode",
           callback = function()
             require("utils.toggle").fittencode()
+          end,
+        },
+        {
+          flexible = 10,
+          static = {
+            icon = " ",
+            text = "Fitten",
+            enabled_hl = { fg = "#98bb6c", bold = true },
+            disabled_hl = { fg = "#ed8796", bold = true },
+          },
+          init = function(self)
+            if vim.g.fittencode_enabled then
+              self.hl = { fg = "#98bb6c", bold = true }
+            else
+              self.hl = { fg = "#ed8796", bold = true }
+            end
+          end,
+          {
+            provider = function(self)
+              return self.icon .. self.text
+            end,
+          },
+          {
+            provider = function(self)
+              return self.icon
+            end,
+          },
+          hl = function(self)
+            return self.hl
           end,
         },
       },
@@ -117,37 +120,39 @@ return {
       end,
       Space(2),
       {
-        static = {
-          icon = "",
-          text = "SuperMaven",
-          enabled_hl = { fg = "#98bb6c", bold = true },
-          disabled_hl = { fg = "#ed8796", bold = true },
-        },
-        init = function(self)
-          if vim.g.supermaven_enabled then
-            self.hl = self.enabled_hl
-          else
-            self.hl = self.disabled_hl
-          end
-        end,
-        flexible = 3,
-        {
-          provider = function(self)
-            return self.icon .. " " .. self.text
-          end,
-        },
-        {
-          provider = function(self)
-            return self.icon .. " "
-          end,
-        },
-        hl = function(self)
-          return self.hl
-        end,
         on_click = {
           name = "heirline_supermaven",
           callback = function()
             require("utils.toggle").supermaven()
+          end,
+        },
+        {
+          static = {
+            icon = " ",
+            text = "SuperMaven",
+            enabled_hl = { fg = "#98bb6c", bold = true },
+            disabled_hl = { fg = "#ed8796", bold = true },
+          },
+          init = function(self)
+            if vim.g.supermaven_enabled then
+              self.hl = self.enabled_hl
+            else
+              self.hl = self.disabled_hl
+            end
+          end,
+          flexible = 10,
+          {
+            provider = function(self)
+              return self.icon .. self.text
+            end,
+          },
+          {
+            provider = function(self)
+              return self.icon
+            end,
+          },
+          hl = function(self)
+            return self.hl
           end,
         },
       },
@@ -164,35 +169,37 @@ return {
       end,
       Space(2),
       {
-        flexible = 3,
-        static = {
-          icon = "",
-          text = "Rime",
-          enabled_hl = { fg = "#98bb6c", bold = true },
-          disabled_hl = { fg = "#ed8796", bold = true },
-        },
-        init = function(self)
-          if vim.g.rime_enabled then
-            self.hl = self.enabled_hl
-          else
-            self.hl = self.disabled_hl
-          end
-        end,
-        {
-          provider = function(self)
-            return self.icon .. " " .. self.text
-          end,
-        },
-        {
-          provider = function(self)
-            return self.icon .. " "
-          end,
-        },
         on_click = {
           name = "heirline_rime",
           callback = function()
             vim.cmd("RimeToggle")
           end,
+        },
+        {
+          flexible = 10,
+          static = {
+            icon = " ",
+            text = "Rime",
+            enabled_hl = { fg = "#98bb6c", bold = true },
+            disabled_hl = { fg = "#ed8796", bold = true },
+          },
+          init = function(self)
+            if vim.g.rime_enabled then
+              self.hl = self.enabled_hl
+            else
+              self.hl = self.disabled_hl
+            end
+          end,
+          {
+            provider = function(self)
+              return self.icon .. self.text
+            end,
+          },
+          {
+            provider = function(self)
+              return self.icon
+            end,
+          },
         },
       },
     }
@@ -280,15 +287,6 @@ return {
         self.lsp_names = names
         self.lsp_filtered_table = lsp_filtered_table
       end,
-      update = {
-        "LspAttach",
-        "LspDetach",
-        "BufEnter",
-        "VimResized",
-        callback = vim.schedule_wrap(function()
-          vim.cmd.redrawstatus()
-        end),
-      },
       hl = { fg = "#98bb6c", bold = true },
       {
         condition = function(self)

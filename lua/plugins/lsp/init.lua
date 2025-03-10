@@ -137,6 +137,11 @@ return {
           cmd = { "lua-language-server", "--locale=zh-cn" },
           settings = {
             Lua = {
+              diagnostics = {
+                disable = {
+                  "trailing-space",
+                },
+              },
               workspace = {
                 checkThirdParty = false,
               },

@@ -171,10 +171,8 @@ return {
   },
   {
     "ziboh/gp.nvim",
-    branch = "reasoning_content",
     config = function()
       local trans_win
-      local gp = require("gp")
       local chat_system_prompt_cn = require("gp.defaults").chat_system_prompt
         .. "You need to answer the question in Chinese.\n"
       local ollama_endpoint = os.getenv("WSL_DISTRO_NAME")
@@ -393,7 +391,7 @@ return {
             local agent = gp.get_chat_agent()
             gp.Prompt(params, gp.Target.popup, agent, template)
           end,
-          SelectAgent = function(gp, _)
+          SelectAgent = function(gp)
             local get_agent = function()
               local buf = vim.api.nvim_get_current_buf()
               local file_name = vim.api.nvim_buf_get_name(buf)
@@ -432,41 +430,6 @@ return {
                 vim.cmd("GpAgent " .. item.text)
               end,
             })
-          end,
-          GitCommit = function(gp)
-            if vim.bo.filetype ~= "gitcommit" then
-              return
-            end
-            local buf = vim.api.nvim_get_current_buf()
-            local agent = gp.get_chat_agent("ChatDoubao")
-            vim.schedule(function()
-              local response = ""
-              local handler = vim.schedule_wrap(function(_, chunk)
-                response = response .. chunk
-                local lines = vim.split(response, "\n")
-                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-              end)
-              local on_exit = function() end
-              local messages = {}
-              local user_prompt = gp.render.template(gp.config.commit_prompt_template, {
-                ["{{git_diff}}"] = vim.fn.system("git diff --no-ext-diff --staged"),
-              })
-
-              table.insert(messages, { role = "user", content = user_prompt })
-
-              vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
-              gp.dispatcher.query(
-                buf,
-                agent.provider,
-                gp.dispatcher.prepare_payload(messages, agent.model, agent.provider),
-                handler,
-                vim.schedule_wrap(function()
-                  on_exit()
-                  vim.cmd("doautocmd User GpDone")
-                end),
-                nil
-              )
-            end)
           end,
           ChatFinder = function(gp)
             Snacks.picker("grep", {
@@ -559,7 +522,7 @@ return {
               end,
             })
           end,
-          Translator = function()
+          Translator = function(gp)
             local mode = vim.fn.mode()
             if trans_win ~= nil and trans_win:win_valid() then
               trans_win:focus()
@@ -598,15 +561,9 @@ return {
                 filetype = "markdown",
               },
             })
-
             local agent = gp.get_chat_agent("CodeQwen")
             vim.schedule(function()
-              local response = ""
-              local handler = vim.schedule_wrap(function(_, chunk)
-                response = response .. chunk
-                local lines = vim.split(response, "\n")
-                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-              end)
+              local handler = gp.dispatcher.create_handler(buf, trans_win.win, 0, true, "", false, false)
               local on_exit = function()
                 vim.api.nvim_create_autocmd("CursorMoved", {
                   group = vim.api.nvim_create_augroup("MyGroup", { clear = true }),
@@ -621,6 +578,71 @@ return {
                 })
               end
 
+              gp.dispatcher.query(
+                buf,
+                agent.provider,
+                gp.dispatcher.prepare_payload(messages, agent.model, agent.provider),
+                handler,
+                vim.schedule_wrap(function()
+                  on_exit()
+                  vim.cmd("doautocmd User GpDone")
+                end),
+                nil
+              )
+            end)
+          end,
+          GitCommit = function(gp)
+            if vim.bo.filetype ~= "gitcommit" then
+              return
+            end
+            local buf = vim.api.nvim_get_current_buf()
+            local agent = gp.get_chat_agent()
+            vim.schedule(function()
+              local on_exit = function() end
+              local messages = {}
+              local commit_prompt_template = [[
+You are an expert at following the Conventional Commit specification. Given the git diff listed below, please generate a commit message for me:
+      1. First line: conventional commit format (type: concise description) (remember to use semantic types like feat, fix, docs, style, refactor, perf, test, chore, etc.)
+      2. Optional bullet points if more context helps:
+        - Keep the second line blank
+        - Keep them short and direct
+        - Focus on what changed
+        - Always be terse
+        - Don't overly explain
+        - Drop any fluffy or formal language
+
+      Return ONLY the commit message - no introduction, no explanation, no quotes around it.
+
+      Examples:
+      feat: add user auth system
+
+      - Add JWT tokens for API auth
+      - Handle token refresh for long sessions
+
+      fix: resolve memory leak in worker pool
+
+      - Clean up idle connections
+      - Add timeout for stale workers
+
+      Simple change example:
+      fix: typo in README.md
+
+      Very important: Do not respond with any of the examples. Your message must be based off the diff that is about to be provided, with a little bit of styling informed by the recent commits you're about to see.
+
+      Based on this format, generate appropriate commit messages. Respond with message only. DO NOT format the message in Markdown code blocks, DO NOT use backticks:
+
+      ```diff
+	  {{git_diff}}
+      ```
+      ]]
+              local user_prompt = gp.render.template(commit_prompt_template, {
+                ["{{git_diff}}"] = vim.fn.system("git diff --no-ext-diff --staged"),
+              })
+
+              table.insert(messages, { role = "user", content = user_prompt })
+
+              vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+              local handler = gp.dispatcher.create_handler(buf, 0, 0, true, "", false, false)
               gp.dispatcher.query(
                 buf,
                 agent.provider,
