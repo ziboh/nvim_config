@@ -183,7 +183,7 @@ return {
           or vim.env.GP_DIR .. "/chats",
         log_dir = vim.env.GP_DIR == nil and vim.fn.stdpath("data"):gsub("/$", "") .. "/gp/gp.nvim.log"
           or vim.env.GP_DIR .. "/gp.nvim.log",
-        static_dir = vim.env.GP_DIR == nil and vim.fn.stdpath("data"):gsub("/$", "") .. "/gp/persisted"
+        state_dir = vim.env.GP_DIR == nil and vim.fn.stdpath("data"):gsub("/$", "") .. "/gp/persisted"
           or vim.env.GP_DIR .. "/persisted",
         chat_free_cursor = true,
         providers = {
@@ -195,6 +195,9 @@ return {
             endpoint = ollama_endpoint,
           },
         },
+        -- You can provide state preservation for agents with customized commands.
+        custom_state = { "translate", "gitcommit" },
+
         agents = {
           {
             provider = "openai",
@@ -207,7 +210,7 @@ return {
           {
             provider = "openai",
             name = "CodeDoubao",
-            chat = true,
+            chat = false,
             command = true,
             model = { model = "doubao-pro-256k", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
@@ -231,7 +234,7 @@ return {
           {
             provider = "openai",
             name = "CodeDeepseek",
-            chat = true,
+            chat = false,
             command = true,
             model = { model = "deepseek-chat", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
@@ -255,15 +258,15 @@ return {
           {
             provider = "openai",
             name = "CodeGrok",
-            chat = true,
+            chat = false,
             command = true,
             model = { model = "grok-2" },
             system_prompt = require("gp.defaults").code_system_prompt,
           },
           {
             provider = "openai",
-            name = "CodeGrok",
-            chat = true,
+            name = "CodeGrok3",
+            chat = false,
             command = true,
             model = { model = "grok-3" },
             system_prompt = require("gp.defaults").code_system_prompt,
@@ -279,7 +282,7 @@ return {
           {
             provider = "openai",
             name = "CodeClaude-3-5-Sonnet",
-            chat = true,
+            chat = false,
             command = true,
             model = { model = "claude-3-5-sonnet-20241022", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
@@ -295,7 +298,7 @@ return {
           {
             provider = "openai",
             name = "CodeGemini",
-            chat = true,
+            chat = false,
             command = true,
             model = { model = "gemini-2.0-flash", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
@@ -311,7 +314,7 @@ return {
           {
             provider = "openai",
             name = "CodeGPT4o",
-            chat = true,
+            chat = false,
             command = true,
             model = { model = "gpt-4o", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
@@ -319,7 +322,7 @@ return {
           {
             provider = "openai",
             name = "CodeGPT4o-mini",
-            chat = true,
+            chat = false,
             command = true,
             model = { model = "gpt-4o-mini", temperature = 0.8, top_p = 1 },
             system_prompt = require("gp.defaults").code_system_prompt,
@@ -327,7 +330,7 @@ return {
           {
             provider = "ollama",
             name = "CodeQwen",
-            chat = true,
+            chat = false,
             command = true,
             model = {
               model = "qwen2.5-coder:7b",
@@ -391,46 +394,101 @@ return {
             local agent = gp.get_chat_agent()
             gp.Prompt(params, gp.Target.popup, agent, template)
           end,
-          SelectAgent = function(gp)
-            local get_agent = function()
+          SetAgent = function(gp, params)
+            local state
+            local bang = params.bang
+            if params.fargs[1] ~= nil then
+              state = params.fargs[1]
+            end
+            local custom_state = vim.deepcopy(gp.opts.custom_state or gp.config.custom_state)
+            vim.list_extend(custom_state, { "chat_agent", "command_agent" })
+            local all_agents = gp.agents
+            local all_agents_name = vim.tbl_keys(all_agents)
+            local picker_agent_state = function(state)
+              local select_agent_items = all_agents_name
+              if state == "chat_agent" then
+                select_agent_items = gp._chat_agents
+              elseif state == "command_agent" then
+                select_agent_items = gp._command_agents
+              end
+              local items = vim.tbl_map(function(value)
+                return {
+                  text = value,
+                  preview = {
+                    text = vim.inspect(all_agents[value]),
+                    ft = "lua",
+                    title = value,
+                  },
+                }
+              end, select_agent_items)
+              Snacks.picker({
+                items = items,
+                format = "text",
+                title = "Select Agent",
+                preview = function(ctx)
+                  ctx.preview:reset()
+                  local lines = vim.split(ctx.item.preview.text, "\n")
+                  ctx.preview:set_lines(lines)
+                  ctx.preview:highlight({ ft = ctx.item.preview.ft })
+                  ctx.preview:wo({
+                    signcolumn = "no",
+                    number = false,
+                  })
+                  ctx.preview:set_title(ctx.item.preview.title)
+                end,
+                confirm = function(picker, item)
+                  picker:close()
+                  gp.set_agent_state(state, item.text)
+                end,
+              })
+            end
+            if state == nil and not bang then
               local buf = vim.api.nvim_get_current_buf()
               local file_name = vim.api.nvim_buf_get_name(buf)
               local is_chat = gp.not_chat(buf, file_name) == nil
-              return is_chat and gp._chat_agents or gp._command_agents
+              if is_chat then
+                picker_agent_state("chat_agent")
+              else
+                picker_agent_state("command_agent")
+              end
+            elseif bang then
+              local items = vim.tbl_map(function(value)
+                return {
+                  text = value,
+                  preview = {
+                    text = vim.inspect(gp.get_agent_from_state(value)),
+                    ft = "lua",
+                    title = value,
+                  },
+                }
+              end, custom_state)
+              Snacks.picker({
+                items = items,
+                format = "text",
+                title = "Select Agent",
+                preview = function(ctx)
+                  ctx.preview:reset()
+                  local lines = vim.split(ctx.item.preview.text, "\n")
+                  ctx.preview:set_lines(lines)
+                  ctx.preview:highlight({ ft = ctx.item.preview.ft })
+                  ctx.preview:wo({
+                    signcolumn = "no",
+                    number = false,
+                  })
+                  ctx.preview:set_title(ctx.item.preview.title)
+                end,
+                confirm = function(picker, item)
+                  picker:close()
+                  vim.schedule(function()
+                    picker_agent_state(item.text)
+                  end)
+                end,
+              })
+            else
+              picker_agent_state(state)
             end
-            local agents = get_agent()
-            local all_agents = gp.agents
-            local items = vim.tbl_map(function(value)
-              return {
-                text = value,
-                preview = {
-                  text = vim.inspect(all_agents[value]),
-                  ft = "lua",
-                  title = value,
-                },
-              }
-            end, agents)
-            Snacks.picker({
-              items = items,
-              format = "text",
-              title = "Select Agent",
-              preview = function(ctx)
-                ctx.preview:reset()
-                local lines = vim.split(ctx.item.preview.text, "\n")
-                ctx.preview:set_lines(lines)
-                ctx.preview:highlight({ ft = ctx.item.preview.ft })
-                ctx.preview:wo({
-                  signcolumn = "no",
-                  number = false,
-                })
-                ctx.preview:set_title(ctx.item.preview.title)
-              end,
-              confirm = function(picker, item)
-                picker:close()
-                vim.cmd("GpAgent " .. item.text)
-              end,
-            })
           end,
+
           ChatFinder = function(gp)
             Snacks.picker("grep", {
               cwd = gp.config.chat_dir,
@@ -561,7 +619,7 @@ return {
                 filetype = "markdown",
               },
             })
-            local agent = gp.get_chat_agent("CodeQwen")
+            local agent = gp.get_agent_from_state("translate")
             vim.schedule(function()
               local handler = gp.dispatcher.create_handler(buf, trans_win.win, 0, true, "", false, false)
               local on_exit = function()
@@ -596,7 +654,7 @@ return {
               return
             end
             local buf = vim.api.nvim_get_current_buf()
-            local agent = gp.get_chat_agent()
+            local agent = gp.get_agent_from_state("gitcommit")
             vim.schedule(function()
               local on_exit = function() end
               local messages = {}
@@ -662,7 +720,7 @@ You are an expert at following the Conventional Commit specification. Given the 
     keys = {
       { "<leader>ts", "<cmd>GpTranslator<cr>", desc = "Translate", mode = { "n", "v" } },
       { "<leader>tc", "<cmd>GpGitCommit<cr>", desc = "Git commits", mode = { "n", "v" } },
-      { "<C-g>z", "<cmd>GpSelectAgent<cr>", desc = "GPT prompt Choose Agent" },
+      { "<C-g>z", "<cmd>GpSetAgent<cr>", desc = "GPT prompt Choose Agent" },
       { "<C-g>c", "<cmd>GpChatNew vsplit<cr>", mode = { "n", "i" }, desc = "New Chat" },
       { "<C-g>t", "<cmd>GpChatToggle<cr>", mode = { "n", "i" }, desc = "Toggle Chat" },
       { "<C-g>f", "<cmd>GpChatFinder<cr>", mode = { "n", "i" }, desc = "Chat Finder" },

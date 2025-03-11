@@ -94,6 +94,9 @@ return {
       },
     },
     toggle = { map = Utils.safe_keymap_set },
+    explorer = {
+      replace_netrw = true,
+    },
   },
   keys = {
     {
