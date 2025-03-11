@@ -18,7 +18,6 @@ return {
         local home = vim.env.HOME:gsub("\\", "/")
         filepath = filepath:gsub(home, "")
         filepath = filepath:gsub("[\\/]", "  "):gsub("^", "")
-
         return filepath
       end,
       hl = { fg = "#c099ff" },
@@ -178,7 +177,7 @@ return {
         {
           flexible = 10,
           static = {
-            icon = " ",
+            icon = " ",
             text = "Rime",
             enabled_hl = { fg = "#98bb6c", bold = true },
             disabled_hl = { fg = "#ed8796", bold = true },
@@ -406,6 +405,7 @@ return {
       },
       Space(2),
     }
+    local Nav = lib.component.nav({ ruler = { pad_ruler = { line = 3, char = 2 } } })
     return {
       opts = {
         disable_winbar_cb = function(args) -- We do this to avoid showing it on the greeter.
@@ -460,8 +460,6 @@ return {
         lib.component.git_diff({}),
         lib.component.diagnostics(),
         lib.component.fill(),
-        lib.component.cmd_info(),
-        lib.component.fill(),
         Lsp,
         FittenCode,
         SuperMaven,
@@ -469,7 +467,7 @@ return {
         FileCode,
         virtual_env,
         Overseer,
-        lib.component.nav(),
+        Nav,
       },
     }
   end,
