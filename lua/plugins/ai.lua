@@ -763,29 +763,6 @@ You are an expert at following the Conventional Commit specification. Given the 
       { "<C-g>x", "<cmd>GpContext<cr>", mode = { "n", "i", "v", "x" }, desc = "Toggle Context" },
       { "<C-g>s", "<cmd>GpStop<cr>", mode = { "n", "i", "v", "x" }, desc = "Stop" },
       { "<C-g>n", "<cmd>GpNextAgent<cr>", mode = { "n", "i", "v", "x" }, desc = "Next Agent" },
-
-      { "<C-g>ww", "<cmd>GpWhisper<cr>", mode = { "n", "i" }, desc = "Whisper" },
-      { "<C-g>ww", ":'<,'>GpWhisper<cr>", mode = "v", desc = "Visual Whisper" },
-
-      { "<C-g>wr", "<cmd>GpWhisperRewrite<cr>", mode = { "n", "i" }, desc = "Whisper Inline Rewrite" },
-      { "<C-g>wa", "<cmd>GpWhisperAppend<cr>", mode = { "n", "i" }, desc = "Whisper Append (after)" },
-      { "<C-g>wb", "<cmd>GpWhisperPrepend<cr>", mode = { "n", "i" }, desc = "Whisper Prepend (before) " },
-
-      { "<C-g>wr", ":'<,'>GpWhisperRewrite<cr>", mode = "v", desc = "Visual Whisper Rewrite" },
-      { "<C-g>wa", ":'<,'>GpWhisperAppend<cr>", mode = "v", desc = "Visual Whisper Append (after)" },
-      { "<C-g>wb", ":'<,'>GpWhisperPrepend<cr>", mode = "v", desc = "Visual Whisper Prepend (before)" },
-
-      { "<C-g>wp", "<cmd>GpWhisperPopup<cr>", mode = { "n", "i" }, desc = "Whisper Popup" },
-      { "<C-g>we", "<cmd>GpWhisperEnew<cr>", mode = { "n", "i" }, desc = "Whisper Enew" },
-      { "<C-g>wn", "<cmd>GpWhisperNew<cr>", mode = { "n", "i" }, desc = "Whisper New" },
-      { "<C-g>wv", "<cmd>GpWhisperVnew<cr>", mode = { "n", "i" }, desc = "Whisper Vnew" },
-      { "<C-g>wt", "<cmd>GpWhisperTabnew<cr>", mode = { "n", "i" }, desc = "Whisper Tabnew" },
-
-      { "<C-g>wp", ":'<,'>GpWhisperPopup<cr>", mode = "v", desc = "Visual Whisper Popup" },
-      { "<C-g>we", ":'<,'>GpWhisperEnew<cr>", mode = "v", desc = "Visual Whisper Enew" },
-      { "<C-g>wn", ":'<,'>GpWhisperNew<cr>", mode = "v", desc = "Visual Whisper New" },
-      { "<C-g>wv", ":'<,'>GpWhisperVnew<cr>", mode = "v", desc = "Visual Whisper Vnew" },
-      { "<C-g>wt", ":'<,'>GpWhisperTabnew<cr>", mode = "v", desc = "Visual Whisper Tabnew" },
     },
   },
 }
