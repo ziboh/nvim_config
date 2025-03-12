@@ -34,6 +34,13 @@ function M.on_attach(on_attach, name)
   })
 end
 
+--- Get the codelldb adapter.
+---
+--- Attempts to retrieve the codelldb adapter.
+--- If `codelldb` is installed via mason-registry, it uses the installed path.
+--- Otherwise, it falls back to a default adapter configuration.
+---
+--- @return rustaceanvim.dap.server.Config
 function M.get_codelldb()
   local adapter
   local success, package = pcall(function()
@@ -260,7 +267,7 @@ end
 
 function M.is_enabled(server)
   local c = M.get_config(server)
----@diagnostic disable-next-line: undefined-field
+  ---@diagnostic disable-next-line: undefined-field
   return c and c.enabled ~= false
 end
 
@@ -461,7 +468,9 @@ end
 function M.rclone_sync(src, dst, callback)
   if vim.fn.executable("rclone") == 0 then
     Utils.error("rclone 未安装，请先安装 rclone")
-    callback(false)
+    if callback then
+      callback(false)
+    end
   end
   local rclone_cmd = "rclone sync " .. src .. " " .. dst
   vim.fn.jobstart(rclone_cmd, {

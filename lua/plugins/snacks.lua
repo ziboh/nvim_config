@@ -39,6 +39,14 @@ return {
     },
     input = {
       enabled = true,
+      win = {
+        on_win = function()
+          vim.opt.titlestring = "input"
+        end,
+        on_close = function()
+          vim.opt.titlestring = "neovim"
+        end,
+      },
     },
     notifier = {
       enabled = true,

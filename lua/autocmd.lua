@@ -101,19 +101,23 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+local group = vim.api.nvim_create_augroup("ChangeTitle", { clear = true })
 vim.api.nvim_create_autocmd("TermEnter", {
+  group = group,
   callback = function()
     vim.opt.titlestring = "terminal"
   end,
 })
 
 vim.api.nvim_create_autocmd("TermLeave", {
+  group = group,
   callback = function()
     vim.opt.titlestring = "neovim"
   end,
 })
 
 vim.api.nvim_create_autocmd("CmdLineEnter", {
+  group = group,
   pattern = "*",
   callback = function()
     vim.opt.titlestring = "command"
@@ -121,6 +125,7 @@ vim.api.nvim_create_autocmd("CmdLineEnter", {
 })
 
 vim.api.nvim_create_autocmd("CmdLineLeave", {
+  group = group,
   pattern = "*",
   callback = function()
     vim.opt.titlestring = "neovim"

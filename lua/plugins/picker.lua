@@ -34,6 +34,12 @@ return {
           vim.cmd.tcd(Utils.root(item._path))
         end,
       },
+      on_show = function()
+        vim.opt.titlestring = "picker"
+      end,
+      on_close = function()
+        vim.opt.titlestring = "neovim"
+      end,
       win = {
         input = {
           keys = {
@@ -118,6 +124,7 @@ return {
     {
       "<leader>fc",
       function()
+        ---@diagnostic disable-next-line: assign-type-mismatch
         Snacks.picker.files({ cwd = vim.fn.stdpath("config"), confirm = { "tcd_cwd", "jump" } })
       end,
       desc = "Find Config File",

@@ -387,6 +387,10 @@ return {
           self.icon = ""
           self.icon_hl = "MiniIconsCyan"
           self.filetype = "Terminal"
+        elseif self.filetype == "snacks_input" then
+          self.icon = ""
+          self.icon_hl = "MiniIconsCyan"
+          self.filetype = "Input"
         else
           self.icon, self.icon_hl = Snacks.util.icon(self.filetype, "filetype")
         end
