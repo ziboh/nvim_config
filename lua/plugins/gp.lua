@@ -202,6 +202,10 @@ return {
           name = "ChatOllamaLlama3.1-8B",
           disable = true,
         },
+        {
+          name = "CodeOllamaLlama3.1-8B",
+          disable = true,
+        },
       },
       template_selection = "我有来自 {{filename}} 文件中的内容如下:"
         .. "\n\n```{{filetype}}\n{{selection}}\n```\n\n{{command}}",
