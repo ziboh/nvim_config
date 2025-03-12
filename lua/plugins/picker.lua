@@ -34,11 +34,18 @@ return {
           vim.cmd.tcd(Utils.root(item._path))
         end,
       },
-      on_show = function()
-        vim.opt.titlestring = "picker"
-      end,
-      on_close = function()
-        vim.opt.titlestring = "neovim"
+      on_show = function(picker)
+        local input = picker.input.win
+        if input then
+          input:on("InsertEnter", function()
+            vim.opt.titlestring = "input"
+            -- The title you set will not take effect immediately; you need to manually execute redraw.
+            vim.cmd("redraw")
+          end)
+          input:on("InsertLeave", function()
+            vim.opt.titlestring = "neovim"
+          end)
+        end
       end,
       win = {
         input = {
