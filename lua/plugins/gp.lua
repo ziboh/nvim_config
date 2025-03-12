@@ -317,7 +317,6 @@ return {
             picker_agent_state(state)
           end
         end,
-
         ChatFinder = function(gp)
           Snacks.picker("grep", {
             cwd = gp.config.chat_dir,

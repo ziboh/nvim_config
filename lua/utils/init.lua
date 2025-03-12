@@ -1,5 +1,5 @@
 --- @class UserUtils: LazyUtilCore
---- @field config LazyVimConfig
+--- @field icons utils.icons
 --- @field ui utils.ui
 --- @field cmp utils.cmp
 --- @field lsp utils.lsp
@@ -28,8 +28,6 @@ function M.has(plugin)
   return M.get_plugin(plugin) ~= nil
 end
 
-M.icons = {}
-M.text_icons = {}
 M.which_key_queue = {}
 
 --- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `dst`)
@@ -167,21 +165,21 @@ function M.safe_keymap_set(mode, lhs, rhs, opts)
   end
 end
 
---- Get an icon from `lspkind` if it is available and return it.
----@param kind string The kind of icon in `lspkind` to retrieve.
----@return string icon.
-function M.get_icon(kind, padding, no_fallback)
-  if not vim.g.icons_enabled and no_fallback then
-    return ""
-  end
-  local icon_pack = vim.g.icons_enabled and "icons" or "text_icons"
-  if next(M[icon_pack]) == nil then
-    M.icons = require("icons.nerd_font")
-    M.text_icons = require("icons.text")
-  end
-  local icon = M[icon_pack] and M[icon_pack][kind]
-  return icon and icon .. string.rep(" ", padding or 0) or ""
-end
+--- --- Get an icon from `lspkind` if it is available and return it.
+--- ---@param kind string The kind of icon in `lspkind` to retrieve.
+--- ---@return string icon.
+--- function M.get_icon(kind, padding, no_fallback)
+---   if not vim.g.icons_enabled and no_fallback then
+---     return ""
+---   end
+---   local icon_pack = vim.g.icons_enabled and "icons" or "text_icons"
+---   if next(M[icon_pack]) == nil then
+---     M.icons = require("icons.nerd_font")
+---     M.text_icons = require("icons.text")
+---   end
+---   local icon = M[icon_pack] and M[icon_pack][kind]
+---   return icon and icon .. string.rep(" ", padding or 0) or ""
+--- end
 
 --- Get an empty table of mappings with a key for each map mode.
 ---@return table<string,table> # a table with entries for each map mode.

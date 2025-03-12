@@ -100,10 +100,10 @@ return {
         virtual_text = true,
         signs = {
           text = {
-            [vim.diagnostic.severity.ERROR] = Utils.get_icon("DiagnosticError"),
-            [vim.diagnostic.severity.HINT] = Utils.get_icon("DiagnosticHint"),
-            [vim.diagnostic.severity.WARN] = Utils.get_icon("DiagnosticWarn"),
-            [vim.diagnostic.severity.INFO] = Utils.get_icon("DiagnosticInfo"),
+            [vim.diagnostic.severity.ERROR] = Utils.icons.diagnostics.Error,
+            [vim.diagnostic.severity.HINT] = Utils.icons.diagnostics.Hint,
+            [vim.diagnostic.severity.WARN] = Utils.icons.diagnostics.Warn,
+            [vim.diagnostic.severity.INFO] = Utils.icons.diagnostics.Info,
           },
         },
         update_in_insert = true,
@@ -214,17 +214,17 @@ return {
             vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
           end
         end)
+      end
 
-        -- code lens
-        if opts.codelens.enabled and vim.lsp.codelens then
-          Utils.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
-            vim.lsp.codelens.refresh()
-            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-              buffer = buffer,
-              callback = vim.lsp.codelens.refresh,
-            })
-          end)
-        end
+      -- code lens
+      if opts.codelens.enabled and vim.lsp.codelens then
+        Utils.lsp.on_supports_method("textDocument/codeLens", function(_, buffer)
+          vim.lsp.codelens.refresh()
+          vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+            buffer = buffer,
+            callback = vim.lsp.codelens.refresh,
+          })
+        end)
       end
 
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
