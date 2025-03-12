@@ -537,6 +537,7 @@ You are an expert at following the Conventional Commit specification. Given the 
               handler,
               vim.schedule_wrap(function()
                 on_exit()
+                vim.api.nvim_command("w")
                 vim.cmd("doautocmd User GpDone")
               end),
               nil
