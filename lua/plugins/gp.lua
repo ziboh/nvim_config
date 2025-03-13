@@ -554,6 +554,7 @@ You are an expert at following the Conventional Commit specification. Given the 
     { "<leader>ts", "<cmd>GpTranslator<cr>", desc = "Translate", mode = { "n", "v" } },
     { "<leader>tc", "<cmd>GpGitCommit<cr>", desc = "Git commits", mode = { "n", "v" } },
     { "<C-g>z", "<cmd>GpSetAgent<cr>", desc = "GPT prompt Choose Agent" },
+    { "<C-g>Z", "<cmd>GpSetAgent!<cr>", desc = "Get Agent From State" },
     { "<C-g>c", "<cmd>GpChatNew vsplit<cr>", mode = { "n", "i" }, desc = "New Chat" },
     { "<C-g>t", "<cmd>GpChatToggle<cr>", mode = { "n", "i" }, desc = "Toggle Chat" },
     { "<C-g>f", "<cmd>GpChatFinder<cr>", mode = { "n", "i" }, desc = "Chat Finder" },

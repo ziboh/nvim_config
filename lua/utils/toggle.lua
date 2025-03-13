@@ -19,20 +19,25 @@ end
 --- Toggle showtabline=2|0
 ---@param silent? boolean if true then don't sent a notification
 function M.tabline(silent)
+  ---@diagnostic disable-next-line: undefined-field
   vim.opt.showtabline = vim.opt.showtabline:get() == 0 and 2 or 0
+  ---@diagnostic disable-next-line: undefined-field
   ui_notify(silent, ("tabline %s"):format(bool2str(vim.opt.showtabline:get() == 2)))
 end
 
 --- Toggle conceal=2|0
 ---@param silent? boolean if true then don't sent a notification
 function M.conceal(silent)
+  ---@diagnostic disable-next-line: undefined-field
   vim.opt.conceallevel = vim.opt.conceallevel:get() == 0 and 2 or 0
+  ---@diagnostic disable-next-line: undefined-field
   ui_notify(silent, ("conceal %s"):format(bool2str(vim.opt.conceallevel:get() == 2)))
 end
 
 --- Toggle laststatus=3|2|0
 ---@param silent? boolean if true then don't sent a notification
 function M.statusline(silent)
+  ---@diagnostic disable-next-line: undefined-field
   local laststatus = vim.opt.laststatus:get()
   local status
   if laststatus == 0 then
@@ -136,7 +141,6 @@ function M.fittencode(slient)
     end
   end
 end
-
 
 --- @param slient? boolean if true then don't sent a notification
 function M.supermaven(slient)
