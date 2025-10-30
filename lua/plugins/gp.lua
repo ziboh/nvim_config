@@ -121,7 +121,7 @@ return {
           name = "ChatGemini",
           chat = true,
           command = false,
-          model = { model = "gemini-2.0-flash", temperature = 1, top_p = 1 },
+          model = { model = "gemini-2.5-flash", temperature = 1, top_p = 1 },
           system_prompt = chat_system_prompt_cn,
         },
         {
@@ -129,7 +129,7 @@ return {
           name = "CodeGemini",
           chat = false,
           command = true,
-          model = { model = "gemini-2.0-flash", temperature = 0.8, top_p = 1 },
+          model = { model = "gemini-2.5-flash", temperature = 0.8, top_p = 1 },
           system_prompt = require("gp.defaults").code_system_prompt,
         },
         {

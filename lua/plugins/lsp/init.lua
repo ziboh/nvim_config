@@ -169,14 +169,8 @@ return {
           mason = true,
           filetypes = { "sh", "bash" },
         },
-        volar = {
-          mason = true,
-          init_options = {
-            vue = {
-              hybridMode = true,
-            },
-          },
-        },
+        vue_ls = {},
+        vtsls = {},
         rust_analyzer = { enabled = false },
         ruff = { enabled = false },
         nushell = {},
@@ -260,7 +254,7 @@ return {
             return
           end
         end
-        require("lspconfig")[server].setup(server_opts)
+        vim.lsp.config(server, server_opts)
       end
 
       -- get all the servers that are available through mason-lspconfig

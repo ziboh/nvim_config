@@ -4,6 +4,7 @@ return {
     opts = {
       servers = {
         rime_ls = {
+          enabled = false,
           on_attach = Utils.lsp.rime_on_attach,
           offset_encoding = "utf-8",
           on_new_config = function(new_config)

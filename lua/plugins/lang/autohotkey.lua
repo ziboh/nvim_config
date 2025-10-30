@@ -5,6 +5,7 @@ return {
       servers = {
         autohotkey_lsp = {
           enabled = Utils.is_win(),
+          autostart = true,
           cmd = {
             "node",
             vim.fn.expand(vim.fn.stdpath("data") .. "/vscode-autohotkey2-lsp/server/dist/server.js"),

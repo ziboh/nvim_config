@@ -264,21 +264,27 @@ return {
 
         for _, server in pairs(vim.lsp.get_clients({ bufnr = 0 })) do
           table.insert(names, server.name)
-          if not Utils.value_in_list(server.name, self.ignore_lsp) then
+          if
+            not Utils.value_in_list(server.name, self.ignore_lsp)
+            and not Utils.value_in_list(server.name, lsp_filtered_table)
+          then
             table.insert(lsp_filtered_table, server.name)
           end
         end
 
         for _, lint in pairs(require("lint")._resolve_linter_by_ft(vim.bo.filetype)) do
           table.insert(names, lint)
-          if not Utils.value_in_list(lint, self.ignore_lsp) then
+          if not Utils.value_in_list(lint, self.ignore_lsp) and not Utils.value_in_list(lint, lsp_filtered_table) then
             table.insert(lsp_filtered_table, lint)
           end
         end
 
         for _, formatter in pairs(require("conform").list_formatters()) do
           table.insert(names, formatter.name)
-          if not Utils.value_in_list(formatter.name, self.ignore_lsp) then
+          if
+            not Utils.value_in_list(formatter.name, self.ignore_lsp)
+            and not Utils.value_in_list(formatter.name, lsp_filtered_table)
+          then
             table.insert(lsp_filtered_table, formatter.name)
           end
         end
