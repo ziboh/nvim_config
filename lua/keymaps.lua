@@ -71,7 +71,7 @@ safe_map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 safe_map("t", "<C-t>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 
 -- quit
-safe_map("n", "<leader>Q", "<cmd>qa<cr>", { desc = "Quit All" })
+safe_map("n", "<leader>q", "<cmd>qa<cr>", { desc = "Quit All" })
 
 -- highlights under cursor
 safe_map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
