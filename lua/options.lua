@@ -97,8 +97,8 @@ opt.clipboard = "unnamedplus"
 vim.opt.title = true
 vim.opt.titlestring = "neovim"
 vim.opt.shell = "nu"
-vim.opt.shellcmdflag = '-c'  -- Nushell 使用 -c 标志运行命令
-vim.opt.shellxquote = ''  -- 避免额外的引号干扰
+vim.opt.shellcmdflag = "-c" -- Nushell 使用 -c 标志运行命令
+vim.opt.shellxquote = "" -- 避免额外的引号干扰
 
 local setreg = vim.fn.setreg
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -108,3 +108,9 @@ vim.fn.setreg = function(rename, value, opts)
     setreg('"', value, opts)
   end
 end
+
+vim.filetype.add({
+  extension = {
+    rye = "toml",
+  },
+})

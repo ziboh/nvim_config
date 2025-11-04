@@ -10,7 +10,6 @@ vim.keymap.set("n", "<Space>", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "q", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "J", "<NOP>", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-b>", "<NOP>", { noremap = true, silent = true })
-vim.keymap.set("n", "<Space>q", "<cmd>q<cr>", { noremap = true, silent = true, desc = "quit" })
 vim.keymap.set("n", "<tab>", "w", { noremap = true, silent = true })
 
 vim.keymap.set("n", "L", "$", { noremap = true, silent = true, desc = "Move to end of line" })
@@ -71,7 +70,8 @@ safe_map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 safe_map("t", "<C-t>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 
 -- quit
-safe_map("n", "<leader>q", "<cmd>qa<cr>", { desc = "Quit All" })
+safe_map("n", "<leader>q", "<cmd>q<cr>", { desc = "Quit" })
+safe_map("n", "<leader>Q", "<cmd>qa<cr>", { desc = "Quit All" })
 
 -- highlights under cursor
 safe_map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
@@ -322,5 +322,9 @@ maps.n["<Leader>duo"] = {
   end,
   desc = "Open Dap UI",
 }
+
+safe_map("i", "<C-.>", function()
+  Utils.notify("C-.")
+end, { desc = "<C-.>", expr = true, silent = true })
 
 require("utils").set_mappings(maps)

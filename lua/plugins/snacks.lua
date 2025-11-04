@@ -102,6 +102,9 @@ return {
       },
     },
     toggle = { map = Utils.safe_keymap_set },
+    image = {
+      enabled = vim.env.WEZTERM_EXECUTABLE ~= nil and true or false,
+    },
     explorer = {
       replace_netrw = true,
     },
