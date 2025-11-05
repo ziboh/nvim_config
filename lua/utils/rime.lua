@@ -83,24 +83,44 @@ end
 --- @param opts? RimeSetupOpts
 function M.setup(opts)
   opts = opts or {}
-  local filetypes = opts and opts.filetype or { "*" }
+  local filetypes = (opts and opts.filetype) and opts.filetype or { "*" }
   if type(filetypes) == "string" then
     opts.filetype = { filetypes }
   end
-  local configs = require("lspconfig.configs")
   local port = Utils.is_win() and 9528 or 9527
+  local rime_started = false
+
   if not Utils.is_port_in_use(port) then
     vim.system({ "rime_ls", "--listen", "127.0.0.1:" .. port }, { detach = true })
+
+    -- 等待 rime_ls 启动，最多等待 5 秒
+    local max_attempts = 50 -- 5秒 = 50次 * 100毫秒
+    local attempt = 0
+
+    while attempt < max_attempts and not Utils.is_port_in_use(port) do
+      vim.wait(100) -- 等待 100 毫秒
+      attempt = attempt + 1
+    end
+
+    if Utils.is_port_in_use(port) then
+      rime_started = true
+    else
+      vim.notify("rime_ls 启动超时，请检查是否已正确安装", vim.log.levels.WARN)
+    end
+  else
+    rime_started = true
   end
-  configs.rime_ls = {
-    default_config = {
+
+  if rime_started then
+    vim.lsp.config.rime_ls = {
       name = "rime_ls",
       cmd = vim.lsp.rpc.connect("127.0.0.1", port),
       filetypes = opts.filetype,
       single_file_support = true,
-    },
-    settings = {},
-  }
+    }
+  else
+    vim.notify("未能启动 rime_ls，跳过 LSP 配置", vim.log.levels.WARN)
+  end
 
   Utils.on_load("blink.cmp", function()
     require("blink.cmp.completion.list").show_emitter:on(function(event)

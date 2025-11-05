@@ -138,10 +138,11 @@ return {
         -- configuration for all lsp servers
         ["*"] = {
           capabilities = {
-            workspace = {
-              fileOperations = {
-                didRename = true,
-                willRename = true,
+            textDocument = {
+              completion = {
+                completionItem = {
+                  commitCharactersSupport = true,
+                },
               },
             },
           },

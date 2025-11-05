@@ -4,21 +4,13 @@ return {
     opts = {
       servers = {
         rime_ls = {
-          enabled = false,
           on_attach = Utils.lsp.rime_on_attach,
           offset_encoding = "utf-8",
-          on_new_config = function(new_config)
-            if Utils.is_win() then
-              new_config.init_options.user_data_dir = "D:\\软件\\rime\\config"
-              new_config.init_options.log_dir = "D:\\软件\\rime\\logs"
-              new_config.init_options.shared_data_dir = "D:\\软件\\rime\\data"
-            end
-          end,
           init_options = {
             enabled = vim.g.rime_enabled,
-            shared_data_dir = "/usr/share/rime-data",
-            user_data_dir = vim.fn.expand("~/.local/share/rime-ls"),
-            log_dir = vim.fn.expand("~/.local/share/rime-ls/logs"),
+            shared_data_dir = Utils.is_win() and "D:\\软件\\rime\\data" or "/usr/share/rime-data",
+            user_data_dir = Utils.is_win() and [[D:\软件\rime\rime_ls_wanxiang]] or vim.fn.expand("~/.local/share/rime-ls"),
+            log_dir = Utils.is_win() and "D:\\软件\\rime\\logs" or vim.fn.expand("~/.local/share/rime-ls/logs"),
             long_filter_text = true,
             schema_trigger_character = "&",
           },

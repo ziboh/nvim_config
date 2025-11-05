@@ -178,7 +178,6 @@ return {
         if provider.kind then
           local CompletionItemKind = require("blink.cmp.types").CompletionItemKind
           local kind_idx = #CompletionItemKind + 1
-
           CompletionItemKind[kind_idx] = provider.kind
           ---@diagnostic disable-next-line: no-unknown
           CompletionItemKind[provider.kind] = kind_idx

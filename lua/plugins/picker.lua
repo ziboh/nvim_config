@@ -187,7 +187,7 @@ return {
       desc = "Git Stash",
     },
     {
-      "<leader>gd",
+      "<leader>gD",
       function()
         Snacks.picker.git_diff()
       end,
