@@ -8,7 +8,7 @@ return {
     },
     keys = {
       {
-        "<leader>as",
+        "<leader>aS",
         function()
           Utils.toggle.supermaven(false)
         end,
