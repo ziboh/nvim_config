@@ -17,27 +17,7 @@ local biome_support = {
 }
 
 return {
-  {
-    "williamboman/mason-lspconfig.nvim",
-    lazy = true,
-    opts_extend = { "ensure_installed" },
-    opts = {
-      ensure_installed = {
-        "pyright",
-        "taplo",
-        "clangd",
-        "eslint",
-        "html",
-        "cssls",
-        "svelte",
-        "powershell_es",
-        "lua_ls",
-        "emmet_language_server",
-        "jsonls",
-        "copilot",
-      },
-    },
-  },
+  { "mason-org/mason-lspconfig.nvim", config = function() end },
   {
     "williamboman/mason.nvim",
     opts_extend = { "ensure_installed" },
@@ -99,7 +79,13 @@ return {
     },
     opts = {
       diagnostics = {
-        virtual_text = true,
+        virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          -- prefix = "●",
+          -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
+          prefix = "icons",
+        },
         signs = {
           text = {
             [vim.diagnostic.severity.ERROR] = Utils.icons.diagnostics.Error,
@@ -146,31 +132,36 @@ return {
               },
             },
           },
-          -- stylua: ignore
           keys = {
-            { "<leader>cl", function() Snacks.picker.lsp_config() end, desc = "Lsp Info" },
-            { "gd", vim.lsp.buf.definition, desc = "Goto Definition", has = "definition" },
-            { "gr", vim.lsp.buf.references, desc = "References", nowait = true },
-            { "gI", vim.lsp.buf.implementation, desc = "Goto Implementation" },
-            { "gy", vim.lsp.buf.type_definition, desc = "Goto T[y]pe Definition" },
-            { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
-            { "K", function() return vim.lsp.buf.hover() end, desc = "Hover" },
-            { "gK", function() return vim.lsp.buf.signature_help() end, desc = "Signature Help", has = "signatureHelp" },
-            { "<c-k>", function() return vim.lsp.buf.signature_help() end, mode = "i", desc = "Signature Help", has = "signatureHelp" },
-            { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "x" }, has = "codeAction" },
-            { "<leader>cc", vim.lsp.codelens.run, desc = "Run Codelens", mode = { "n", "x" }, has = "codeLens" },
-            { "<leader>cC", vim.lsp.codelens.refresh, desc = "Refresh & Display Codelens", mode = { "n" }, has = "codeLens" },
-            { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename File", mode ={"n"}, has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } },
-            { "<leader>cr", vim.lsp.buf.rename, desc = "Rename", has = "rename" },
-            -- { "<leader>cA", LazyVim.lsp.action.source, desc = "Source Action", has = "codeAction" },
-            { "]]", function() Snacks.words.jump(vim.v.count1) end, has = "documentHighlight",
-              desc = "Next Reference", enabled = function() return Snacks.words.is_enabled() end },
-            { "[[", function() Snacks.words.jump(-vim.v.count1) end, has = "documentHighlight",
-              desc = "Prev Reference", enabled = function() return Snacks.words.is_enabled() end },
-            { "<a-n>", function() Snacks.words.jump(vim.v.count1, true) end, has = "documentHighlight",
-              desc = "Next Reference", enabled = function() return Snacks.words.is_enabled() end },
-            { "<a-p>", function() Snacks.words.jump(-vim.v.count1, true) end, has = "documentHighlight",
-              desc = "Prev Reference", enabled = function() return Snacks.words.is_enabled() end },
+            { "<leader>ll", function() Snacks.picker.lsp_config() end,          desc = "Lsp Info" },
+            { "gd",         vim.lsp.buf.definition,                             desc = "Goto Definition",            has = "definition" },
+            { "gr",         vim.lsp.buf.references,                             desc = "References",                 nowait = true },
+            { "gI",         vim.lsp.buf.implementation,                         desc = "Goto Implementation" },
+            { "gy",         vim.lsp.buf.type_definition,                        desc = "Goto T[y]pe Definition" },
+            { "gD",         vim.lsp.buf.declaration,                            desc = "Goto Declaration" },
+            { "<leader>h",  function() return vim.lsp.buf.hover() end,          desc = "Hover" },
+            { "K",          function() return vim.lsp.buf.hover() end,          desc = "Hover" },
+            { "<leader>lh", function() return vim.lsp.buf.signature_help() end, desc = "Signature Help",             has = "signatureHelp" },
+            { "<c-k>",      function() return vim.lsp.buf.signature_help() end, mode = "i",                          desc = "Signature Help", has = "signatureHelp" },
+            { "<leader>la", vim.lsp.buf.code_action,                            desc = "Code Action",                mode = { "n", "v" },     has = "codeAction" },
+            { "<leader>lc", vim.lsp.codelens.run,                               desc = "Run Codelens",               mode = { "n", "v" },     has = "codeLens" },
+            { "<leader>lC", vim.lsp.codelens.refresh,                           desc = "Refresh & Display Codelens", mode = { "n" },          has = "codeLens" },
+            { "<leader>lR", function() Snacks.rename.rename_file() end,         desc = "Rename File",                mode = { "n" },          has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } },
+            { "<leader>lr", vim.lsp.buf.rename,                                 desc = "Rename",                     has = "rename" },
+            {
+              "]]",
+              function() Snacks.words.jump(vim.v.count1) end,
+              has = "documentHighlight",
+              desc = "Next Reference",
+              cond = function() return Snacks.words.is_enabled() end
+            },
+            {
+              "[[",
+              function() Snacks.words.jump(-vim.v.count1) end,
+              has = "documentHighlight",
+              desc = "Prev Reference",
+              cond = function() return Snacks.words.is_enabled() end
+            },
           },
         },
         lua_ls = {
@@ -222,26 +213,20 @@ return {
       setup = {},
     },
     config = function(_, opts)
-      -- diagnostics signs
-      if type(opts.diagnostics.signs) ~= "boolean" then
-        for severity, icon in pairs(opts.diagnostics.signs.text) do
-          local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
-          name = "DiagnosticSign" .. name
-          vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+      -- setup keymaps
+      for server, server_opts in pairs(opts.servers) do
+        if type(server_opts) == "table" and server_opts.keys then
+          require("plugins.lsp.keymaps").set({ name = server ~= "*" and server or nil }, server_opts.keys)
         end
       end
-      -- setup keymaps
-      Utils.lsp.on_attach(function(client, buffer)
-        require("plugins.lsp.keymaps").on_attach(client, buffer)
-      end)
 
-      Utils.lsp.setup()
-      Utils.lsp.on_dynamic_capability(require("plugins.lsp.keymaps").on_attach)
+      -- inlay hints
       if opts.inlay_hints.enabled then
-        Utils.lsp.on_supports_method("textDocument/inlayHint", function(_, buffer)
+        Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(buffer)
           if
-            vim.api.nvim_buf_is_valid(buffer)
-            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
+              vim.api.nvim_buf_is_valid(buffer)
+              and vim.bo[buffer].buftype == ""
+              and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
           then
             vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
           end
@@ -250,7 +235,7 @@ return {
 
       -- code lens
       if opts.codelens.enabled and vim.lsp.codelens then
-        Utils.lsp.on_supports_method("textDocument/codeLens", function(_, buffer)
+        Snacks.util.lsp.on({ method = "textDocument/codeLens" }, function(buffer)
           vim.lsp.codelens.refresh()
           vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
             buffer = buffer,
@@ -259,19 +244,19 @@ return {
         end)
       end
 
+      -- diagnostics
+      if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
+        opts.diagnostics.virtual_text.prefix = function(diagnostic)
+          local icons = Utils.icons.diagnostics
+          for d, icon in pairs(icons) do
+            if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+              return icon
+            end
+          end
+          return "●"
+        end
+      end
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
-
-      -- local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-      -- local has_blink, blink = pcall(require, "blink.cmp")
-      -- local capabilities = vim.tbl_deep_extend(
-      --   "force",
-      --   {},
-      --   vim.lsp.protocol.make_client_capabilities(),
-      --   has_cmp and cmp_nvim_lsp.default_capabilities() or {},
-      --   has_blink and blink.get_lsp_capabilities() or {},
-      --   opts.servers["*"].capabilities or {}
-      -- )
-      -- capabilities.general.positionEncodings = { "utf-8", "utf-16" }
 
       if opts.servers["*"] then
         vim.lsp.config("*", opts.servers["*"])
@@ -281,7 +266,7 @@ return {
       local have_mason = Utils.has("mason-lspconfig.nvim")
       local mason_all = have_mason
           and vim.tbl_keys(require("mason-lspconfig.mappings").get_mason_map().lspconfig_to_package)
-        or {} --[[ @as string[] ]]
+          or {} --[[ @as string[] ]]
       local mason_exclude = {} ---@type string[]
 
       ---@return boolean? exclude automatic setup
@@ -292,11 +277,13 @@ return {
         local sopts = opts.servers[server]
         sopts = sopts == true and {} or (not sopts) and { enabled = false } or sopts --[[@as lazyvim.lsp.Config]]
 
+        ---@diagnostic disable-next-line: undefined-field
         if sopts.enabled == false then
           mason_exclude[#mason_exclude + 1] = server
           return
         end
 
+        ---@diagnostic disable-next-line: undefined-field
         local use_mason = sopts.mason ~= false and vim.tbl_contains(mason_all, server)
         local setup = opts.setup[server] or opts.setup["*"]
         if setup and setup(server, sopts) then
@@ -316,17 +303,6 @@ return {
           ensure_installed = vim.list_extend(install, Utils.opts("mason-lspconfig.nvim").ensure_installed or {}),
           automatic_enable = { exclude = mason_exclude },
         })
-      end
-
-      if Utils.lsp.is_enabled("denols") and Utils.lsp.is_enabled("vtsls") then
-        local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-        Utils.lsp.disable("vtsls", is_deno)
-        Utils.lsp.disable("denols", function(root_dir, config)
-          if not is_deno(root_dir) then
-            config.settings.deno.enable = false
-          end
-          return false
-        end)
       end
     end,
   },
@@ -398,7 +374,7 @@ return {
       },
     },
   },
-  { "kevinhwang91/nvim-bqf", ft = "qf" },
+  { "kevinhwang91/nvim-bqf",          ft = "qf" },
   {
     "p00f/clangd_extensions.nvim",
     event = "Lspattach",

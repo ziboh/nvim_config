@@ -13,7 +13,7 @@ function M.get_clients(opts)
     if opts and opts.method then
       ---@param client vim.lsp.Client
       ret = vim.tbl_filter(function(client)
-        return client.supports_method(opts.method, { bufnr = opts.bufnr })
+        return client:supports_method(opts.method, { bufnr = opts.bufnr })
       end, ret)
     end
   end
@@ -100,7 +100,7 @@ function M.rime_on_attach(client, _)
   local map_del = vim.keymap.del
 
   local sync_user_data = function()
-    client.request("workspace/executeCommand", { command = "rime-ls.sync-user-data" }, function(err, result)
+    client:request("workspace/executeCommand", { command = "rime-ls.sync-user-data" }, function(err, result)
       if result == nil and not err then
         Utils.info("Rime LSP: sync user data success", { title = "Rime LSP" })
       else
@@ -127,7 +127,7 @@ function M.rime_on_attach(client, _)
   end, { nargs = 0 })
 
   vim.api.nvim_create_user_command("RimeToggle", function()
-    client.request("workspace/executeCommand", { command = "rime-ls.toggle-rime" }, function(_, result, ctx)
+    client:request("workspace/executeCommand", { command = "rime-ls.toggle-rime" }, function(_, result, ctx)
       if vim.g.rime_enabled then
         for k, _ in pairs(mapped_punc) do
           map_del({ "i" }, k .. "<space>")
@@ -136,10 +136,10 @@ function M.rime_on_attach(client, _)
         for k, v in pairs(mapped_punc) do
           map_set({ "i" }, k .. "<space>", function()
             if
-              Utils.rime.rime_ls_disabled({
-                line = vim.api.nvim_get_current_line(),
-                cursor = vim.api.nvim_win_get_cursor(0),
-              })
+                Utils.rime.rime_ls_disabled({
+                  line = vim.api.nvim_get_current_line(),
+                  cursor = vim.api.nvim_win_get_cursor(0),
+                })
             then
               feedkeys(k .. "<space>", "n")
             else
@@ -169,86 +169,6 @@ end
 
 ---@type table<string, table<vim.lsp.Client, table<number, boolean>>>
 M._supports_method = {}
-
-function M.setup()
-  local register_capability = vim.lsp.handlers["client/registerCapability"]
-  vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
-    ---@diagnostic disable-next-line: no-unknown
-    local ret = register_capability(err, res, ctx)
-    local client = vim.lsp.get_client_by_id(ctx.client_id)
-    if client then
-      for buffer in pairs(client.attached_buffers) do
-        vim.api.nvim_exec_autocmds("User", {
-          pattern = "LspDynamicCapability",
-          data = { client_id = client.id, buffer = buffer },
-        })
-      end
-    end
-    return ret
-  end
-  M.on_attach(M._check_methods)
-  M.on_dynamic_capability(M._check_methods)
-end
-
----@param client vim.lsp.Client
-function M._check_methods(client, buffer)
-  -- don't trigger on invalid buffers
-  if not vim.api.nvim_buf_is_valid(buffer) then
-    return
-  end
-  -- don't trigger on non-listed buffers
-  if not vim.bo[buffer].buflisted then
-    return
-  end
-  -- don't trigger on nofile buffers
-  if vim.bo[buffer].buftype == "nofile" then
-    return
-  end
-  for method, clients in pairs(M._supports_method) do
-    clients[client] = clients[client] or {}
-    if not clients[client][buffer] then
-      if client.supports_method and client.supports_method(method, { bufnr = buffer }) then
-        clients[client][buffer] = true
-        vim.api.nvim_exec_autocmds("User", {
-          pattern = "LspSupportsMethod",
-          data = { client_id = client.id, buffer = buffer, method = method },
-        })
-      end
-    end
-  end
-end
-
----@param fn fun(client:vim.lsp.Client, buffer):boolean?
----@param opts? {group?: integer}
-function M.on_dynamic_capability(fn, opts)
-  return vim.api.nvim_create_autocmd("User", {
-    pattern = "LspDynamicCapability",
-    group = opts and opts.group or nil,
-    callback = function(args)
-      local client = vim.lsp.get_client_by_id(args.data.client_id)
-      local buffer = args.data.buffer ---@type number
-      if client then
-        return fn(client, buffer)
-      end
-    end,
-  })
-end
-
----@param method string
----@param fn fun(client:vim.lsp.Client, buffer)
-function M.on_supports_method(method, fn)
-  M._supports_method[method] = M._supports_method[method] or setmetatable({}, { __mode = "k" })
-  return vim.api.nvim_create_autocmd("User", {
-    pattern = "LspSupportsMethod",
-    callback = function(args)
-      local client = vim.lsp.get_client_by_id(args.data.client_id)
-      local buffer = args.data.buffer ---@type number
-      if client and method == args.data.method then
-        return fn(client, buffer)
-      end
-    end,
-  })
-end
 
 ---@return _.lspconfig.options
 function M.get_config(server)

@@ -35,13 +35,13 @@ return {
         },
         ["claude-haiku"] = {
           __inherited_from = "openai",
-          api_key_name = "ONEAPI_API_KEY",
-          endpoint = os.getenv("ONEAPI_URL") .. "/v1",
+          api_key_name = "AIPROXY_API_KEY",
+          endpoint = os.getenv("AIPROXY_URL") .. "/v1",
           model = "claude-haiku-4-5",
         },
         moonshot = {
-          api_key_name = "ONEAPI_API_KEY",
-          endpoint = os.getenv("ONEAPI_URL") .. "/v1",
+          api_key_name = "AIPROXY_API_KEY",
+          endpoint = os.getenv("AIPROXY_URL") .. "/v1",
           model = "kimi-k2-0905-preview",
           timeout = 30000, -- 超时时间（毫秒）
           extra_request_body = {
@@ -51,20 +51,20 @@ return {
         },
         openai = {
           __inherited_from = "openai",
-          api_key_name = "ONEAPI_API_KEY",
-          endpoint = os.getenv("ONEAPI_URL") .. "/v1",
+          api_key_name = "AIPROXY_API_KEY",
+          endpoint = os.getenv("AIPROXY_URL") .. "/v1",
           model = "gpt-5",
         },
         deepseek = {
           __inherited_from = "openai",
-          api_key_name = "ONEAPI_API_KEY",
-          endpoint = os.getenv("ONEAPI_URL") .. "/v1",
+          api_key_name = "AIPROXY_API_KEY",
+          endpoint = os.getenv("AIPROXY_URL") .. "/v1",
           model = "deepseek-chat",
         },
         qwen = {
           __inherited_from = "openai",
-          api_key_name = "ONEAPI_API_KEY",
-          endpoint = os.getenv("ONEAPI_URL") .. "/v1",
+          api_key_name = "AIPROXY_API_KEY",
+          endpoint = os.getenv("AIPROXY_URL") .. "/v1",
           model = "qwen3-coder-plus",
         },
       },

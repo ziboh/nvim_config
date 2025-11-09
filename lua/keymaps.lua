@@ -133,8 +133,7 @@ maps.n["<leader>C"] = {
 }
 
 -- smart-splits.nivm
-if has("smart-splits.nvim") then
-else
+if not has("smart-splits.nvim") then
   maps.n["<C-h>"] = { "<C-w>h", desc = "Move to left split" }
   maps.n["<C-j>"] = { "<C-w>j", desc = "Move to below split" }
   maps.n["<C-k>"] = { "<C-w>k", desc = "Move to above split" }

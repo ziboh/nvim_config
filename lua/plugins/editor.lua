@@ -86,7 +86,7 @@ return {
     "mrjones2014/smart-splits.nvim",
     keys = {
       {
-        "<C-h>",
+        "<C-A-F8>",
         function()
           require("smart-splits").move_cursor_left()
         end,

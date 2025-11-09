@@ -4,7 +4,8 @@
     "missing-fields",
     "undefined-doc-name",
     "cast-local-type",
-    "param-type-mismatch"
+    "param-type-mismatch",
+        "inject-field"
   ],
   "completion.autoRequire": false
 }
