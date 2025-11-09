@@ -31,14 +31,12 @@ return {
       "MasonLog",
     },
     opts = {
+      github = {
+        download_url_template = "https://ghfast.top/https://github.com/%s/releases/download/%s/%s",
+      },
       ensure_installed = {
         "stylua",
         "shfmt",
-        "clang-format",
-        "selene",
-        "ruff",
-        "prettierd",
-        "biome",
       },
     },
     ---@param opts MasonSettings | {ensure_installed: string[]}
@@ -133,34 +131,116 @@ return {
             },
           },
           keys = {
-            { "<leader>ll", function() Snacks.picker.lsp_config() end,          desc = "Lsp Info" },
-            { "gd",         vim.lsp.buf.definition,                             desc = "Goto Definition",            has = "definition" },
-            { "gr",         vim.lsp.buf.references,                             desc = "References",                 nowait = true },
-            { "gI",         vim.lsp.buf.implementation,                         desc = "Goto Implementation" },
-            { "gy",         vim.lsp.buf.type_definition,                        desc = "Goto T[y]pe Definition" },
-            { "gD",         vim.lsp.buf.declaration,                            desc = "Goto Declaration" },
-            { "<leader>h",  function() return vim.lsp.buf.hover() end,          desc = "Hover" },
-            { "K",          function() return vim.lsp.buf.hover() end,          desc = "Hover" },
-            { "<leader>lh", function() return vim.lsp.buf.signature_help() end, desc = "Signature Help",             has = "signatureHelp" },
-            { "<c-k>",      function() return vim.lsp.buf.signature_help() end, mode = "i",                          desc = "Signature Help", has = "signatureHelp" },
-            { "<leader>la", vim.lsp.buf.code_action,                            desc = "Code Action",                mode = { "n", "v" },     has = "codeAction" },
-            { "<leader>lc", vim.lsp.codelens.run,                               desc = "Run Codelens",               mode = { "n", "v" },     has = "codeLens" },
-            { "<leader>lC", vim.lsp.codelens.refresh,                           desc = "Refresh & Display Codelens", mode = { "n" },          has = "codeLens" },
-            { "<leader>lR", function() Snacks.rename.rename_file() end,         desc = "Rename File",                mode = { "n" },          has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } },
-            { "<leader>lr", vim.lsp.buf.rename,                                 desc = "Rename",                     has = "rename" },
+            {
+              "<leader>ll",
+              function()
+                Snacks.picker.lsp_config()
+              end,
+              desc = "Lsp Info",
+            },
+            {
+              "gd",
+              vim.lsp.buf.definition,
+              desc = "Goto Definition",
+              has = "definition",
+            },
+            {
+              "gr",
+              vim.lsp.buf.references,
+              desc = "References",
+              nowait = true,
+            },
+            { "gI", vim.lsp.buf.implementation, desc = "Goto Implementation" },
+            { "gy", vim.lsp.buf.type_definition, desc = "Goto T[y]pe Definition" },
+            { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
+            {
+              "<leader>h",
+              function()
+                return vim.lsp.buf.hover()
+              end,
+              desc = "Hover",
+            },
+            {
+              "K",
+              function()
+                return vim.lsp.buf.hover()
+              end,
+              desc = "Hover",
+            },
+            {
+              "<leader>lh",
+              function()
+                return vim.lsp.buf.signature_help()
+              end,
+              desc = "Signature Help",
+              has = "signatureHelp",
+            },
+            {
+              "<c-k>",
+              function()
+                return vim.lsp.buf.signature_help()
+              end,
+              mode = "i",
+              desc = "Signature Help",
+              has = "signatureHelp",
+            },
+            {
+              "<leader>la",
+              vim.lsp.buf.code_action,
+              desc = "Code Action",
+              mode = { "n", "v" },
+              has = "codeAction",
+            },
+            {
+              "<leader>lc",
+              vim.lsp.codelens.run,
+              desc = "Run Codelens",
+              mode = { "n", "v" },
+              has = "codeLens",
+            },
+            {
+              "<leader>lC",
+              vim.lsp.codelens.refresh,
+              desc = "Refresh & Display Codelens",
+              mode = { "n" },
+              has = "codeLens",
+            },
+            {
+              "<leader>lR",
+              function()
+                Snacks.rename.rename_file()
+              end,
+              desc = "Rename File",
+              mode = { "n" },
+              has = { "workspace/didRenameFiles", "workspace/willRenameFiles" },
+            },
+            {
+              "<leader>lr",
+              vim.lsp.buf.rename,
+              desc = "Rename",
+              has = "rename",
+            },
             {
               "]]",
-              function() Snacks.words.jump(vim.v.count1) end,
+              function()
+                Snacks.words.jump(vim.v.count1)
+              end,
               has = "documentHighlight",
               desc = "Next Reference",
-              cond = function() return Snacks.words.is_enabled() end
+              cond = function()
+                return Snacks.words.is_enabled()
+              end,
             },
             {
               "[[",
-              function() Snacks.words.jump(-vim.v.count1) end,
+              function()
+                Snacks.words.jump(-vim.v.count1)
+              end,
               has = "documentHighlight",
               desc = "Prev Reference",
-              cond = function() return Snacks.words.is_enabled() end
+              cond = function()
+                return Snacks.words.is_enabled()
+              end,
             },
           },
         },
@@ -200,8 +280,6 @@ return {
           mason = true,
           filetypes = { "sh", "bash" },
         },
-        rust_analyzer = { enabled = false },
-        ruff = { enabled = false },
         nushell = {},
         eslint = {
           settings = {
@@ -224,9 +302,9 @@ return {
       if opts.inlay_hints.enabled then
         Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(buffer)
           if
-              vim.api.nvim_buf_is_valid(buffer)
-              and vim.bo[buffer].buftype == ""
-              and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
+            vim.api.nvim_buf_is_valid(buffer)
+            and vim.bo[buffer].buftype == ""
+            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
           then
             vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
           end
@@ -266,7 +344,7 @@ return {
       local have_mason = Utils.has("mason-lspconfig.nvim")
       local mason_all = have_mason
           and vim.tbl_keys(require("mason-lspconfig.mappings").get_mason_map().lspconfig_to_package)
-          or {} --[[ @as string[] ]]
+        or {} --[[ @as string[] ]]
       local mason_exclude = {} ---@type string[]
 
       ---@return boolean? exclude automatic setup
@@ -374,7 +452,7 @@ return {
       },
     },
   },
-  { "kevinhwang91/nvim-bqf",          ft = "qf" },
+  { "kevinhwang91/nvim-bqf", ft = "qf" },
   {
     "p00f/clangd_extensions.nvim",
     event = "Lspattach",

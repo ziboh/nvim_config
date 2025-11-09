@@ -4,49 +4,49 @@ local maps = require("utils").get_mappings_template()
 local safe_map = utils.safe_keymap_set
 -- Normal mode --
 -----------------
-vim.keymap.set("n", "<C-n>", "5j", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-p>", "5k", { noremap = true, silent = true })
-vim.keymap.set("n", "<Space>", "<NOP>", { noremap = true, silent = true })
-vim.keymap.set("n", "q", "<NOP>", { noremap = true, silent = true })
-vim.keymap.set("n", "J", "<NOP>", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-b>", "<NOP>", { noremap = true, silent = true })
-vim.keymap.set("n", "<tab>", "w", { noremap = true, silent = true })
+safe_map("n", "<C-n>", "5j", { noremap = true, silent = true })
+safe_map("n", "<C-p>", "5k", { noremap = true, silent = true })
+safe_map("n", "<Space>", "<NOP>", { noremap = true, silent = true })
+safe_map("n", "q", "<NOP>", { noremap = true, silent = true })
+safe_map("n", "J", "<NOP>", { noremap = true, silent = true })
+safe_map("n", "<C-b>", "<NOP>", { noremap = true, silent = true })
+safe_map("n", "<tab>", "w", { noremap = true, silent = true })
 
-vim.keymap.set("n", "L", "$", { noremap = true, silent = true, desc = "Move to end of line" })
-vim.keymap.set("n", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
-vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { noremap = true, silent = true, desc = "Increase window height" })
-vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { noremap = true, silent = true, desc = "Decrease window height" })
-vim.keymap.set("n", "M", "J", { noremap = true, silent = true, desc = "Join the current line with the next line" })
+safe_map("n", "L", "$", { noremap = true, silent = true, desc = "Move to end of line" })
+safe_map("n", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
+safe_map("n", "<A-k>", ":m .-2<CR>==", { noremap = true, silent = true, desc = "Increase window height" })
+safe_map("n", "<A-j>", ":m .+1<CR>==", { noremap = true, silent = true, desc = "Decrease window height" })
+safe_map("n", "M", "J", { noremap = true, silent = true, desc = "Join the current line with the next line" })
 
-vim.keymap.set("n", "<leader>/", "gcc", { remap = true, silent = true, desc = "Toggle Comment linewise" })
-vim.keymap.set("v", "<leader>/", "gc", { remap = true, desc = "Toggle Comment lineise" })
+safe_map("n", "<leader>/", "gcc", { remap = true, silent = true, desc = "Toggle Comment linewise" })
+safe_map("v", "<leader>/", "gc", { remap = true, desc = "Toggle Comment lineise" })
 
 -----------------
 -- Visual mode --
 -----------
-vim.keymap.set("v", "<C-n>", "5j", { noremap = true, silent = true })
-vim.keymap.set("v", "<C-p>", "5k", { noremap = true, silent = true })
-vim.keymap.set("v", "L", "$h", { noremap = true, silent = true, desc = "Move to end of line" })
-vim.keymap.set("v", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
-vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true, desc = "Unindent line" })
-vim.keymap.set("v", "<Tab>", ">gv", { noremap = true, silent = true, desc = "Unindent line" })
-vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv-gv", { noremap = true, silent = true, desc = "Move line down" })
-vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv-gv", { noremap = true, silent = true, desc = "Move line up" })
-vim.keymap.set("v", "J", "<NOP>", { noremap = true, silent = true })
-vim.keymap.set("v", "J", "j", { noremap = true, silent = true })
-vim.keymap.set("v", "K", "k", { noremap = true, silent = true })
+safe_map("v", "<C-n>", "5j", { noremap = true, silent = true })
+safe_map("v", "<C-p>", "5k", { noremap = true, silent = true })
+safe_map("v", "L", "$h", { noremap = true, silent = true, desc = "Move to end of line" })
+safe_map("v", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
+safe_map("v", "<S-Tab>", "<gv", { noremap = true, silent = true, desc = "Unindent line" })
+safe_map("v", "<Tab>", ">gv", { noremap = true, silent = true, desc = "Unindent line" })
+safe_map("v", "<A-j>", ":m '>+1<CR>gv-gv", { noremap = true, silent = true, desc = "Move line down" })
+safe_map("v", "<A-k>", ":m '<-2<CR>gv-gv", { noremap = true, silent = true, desc = "Move line up" })
+safe_map("v", "J", "<NOP>", { noremap = true, silent = true })
+safe_map("v", "J", "j", { noremap = true, silent = true })
+safe_map("v", "K", "k", { noremap = true, silent = true })
 
 -----------------
 -- Insert mode --
 -----------------
-vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { noremap = true, silent = true, desc = "Move line up" })
-vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { noremap = true, silent = true, desc = "Move line down" })
+safe_map("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { noremap = true, silent = true, desc = "Move line up" })
+safe_map("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { noremap = true, silent = true, desc = "Move line down" })
 
 -- Stay in indent mode
-vim.keymap.set("v", "<", "<gv", { noremap = true, silent = true })
-vim.keymap.set("v", ">", ">gv", { noremap = true, silent = true })
-vim.keymap.set("o", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
-vim.keymap.set("o", "L", "$", { noremap = true, silent = true, desc = "Move to end of line" })
+safe_map("v", "<", "<gv", { noremap = true, silent = true })
+safe_map("v", ">", ">gv", { noremap = true, silent = true })
+safe_map("o", "H", "^", { noremap = true, silent = true, desc = "Move to first non-blank character" })
+safe_map("o", "L", "$", { noremap = true, silent = true, desc = "Move to end of line" })
 
 -- tabs
 safe_map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
@@ -325,5 +325,10 @@ maps.n["<Leader>duo"] = {
 safe_map("i", "<C-.>", function()
   Utils.notify("C-.")
 end, { desc = "<C-.>", expr = true, silent = true })
+
+-- commenting
+safe_map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
+safe_map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
+
 
 require("utils").set_mappings(maps)
