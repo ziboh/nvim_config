@@ -129,12 +129,7 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        bacon_ls = {
-          init_options = {
-            updateOnSave = true,
-            updateOnSaveWaitMillis = 1000,
-          },
-        },
+        bacon_ls = {},
         rust_analyzer = { enabled = false },
       },
     },
