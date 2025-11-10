@@ -1,6 +1,7 @@
 return {
   "stevearc/overseer.nvim",
   lazy = true,
+  tags = "v1.6.0",
   config = function(_)
     local overseer = require("overseer")
     overseer.setup({
