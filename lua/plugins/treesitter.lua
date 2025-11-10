@@ -17,6 +17,7 @@ return {
         "jsdoc",
         "json",
         "jsonc",
+        "gitcommit",
         "lua",
         "luadoc",
         "luap",

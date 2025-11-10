@@ -1,4 +1,4 @@
-vim.g.lazyvim_rust_diagnostics = "bacon-ls"
+-- vim.g.lazyvim_rust_diagnostics = "bacon_ls"
 local diagnostics = vim.g.lazyvim_rust_diagnostics or "rust-analyzer"
 
 return {
@@ -129,7 +129,7 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        bacon_ls = {},
+        bacon_ls = { enabled = diagnostics == "bacon_ls" },
         rust_analyzer = { enabled = false },
       },
     },

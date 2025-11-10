@@ -1,4 +1,4 @@
-exec_table = {
+local exec_table = {
   autohotkey = {
     bin = "autohotkey.exe",
   },
@@ -6,7 +6,7 @@ exec_table = {
     bin = "python",
   },
 }
-vim.fn.executable("autohotkey.exe")
+
 return {
   name = "Run current file",
   builder = function(params)

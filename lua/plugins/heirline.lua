@@ -259,7 +259,7 @@ return {
       condition = conditions.lsp_attached,
       init = function(self)
         local names = {}
-        self.ignore_lsp = { "rime_ls" }
+        self.ignore_lsp = { "rime_ls", "copilot" }
         local lsp_filtered_table = {}
 
         for _, server in pairs(vim.lsp.get_clients({ bufnr = 0 })) do
