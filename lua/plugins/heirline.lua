@@ -3,6 +3,7 @@ return {
   "rebelot/heirline.nvim",
   dependencies = { { "Zeioth/heirline-components.nvim" } },
   lazy = vim.fn.argc(-1) == 0,
+  enabled = vim.g.statusline == "heirline",
   event = "VeryLazy",
   opts = function()
     local lib = require("heirline-components.all")
@@ -66,49 +67,6 @@ return {
           name = "heirline_virtual_env",
           callback = function()
             vim.schedule(vim.cmd.VenvSelect)
-          end,
-        },
-      },
-    }
-    local FittenCode = {
-      condition = function()
-        return require("utils").has("fittencode.nvim")
-      end,
-      Space(2),
-      {
-        on_click = {
-          name = "heirline_fittencode",
-          callback = function()
-            require("utils.toggle").fittencode()
-          end,
-        },
-        {
-          flexible = 10,
-          static = {
-            icon = " ",
-            text = "Fitten",
-            enabled_hl = { fg = "#98bb6c", bold = true },
-            disabled_hl = { fg = "#ed8796", bold = true },
-          },
-          init = function(self)
-            if vim.g.fittencode_enabled then
-              self.hl = { fg = "#98bb6c", bold = true }
-            else
-              self.hl = { fg = "#ed8796", bold = true }
-            end
-          end,
-          {
-            provider = function(self)
-              return self.icon .. self.text
-            end,
-          },
-          {
-            provider = function(self)
-              return self.icon
-            end,
-          },
-          hl = function(self)
-            return self.hl
           end,
         },
       },
@@ -231,7 +189,7 @@ return {
       on_click = {
         name = "heirline_lsp_info",
         callback = function()
-          vim.cmd("LspInfo")
+          Snacks.picker.lsp_config()
         end,
       },
       {
@@ -473,7 +431,6 @@ return {
         lib.component.diagnostics(),
         lib.component.fill(),
         Lsp,
-        FittenCode,
         SuperMaven,
         Rime,
         FileCode,

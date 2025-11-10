@@ -13,7 +13,6 @@ vim.g.disable_rime_ls_pattern = {
   "%[.*%]",
 }
 
-vim.g.fittencode_enabled = false
 vim.g.supermaven_enabled = false
 vim.g.ai_cmp = true
 
@@ -33,7 +32,7 @@ vim.g.transparent_enabled = false
 
 -- For rust-analyzer
 vim.g.rust_analyzer_mason = true
-
+vim.g.statusline = "heirline"
 local opt = vim.opt
 
 vim.opt.cmdheight = 0

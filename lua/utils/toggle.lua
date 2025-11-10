@@ -128,21 +128,6 @@ function M.foldcolumn(silent)
 end
 
 --- @param slient? boolean if true then don't sent a notification
-function M.fittencode(slient)
-  if vim.g.fittencode_enabled == false then
-    vim.g.fittencode_enabled = true
-    if slient == nil or slient == false then
-      Utils.info("Enable Fittencode", { title = "Fittencode", timeout = 3000 })
-    end
-  else
-    vim.g.fittencode_enabled = false
-    if slient == nil or slient == false then
-      Utils.info("Disable Fittencode", { title = "Fittencode", timeout = 3000 })
-    end
-  end
-end
-
---- @param slient? boolean if true then don't sent a notification
 function M.supermaven(slient)
   if vim.g.supermaven_enabled == false then
     vim.g.supermaven_enabled = true

@@ -89,13 +89,6 @@ return {
       desc = "Command History",
     },
     {
-      "<leader>n",
-      function()
-        Snacks.picker.notifications()
-      end,
-      desc = "Notification History",
-    },
-    {
       "<leader>e",
       function()
         local opts = {}
@@ -442,6 +435,41 @@ return {
         Snacks.picker.lsp_workspace_symbols()
       end,
       desc = "LSP Workspace Symbols",
+    },
+    {
+      "<leader>fn",
+      function()
+        Snacks.picker.notifications()
+      end,
+      desc = "Notifications",
+    },
+    {
+      "<leader>fz",
+      function()
+        Snacks.picker.zoxide()
+      end,
+      desc = "Open a project from zoxide",
+    },
+    {
+      "<leader>fu",
+      function()
+        Snacks.picker.undo()
+      end,
+      desc = "Undo",
+    },
+    {
+      "<leader>f/",
+      function()
+        Snacks.picker.search_history()
+      end,
+      desc = "Find Search history",
+    },
+    {
+      "<leader>fs",
+      function()
+        Snacks.picker.scratch()
+      end,
+      desc = "Find Scratch",
     },
   },
 }

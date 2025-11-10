@@ -8,6 +8,7 @@
 --- @field toggle utils.toggle
 --- @field mini utils.mini
 --- @field root utils.root
+--- @field lualine utils.lualine
 local M = {}
 
 M.user_terminals = {}
