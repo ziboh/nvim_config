@@ -32,9 +32,11 @@ vim.g.transparent_enabled = false
 
 -- For rust-analyzer
 vim.g.rust_analyzer_mason = true
-vim.g.statusline = "heirline"
-local opt = vim.opt
 
+-- 设置 statuskine 插件，可选："heirline" , "lualine"
+vim.g.statusline = "heirline"
+
+local opt = vim.opt
 vim.opt.cmdheight = 0
 
 opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
@@ -93,11 +95,11 @@ opt.foldmethod = "expr"
 opt.foldtext = ""
 opt.clipboard = "unnamedplus"
 
-vim.opt.title = true
-vim.opt.titlestring = "neovim"
-vim.opt.shell = "nu"
-vim.opt.shellcmdflag = "-c" -- Nushell 使用 -c 标志运行命令
-vim.opt.shellxquote = "" -- 避免额外的引号干扰
+opt.title = true
+opt.titlestring = "neovim"
+opt.shell = "nu"
+opt.shellcmdflag = "-c" -- Nushell 使用 -c 标志运行命令
+opt.shellxquote = "" -- 避免额外的引号干扰
 
 local setreg = vim.fn.setreg
 ---@diagnostic disable-next-line: duplicate-set-field

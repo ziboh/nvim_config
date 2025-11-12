@@ -219,6 +219,8 @@ return {
         dotenv = { glyph = "", hl = "MiniIconsYellow" },
         yaml = { glyph = "", hl = "MiniIconsPurple" },
         outline = { glyph = "󰱺", hl = "MiniIconsYellow" },
+        nu = { glyph = "", hl = "MiniIconsGreen" },
+        nushell = { glyph = "", hl = "MiniIconsGreen" },
       },
       lsp = {
         supermaven = { glyph = "", hl = "MiniIconsYellow" },
