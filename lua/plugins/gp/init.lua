@@ -399,23 +399,102 @@ return {
           end)
         end,
         GitCommit = function(gp)
+          local buf
+          local win
           if vim.bo.filetype ~= "gitcommit" then
-            return
+            buf = vim.api.nvim_create_buf(false, true)
+            win = Snacks.win({
+              show = false,
+              width = 0.4,
+              buf = buf,
+              height = 0.4,
+              border = "rounded",
+              wo = {
+                spell = false,
+                wrap = false,
+                signcolumn = "yes",
+                statuscolumn = " ",
+                conceallevel = 3,
+              },
+              footer_keys = true, -- 启用底部快捷键提示
+              footer_pos = "center", -- 底部提示居中显示
+              keys = { -- 定义快捷键
+                ["q"] = "close",
+                ["<Esc>"] = "close",
+                ["<Enter>"] = "提交",
+              },
+            })
+            vim.bo[buf].filetype = "gitcommit"
+          else
+            buf = vim.api.nvim_get_current_buf()
           end
-          local buf = vim.api.nvim_get_current_buf()
           local agent = gp.get_agent_from_state("gitcommit")
           vim.schedule(function()
             local on_exit = function() end
             local messages = {}
             local commit_prompt_template = prompt.commit_prompt_template
+            local git_diff_msg = vim.fn.system("git diff --no-ext-diff --staged")
+            if git_diff_msg == "" then
+              Snacks.notify.warn("没有新增或修改的文件", { title = "Gp Commit" })
+              return
+            end
             local user_prompt = gp.render.template(commit_prompt_template, {
-              ["{{git_diff}}"] = vim.fn.system("git diff --no-ext-diff --staged"),
+              ["{{git_diff}}"] = git_diff_msg,
             })
-
             table.insert(messages, { role = "user", content = user_prompt })
 
             vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+
             local handler = gp.dispatcher.create_handler(buf, 0, 0, true, "", false, false)
+            if win ~= nil then
+              win:show()
+              -- 动画状态
+              local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+              local spinner_idx = 1
+              local timer = nil
+
+              -- 启动动画
+              local function start_spinner()
+                timer = vim.loop.new_timer()
+                timer:start(100, 100, function()
+                  vim.schedule(function()
+                    if win and win:valid() then
+                      local title = " " .. spinner[spinner_idx] .. " 生成 commit 消息"
+                      spinner_idx = (spinner_idx % #spinner) + 1
+                      win:set_title(title)
+                    end
+                  end)
+                end)
+              end
+
+              -- 停止动画
+              local function stop_spinner()
+                if timer then
+                  timer:close()
+                  timer = nil
+                  if win and win:valid() then
+                    win:set_title(" 生成 commit 消息")
+                  end
+                end
+              end
+
+              win:on("User", function(_, ev)
+                if ev.match == "GpDone" then
+                  stop_spinner()
+                end
+              end)
+
+              -- 启动动画
+              start_spinner()
+              vim.api.nvim_buf_set_keymap(
+                0,
+                "n",
+                "<cr>",
+                "<cmd>lua " .. [[Snacks.notify.warn("生成Commit中，请稍等",{ title = "Gp Commit"})<cr>]],
+                { desc = "提交更改" }
+              )
+            end
+
             gp.dispatcher.query(
               buf,
               agent.provider,
@@ -423,7 +502,24 @@ return {
               handler,
               vim.schedule_wrap(function()
                 on_exit()
-                vim.api.nvim_command("w")
+                if win == nil then
+                  vim.api.nvim_command("w")
+                else
+                  local git_commit_path = vim.fn.stdpath("data"):gsub("/$", "") .. "/gp/gpcommit.txt"
+                  git_commit_path = git_commit_path:gsub("\\", "/")
+                  vim.fn.writefile(vim.api.nvim_buf_get_lines(buf, 0, -1, false), git_commit_path, "p")
+                  local git_commit = [[vim.fn.system("git commit -F ]] .. git_commit_path .. [[")]]
+
+                  vim.api.nvim_buf_set_keymap(
+                    0,
+                    "n",
+                    "<cr>",
+                    "<cmd>lua "
+                      .. git_commit
+                      .. [[;vim.api.nvim_win_close(0, false);Snacks.notify("已提交更改",{ title = "Gp Commit"})<cr>]],
+                    { desc = "提交更改" }
+                  )
+                end
                 vim.cmd("doautocmd User GpDone")
               end),
               nil

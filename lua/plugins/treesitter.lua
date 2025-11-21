@@ -1,7 +1,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    event = { "User LazyFile", "VeryLazy" },
+    event = { "VeryLazy" },
     lazy = vim.fn.argc(-1) == 0,
     opts_extend = { "ensure_installed" },
     opts = {
