@@ -36,10 +36,11 @@ vim.g.rust_analyzer_mason = true
 -- 设置 statuskine 插件，可选："heirline" , "lualine"
 vim.g.statusline = "heirline"
 
+vim.g.suda_smart_edit = 1
+
 local opt = vim.opt
 vim.opt.cmdheight = 0
 
-opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
 opt.autowrite = true
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 

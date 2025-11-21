@@ -6,7 +6,7 @@ return {
       "nvim-lua/plenary.nvim",
       {
         "purarue/gitsigns-yadm.nvim",
-        enabled = not Utils.is_win(),
+        enabled = not Utils.is_win() and vim.fn.executable("yadm") == 1,
         opts = {
           shell_timeout_ms = 1000,
         },
@@ -14,7 +14,7 @@ return {
     },
     opts = {
       _on_attach_pre = function(_, callback)
-        if Utils.is_win() then
+        if Utils.is_win() or vim.fn.executable("yadm") == 0 then
           callback()
           return
         end

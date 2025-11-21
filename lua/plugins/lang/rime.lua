@@ -11,7 +11,7 @@ return true
                 enabled = vim.g.rime_enabled,
                 shared_data_dir = Utils.is_win() and "D:\\软件\\rime\\data" or "/usr/share/rime-data",
                 user_data_dir = Utils.is_win() and [[D:\软件\rime\rime_ls_wanxiang]]
-                  or vim.fn.expand("~/.local/share/rime-ls"),
+                  or vim.fn.expand("~/.local/share/rime_ls_wanxiang"),
                 log_dir = Utils.is_win() and "D:\\软件\\rime\\logs" or vim.fn.expand("~/.local/share/rime-ls/logs"),
                 long_filter_text = true,
                 schema_trigger_character = "&",

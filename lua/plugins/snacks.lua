@@ -103,7 +103,7 @@ return {
     },
     toggle = { map = Utils.safe_keymap_set },
     image = {
-      enabled = vim.env.WEZTERM_EXECUTABLE ~= nil and true or false,
+      enabled = true,
     },
     explorer = {
       replace_netrw = true,
@@ -271,6 +271,7 @@ return {
     vim.api.nvim_create_autocmd("User", {
       pattern = "VeryLazy",
       callback = function()
+        vim.opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
         -- Setup some globals for debugging (lazy-loaded)
         _G.dd = function(...)
           Snacks.debug.inspect(...)

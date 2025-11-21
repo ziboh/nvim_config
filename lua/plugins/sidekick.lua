@@ -107,6 +107,13 @@ return {
         end,
         desc = "Sidekick Toggle Claude",
       },
+      {
+        "<leader>aq",
+        function()
+          require("sidekick.cli").toggle({ name = "qwen", focus = true })
+        end,
+        desc = "Sidekick Toggle Claude",
+      },
     },
   },
 }

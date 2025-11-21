@@ -509,6 +509,11 @@ function M.is_win()
   return vim.uv.os_uname().sysname:find("Windows") ~= nil
 end
 
+
+function M.is_linux()
+  return vim.uv.os_uname().sysname:find("Linux") ~= nil
+end
+
 --- 将 Lua table 转换为字符串表示形式
 --- @param t table 要转换的 table
 --- @param indent? string 可选参数，用于控制缩进（默认为空字符串）

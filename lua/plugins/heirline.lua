@@ -259,17 +259,45 @@ return {
       },
       LspServer,
     }
+
+    local Spacer = { provider = " " }
+    local function rpad(child)
+      return {
+        condition = child.condition,
+        Spacer,
+        child,
+      }
+    end
+    local function OverseerTasksForStatus(status)
+      return {
+        condition = function(self)
+          return self.tasks[status]
+        end,
+        provider = function(self)
+          return string.format("%s%d", self.symbols[status], #self.tasks[status])
+        end,
+        hl = function(self)
+          return {
+            fg = self.colors[status],
+          }
+        end,
+      }
+    end
+
     local Overseer = {
       condition = function()
-        local ok, _ = pcall(require, "overseer")
-        if ok then
-          return true
-        end
+        return package.loaded.overseer
       end,
+      on_click = {
+        name = "heirline_overseer_info",
+        callback = function()
+          require("overseer").list_tasks()
+        end,
+      },
       init = function(self)
-        self.overseer = require("overseer")
-        self.tasks = self.overseer.task_list
-        self.STATUS = self.overseer.constants.STATUS
+        local tasks = require("overseer.task_list").list_tasks({ unique = true, include_ephemeral = true })
+        local tasks_by_status = require("overseer.util").tbl_group_by(tasks, "status")
+        self.tasks = tasks_by_status
       end,
       static = {
         symbols = {
@@ -277,43 +305,22 @@ return {
           ["CANCELED"] = " ",
           ["SUCCESS"] = "󰄴 ",
           ["RUNNING"] = "󰑮 ",
+          ["PENDING"] = "󰑮 ",
         },
         colors = {
           ["FAILURE"] = "red",
           ["CANCELED"] = "gray",
           ["SUCCESS"] = "#c3e88d",
           ["RUNNING"] = "yellow",
+          ["PENDING"] = "yellow",
         },
       },
-      {
-        Space(2),
-        {
-          provider = function(self)
-            local tasks_by_status = self.overseer.util.tbl_group_by(self.tasks.list_tasks({ unique = true }), "status")
 
-            if next(tasks_by_status) == nil then
-              self.color = "#c3e88d"
-              return self.symbols["RUNNING"]
-            end
-            for _, status in ipairs(self.STATUS.values) do
-              local status_tasks = tasks_by_status[status]
-              if self.symbols[status] and status_tasks then
-                self.color = self.colors[status]
-                return self.symbols[status]
-              end
-            end
-          end,
-          hl = function(self)
-            return { fg = self.color }
-          end,
-          on_click = {
-            name = "heirline_overseer",
-            callback = function()
-              vim.cmd("OverseerToggle")
-            end,
-          },
-        },
-      },
+      rpad(OverseerTasksForStatus("PENDING")),
+      rpad(OverseerTasksForStatus("CANCELED")),
+      rpad(OverseerTasksForStatus("RUNNING")),
+      rpad(OverseerTasksForStatus("SUCCESS")),
+      rpad(OverseerTasksForStatus("FAILURE")),
     }
     local FileType = {
       condition = function()

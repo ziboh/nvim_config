@@ -103,4 +103,12 @@ return {
       })
     end,
   },
+  {
+    "mason.nvim",
+    opts = {
+      ensure_installed = {
+        "selene",
+      },
+    },
+  },
 }
