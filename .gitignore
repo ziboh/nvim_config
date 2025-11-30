@@ -1,4 +1,5 @@
 lazy-lock.json
+package-lock.json
 lua/test.lua
 GEMINI.md
 QWEN.md

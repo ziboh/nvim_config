@@ -91,12 +91,15 @@ end, { desc = "Open Bottom" })
 
 -- diagnostic
 local diagnostic_goto = function(next, severity)
-  local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
-  severity = severity and vim.diagnostic.severity[severity] or nil
   return function()
-    go({ severity = severity })
+    local opts = {
+      count = next and 1 or -1,
+      severity = severity and vim.diagnostic.severity[severity] or nil,
+    }
+    vim.diagnostic.jump(opts)
   end
 end
+
 safe_map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 safe_map("n", "]d", diagnostic_goto(true), { desc = "Next Diagnostic" })
 safe_map("n", "[d", diagnostic_goto(false), { desc = "Prev Diagnostic" })
@@ -329,6 +332,5 @@ end, { desc = "<C-.>", expr = true, silent = true })
 -- commenting
 safe_map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
 safe_map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
-
 
 require("utils").set_mappings(maps)

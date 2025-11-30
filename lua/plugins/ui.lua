@@ -77,8 +77,8 @@ return {
       { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
       { "[B", "<cmd>BufferLineMovePrev<cr>", desc = "Move buffer prev" },
       { "]B", "<cmd>BufferLineMoveNext<cr>", desc = "Move buffer next" },
+      { "<C-A-F10>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev Buffer" },
       { "<C-A-1>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev Buffer" },
-      -- { "<c-[>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev Buffer" },
       { "<C-]>", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
     },
     opts = {

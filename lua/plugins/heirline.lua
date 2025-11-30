@@ -291,7 +291,7 @@ return {
       on_click = {
         name = "heirline_overseer_info",
         callback = function()
-          require("overseer").list_tasks()
+          vim.cmd("OverseerToggle")
         end,
       },
       init = function(self)

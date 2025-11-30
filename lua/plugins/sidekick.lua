@@ -112,14 +112,14 @@ return {
         function()
           require("sidekick.cli").toggle({ name = "qwen", focus = true })
         end,
-        desc = "Sidekick Toggle Claude",
+        desc = "Sidekick Toggle Qwen",
       },
       {
         "<leader>ag",
         function()
           require("sidekick.cli").toggle({ name = "gemini", focus = true })
         end,
-        desc = "Sidekick Toggle Claude",
+        desc = "Sidekick Toggle Gemini",
       },
     },
   },
