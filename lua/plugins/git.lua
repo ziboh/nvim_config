@@ -47,14 +47,14 @@ return {
         if vim.wo.diff then
           vim.cmd.normal({ "]c", bang = true })
         else
-          gs.nav_hunk("next")
+          gs.nav_hunk("next",{target = 'all'})
         end
       end, "Next Hunk")
       map("n", "[g", function()
         if vim.wo.diff then
           vim.cmd.normal({ "[c", bang = true })
         else
-          gs.nav_hunk("prev")
+          gs.nav_hunk("prev",{target = 'all'})
         end
       end, "Prev Hunk")
       map("n", "]H", function() gs.nav_hunk("last") end, "Last Hunk")

@@ -13,7 +13,6 @@ return {
         mode = { "n", "v" },
         { "<leader><tab>", group = "tab", icon = { icon = " ", color = "cyan" } },
         { "<leader>gh", group = "hunks" },
-        { "<leader>gn", group = "neogit" },
         { "<leader>u", group = "ui", icon = { icon = "󰙵 ", color = "cyan" } },
         { "<leader>a", group = "ai", icon = { icon = " ", color = "cyan" } },
         { "<c-g>", group = "ai", icon = { icon = " ", color = "cyan" } },
