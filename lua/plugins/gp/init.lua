@@ -301,60 +301,6 @@ return {
             args = { "--sort", "path", "--sortr", "path" },
             layout = { preset = "max" },
             title = "Find Gp Chat",
-            actions = {
-              open_popup = function(picker, item)
-                picker:close()
-                Snacks.win({
-                  file = item._path,
-                  width = 100,
-                  height = 30,
-                  bo = {
-                    buftype = "",
-                    buflisted = false,
-                    bufhidden = "hide",
-                    swapfile = false,
-                    modifiable = true,
-                  },
-                  minimal = false,
-                  noautocmd = false,
-                  zindex = 20,
-                  wo = {
-                    winhighlight = "NormalFloat:Normal",
-                  },
-                  border = "rounded",
-                  title_pos = "center",
-                  footer_pos = "center",
-                })
-                -- HACK: this should fix folds
-                if vim.wo.foldmethod == "expr" then
-                  vim.schedule(function()
-                    vim.opt.foldmethod = "expr"
-                  end)
-                end
-              end,
-              open_vsplit = function(picker, item)
-                picker:close()
-                Snacks.win({
-                  file = item._path,
-                  position = "right",
-                  width = 0.5,
-                  minimal = false,
-                  wo = {
-                    winhighlight = "NormalFloat:Normal",
-                  },
-                  bo = {
-                    modifiable = true,
-                  },
-                })
-
-                -- HACK: this should fix folds
-                if vim.wo.foldmethod == "expr" then
-                  vim.schedule(function()
-                    vim.opt.foldmethod = "expr"
-                  end)
-                end
-              end,
-            },
             layouts = {
               max = {
                 fullscreen = true,
@@ -365,9 +311,7 @@ return {
               input = {
                 keys = {
                   ["<c-d>"] = { "delect_file", mode = { "n", "i" } },
-                  ["<c-f>"] = { "open_popup", mode = { "n", "i" } },
-                  ["<c-v>"] = { "vsplit", mode = { "n", "i" } },
-                  ["<c-s>"] = { "split", mode = { "n", "i" } },
+                  ["<c-f>"] = { "edit_popup", mode = { "n", "i" } },
                   ["<c-t>"] = { "tab", mode = { "n", "i" } },
                 },
               },

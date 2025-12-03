@@ -33,6 +33,79 @@ return {
         tcd_root = function(_, item)
           vim.cmd.tcd(Utils.root(item._path))
         end,
+        edit_popup = function(picker, item)
+          picker:close()
+          Snacks.win({
+            file = item._path,
+            width = 100,
+            height = 30,
+            bo = {
+              buftype = "",
+              buflisted = false,
+              bufhidden = "hide",
+              swapfile = false,
+              modifiable = true,
+            },
+            minimal = false,
+            noautocmd = false,
+            zindex = 20,
+            wo = {
+              winhighlight = "NormalFloat:Normal",
+            },
+            border = "rounded",
+            title_pos = "center",
+            footer_pos = "center",
+          })
+          -- HACK: this should fix folds
+          if vim.wo.foldmethod == "expr" then
+            vim.schedule(function()
+              vim.opt.foldmethod = "expr"
+            end)
+          end
+        end,
+        edit_vsplit = function(picker, item)
+          picker:close()
+          Snacks.win({
+            file = item._path,
+            position = "right",
+            width = 0.5,
+            minimal = false,
+            wo = {
+              winhighlight = "NormalFloat:Normal",
+            },
+            bo = {
+              modifiable = true,
+            },
+          })
+
+          -- HACK: this should fix folds
+          if vim.wo.foldmethod == "expr" then
+            vim.schedule(function()
+              vim.opt.foldmethod = "expr"
+            end)
+          end
+        end,
+        edit_split = function(picker, item)
+          picker:close()
+          Snacks.win({
+            file = item._path,
+            position = "bottom",
+            minimal = false,
+            wo = {
+              winhighlight = "NormalFloat:Normal",
+            },
+            bo = {
+              modifiable = true,
+            },
+          })
+
+          -- HACK: this should fix folds
+          if vim.wo.foldmethod == "expr" then
+            vim.schedule(function()
+              vim.opt.foldmethod = "expr"
+            end)
+          end
+        end,
       },
       on_show = function(picker)
         local input = picker.input.win
