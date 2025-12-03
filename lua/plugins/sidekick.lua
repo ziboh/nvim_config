@@ -3,6 +3,10 @@ return {
     "folke/sidekick.nvim",
     opts = {
       cli = {
+        mux = {
+          backend = "zellij",
+          enabled = Utils.is_linux() and true or false,
+        },
         prompts = {
           changes = "你能审查我的更改吗？",
           diagnostics = "你能帮我修复 {file} 中的诊断问题吗？\n{diagnostics}",
