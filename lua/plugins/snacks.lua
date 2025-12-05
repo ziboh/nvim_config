@@ -109,6 +109,29 @@ return {
       replace_netrw = true,
     },
   },
+  config = function(_, opts)
+    if Utils.is_win() then
+      local scripts_path = vim.env.HOME .. "\\Documents\\Nushell\\Scripts\\edit_nvim_remote.nu"
+      local edit = "nu " .. scripts_path .. " {{filename}} "
+      local editAtLine = "nu " .. scripts_path .. "{{filename}} {{line}} "
+      local openDirInEditor = "nu " .. scripts_path .. " {{dir}}"
+      opts.lazygit = {
+        config = {
+          os = {
+            edit = edit,
+            editAtLine = editAtLine,
+            openDirInEditor = openDirInEditor,
+          },
+          gui = {
+            -- set to an empty string "" to disable icons
+            nerdFontsVersion = "3",
+          },
+        },
+      }
+    end
+    require("snacks").setup(opts)
+  end,
+
   keys = {
     {
       "<leader>n",

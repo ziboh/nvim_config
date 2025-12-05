@@ -1,6 +1,5 @@
 --- @class UserUtils: LazyUtilCore
 --- @field icons utils.icons
---- @field ui utils.ui
 --- @field cmp utils.cmp
 --- @field lsp utils.lsp
 --- @field pick utils.pick
@@ -508,7 +507,6 @@ end
 function M.is_win()
   return vim.uv.os_uname().sysname:find("Windows") ~= nil
 end
-
 
 function M.is_linux()
   return vim.uv.os_uname().sysname:find("Linux") ~= nil

@@ -89,11 +89,7 @@ opt.fillchars = {
   eob = " ",
 }
 
-opt.foldlevel = 99
 opt.smoothscroll = true
-opt.foldexpr = "v:lua.require'utils'.ui.foldexpr()"
-opt.foldmethod = "expr"
-opt.foldtext = ""
 opt.clipboard = "unnamedplus"
 
 opt.title = true

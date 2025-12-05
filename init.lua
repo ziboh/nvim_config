@@ -1,6 +1,7 @@
 require("options")
 require("lazy-setup")
 require("utils")
+require("folding")
 require("keymaps")
 require("autocmd")
 require("colorcheme")
