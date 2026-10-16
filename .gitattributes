@@ -1,0 +1,4 @@
+# 跨平台统一约定：shell 脚本必须 LF，否则 Linux/WSL 下报
+# "bad interpreter: /usr/bin/env bash^M"
+*.sh text eol=lf
+*.bash text eol=lf
