@@ -131,3 +131,11 @@ vim.api.nvim_create_autocmd("CmdLineLeave", {
     vim.opt.titlestring = "neovim"
   end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("AutoSetFiletype", {}),
+  pattern = "json",
+  callback = function()
+    vim.bo.filetype = "jsonc" -- 切换到 jsonc 以支持注释高亮
+  end,
+})

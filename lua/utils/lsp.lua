@@ -136,10 +136,10 @@ function M.rime_on_attach(client, _)
         for k, v in pairs(mapped_punc) do
           map_set({ "i" }, k .. "<space>", function()
             if
-                Utils.rime.rime_ls_disabled({
-                  line = vim.api.nvim_get_current_line(),
-                  cursor = vim.api.nvim_win_get_cursor(0),
-                })
+              Utils.rime.rime_ls_disabled({
+                line = vim.api.nvim_get_current_line(),
+                cursor = vim.api.nvim_win_get_cursor(0),
+              })
             then
               feedkeys(k .. "<space>", "n")
             else
