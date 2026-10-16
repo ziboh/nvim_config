@@ -1,6 +1,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "master", -- 钉住 legacy 分支（新 main 已删除 configs API，与旧配置不兼容）
     event = { "VeryLazy" },
     lazy = vim.fn.argc(-1) == 0,
     opts_extend = { "ensure_installed" },
@@ -60,6 +61,7 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "master",
     event = "VeryLazy",
     enabled = true,
     config = function()
